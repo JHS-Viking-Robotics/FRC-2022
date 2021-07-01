@@ -31,4 +31,12 @@ public final class Constants {
 
   }
 
+  /** Joystick USB ports */
+  public final class Joystick {
+    /** USB port for driver controller */
+    public final static int DRIVER = 0;
+    /** USB port for support controller */
+    public final static int SUPPORT = 1;
+  }
+
 }
