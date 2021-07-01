@@ -17,7 +17,7 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX rightMain;
   private final WPI_TalonSRX rightFollow;
 
-  private final DifferentialDrive drivetrain;
+  private final DifferentialDrive diffDrivetrain;
 
   /** Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor controllers. */
   public Drivetrain() {
@@ -43,9 +43,32 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setSafetyEnabled(true);
 
     // Initialize new differential drivetrain with the new left and right controllers
-    drivetrain = new DifferentialDrive(leftMain, rightMain);
+    diffDrivetrain = new DifferentialDrive(leftMain, rightMain);
 
   }
+
+  /**
+   * Get the DifferentialDrive object
+   * 
+   * @return DifferentialDrive object
+   */
+  public DifferentialDrive getDifferentialDrive() {
+    return diffDrivetrain;
+  }
+  
+  /** Arcade drive using percent output to the motor controllers */
+  public void arcadeDrivePercentOutput(double throttle, double rotation) {
+    diffDrivetrain.arcadeDrive(throttle, rotation);
+  }
+
+/*
+  // Arcade drive using velocity control onboard the motor controllers
+  public void arcadeDriveVelocity() {
+  
+    // TODO: Add velocity controlled drive (requires encoders to be set up)
+  
+  }
+*/
 
   @Override
   public void periodic() {
