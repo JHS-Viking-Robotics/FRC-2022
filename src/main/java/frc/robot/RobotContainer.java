@@ -11,7 +11,6 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,8 +24,11 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private final Drivetrain m_drivetrain = new Drivetrain();
 
-  // Define joystick controllers and/or other input devices
-  private final XboxController m_driveController = new XboxController(Constants.Joystick.DRIVER);
+  // Define joystick controllers and/or other input devices, and define their buttons and axes
+  public static final XboxController m_driveController = new XboxController(Constants.Joystick.DRIVER);
+  // TODO: Issue #3 add toggle for Velocity/PercentOutput driving
+  // private final JoystickButton m_driveControllerButtonA = new JoystickButton(m_driveController, XboxController.Button.kA.value);
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -34,10 +36,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Set drivetrain default command to arcade drive
-    // TODO: Use Lambdas to clean this up
-    double throttle = m_driveController.getX(GenericHID.Hand.kLeft);
-    double rotation = m_driveController.getY(GenericHID.Hand.kLeft);
-    m_drivetrain.setDefaultCommand(new DriveStandard(m_drivetrain, throttle, rotation));
+    m_drivetrain.setDefaultCommand(new DriveStandard(m_drivetrain));
   }
 
   /**

@@ -22,7 +22,7 @@ public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor controllers. */
   public Drivetrain() {
 
-    // Initialize new Talon controllers and set slaves
+    // Initialize new Talon controllers and set followers
     leftMain = new WPI_TalonSRX(Constants.Talon.Drivetrain.LEFT_MAIN);
     rightMain = new WPI_TalonSRX(Constants.Talon.Drivetrain.RIGHT_MAIN);
     leftFollow = new WPI_TalonSRX(Constants.Talon.Drivetrain.LEFT_FOLLOW);
@@ -45,15 +45,6 @@ public class Drivetrain extends SubsystemBase {
     // Initialize new differential drivetrain with the new left and right controllers
     diffDrivetrain = new DifferentialDrive(leftMain, rightMain);
 
-  }
-
-  /**
-   * Get the DifferentialDrive object
-   * 
-   * @return DifferentialDrive object
-   */
-  public DifferentialDrive getDifferentialDrive() {
-    return diffDrivetrain;
   }
   
   /** Arcade drive using percent output to the motor controllers */
