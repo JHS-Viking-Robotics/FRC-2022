@@ -41,7 +41,9 @@ public class DriveStandard extends CommandBase {
   @Override
   public void execute() {
     // Drive with percent output from joystick
-    drivetrain.arcadeDrivePercentOutput(throttle.getAsDouble(), rotation.getAsDouble());
+    // NOTE: The +/- for the y axis on the joystick is inverted from what one expects from
+    //       the right-hand-rule (see issue #10). As such the value for the y axis needs to be flipped
+    drivetrain.arcadeDrivePercentOutput(-throttle.getAsDouble(), rotation.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

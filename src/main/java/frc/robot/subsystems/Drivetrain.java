@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.Constants;
+import frc.robot.Constants.Talon;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -20,25 +20,22 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX rightMain;
   private final WPI_TalonSRX rightFollow;
 
-  private DifferentialDrive diffDrivetrain;
+  private final DifferentialDrive diffDrivetrain;
 
-  /**
-   * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
-   * controllers.
-   */
+  /** Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor controllers. */
   public Drivetrain() {
 
     // Initialize new Talon controllers and set followers
-    leftMain = new WPI_TalonSRX(Constants.Talon.Drivetrain.LEFT_MAIN);
-    rightMain = new WPI_TalonSRX(Constants.Talon.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_TalonSRX(Constants.Talon.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_TalonSRX(Constants.Talon.Drivetrain.RIGHT_FOLLOW);
+    leftMain = new WPI_TalonSRX(Talon.Drivetrain.LEFT_MAIN);
+    rightMain = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_MAIN);
+    leftFollow = new WPI_TalonSRX(Talon.Drivetrain.LEFT_FOLLOW);
+    rightFollow = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_FOLLOW);
+    leftMain.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
     leftFollow.follow(leftMain);
     rightFollow.follow(rightMain);
-
-    // Connect encoders to Talons
-    leftMain.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    rightMain.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
     // Set parameters, PID values, and safety config
     leftMain.configFactoryDefault();
