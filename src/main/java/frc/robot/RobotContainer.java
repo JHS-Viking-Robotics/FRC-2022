@@ -6,8 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.DriveStandard;
+import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -17,15 +17,28 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  // Define robot subsystems, commands, input devices, and buttons
+  private final Drivetrain m_drivetrain;
+  private final Command m_driveStandard;
+  public final XboxController m_driveController;
+  // TODO: Issue #3 add toggle for Velocity/PercentOutput driving
+  // private final JoystickButton m_driveControllerButtonA = new JoystickButton(m_driveController, XboxController.Button.kA.value);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // Instantiate robot subsystems, commands, input devices, and buttons
+    m_drivetrain = new Drivetrain();
+    m_driveController = new XboxController(Constants.Joystick.DRIVER);
+    m_driveStandard = new DriveStandard(
+                          m_drivetrain,
+                          () -> m_driveController.getY(GenericHID.Hand.kLeft),
+                          () -> m_driveController.getX(GenericHID.Hand.kLeft));
+
+    // Set subsystem default commands
+    m_drivetrain.setDefaultCommand(m_driveStandard);
   }
 
   /**
@@ -43,6 +56,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return m_driveStandard;
   }
 }
