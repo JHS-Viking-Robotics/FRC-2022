@@ -4,26 +4,31 @@
 
 package frc.robot.commands;
 
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Drivetrain;
-import edu.wpi.first.wpilibj.GenericHID;
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** Arcade drive with standard percent output for Drivetrain subsystem */
 public class DriveStandard extends CommandBase {
 
   private final Drivetrain drivetrain;
+  private final DoubleSupplier throttle;
+  private final DoubleSupplier rotation;
 
   /**
    * Creates a new DriveStandard.
    *
    * @param subsystem The drivetrain subsystem used by this command.
    */
-  public DriveStandard(Drivetrain subsystem) {
+  public DriveStandard(Drivetrain subsystem, DoubleSupplier throttle, DoubleSupplier rotation) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    
+    // NOTE: 'this' is used here when collecting parameter values, but not throughout rest of code
+    // NOTE: Controller inputs are passed as DoubleSupplier class, and need to be converted to
+    //       double whenever utilized. See WPI FRC docs on command-based examples for more info
     this.drivetrain = subsystem;
+    this.throttle = throttle;
+    this.rotation = rotation;
+    addRequirements(this.drivetrain);
   }
 
   // Called when the command is initially scheduled.
@@ -33,12 +38,9 @@ public class DriveStandard extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // Get joystick values
-    double throttle = RobotContainer.m_driveController.getY(GenericHID.Hand.kLeft);
-    double rotation = RobotContainer.m_driveController.getX(GenericHID.Hand.kLeft);
-
     // Drive with percent output from joystick
-    drivetrain.arcadeDrivePercentOutput(throttle, rotation);
+    drivetrain.arcadeDrivePercentOutput(throttle.getAsDouble(), rotation.getAsDouble());
+    drivetrain.arcadeDrivePercentOutput(throttle.getAsDouble(), rotation.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

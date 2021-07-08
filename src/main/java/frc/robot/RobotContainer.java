@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // Define robot subsystems and commands
   private final Drivetrain m_drivetrain = new Drivetrain();
-  private final Command m_driveStandard = new DriveStandard(m_drivetrain);
+  private final Command m_driveStandard = new DriveStandard(m_drivetrain, () -> m_driveController.getY(GenericHID.Hand.kLeft), () -> m_driveController.getX(GenericHID.Hand.kLeft));
 
   // Define joystick controllers and/or other input devices, and define their buttons and axes
   public static final XboxController m_driveController = new XboxController(Constants.Joystick.DRIVER);
@@ -33,7 +33,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Set drivetrain default command to arcade drive
-    m_drivetrain.setDefaultCommand(new DriveStandard(m_drivetrain));
+    m_drivetrain.setDefaultCommand(m_driveStandard);
   }
 
   /**
