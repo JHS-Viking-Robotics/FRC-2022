@@ -17,22 +17,27 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Define robot subsystems and commands
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final Command m_driveStandard = new DriveStandard(m_drivetrain, () -> m_driveController.getY(GenericHID.Hand.kLeft), () -> m_driveController.getX(GenericHID.Hand.kLeft));
-
-  // Define joystick controllers and/or other input devices, and define their buttons and axes
-  public static final XboxController m_driveController = new XboxController(Constants.Joystick.DRIVER);
+  // Define robot subsystems, commands, input devices, and buttons
+  private final Drivetrain m_drivetrain;
+  private final Command m_driveStandard;
+  public final XboxController m_driveController;
   // TODO: Issue #3 add toggle for Velocity/PercentOutput driving
   // private final JoystickButton m_driveControllerButtonA = new JoystickButton(m_driveController, XboxController.Button.kA.value);
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Set drivetrain default command to arcade drive
+    // Instantiate robot subsystems, commands, input devices, and buttons
+    m_drivetrain = new Drivetrain();
+    m_driveController = new XboxController(Constants.Joystick.DRIVER);
+    m_driveStandard = new DriveStandard(
+                          m_drivetrain,
+                          () -> m_driveController.getY(GenericHID.Hand.kLeft),
+                          () -> m_driveController.getX(GenericHID.Hand.kLeft));
+
+    // Set subsystem default commands
     m_drivetrain.setDefaultCommand(m_driveStandard);
   }
 
