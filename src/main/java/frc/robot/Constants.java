@@ -20,13 +20,17 @@ public final class Constants {
     /** Talon CAN Bus ID for {@link Drivetrain} subsystem */
     public final class Drivetrain {
       /** CAN Bus ID of primary left drive Talon */
-      public final static int LEFT_MAIN = 1;
+      public final static int LEFT_MAIN = 3;
       /** CAN Bus ID of follower left drive Talon or Victor */
-      public final static int LEFT_FOLLOW = 51;
+      public final static int LEFT_FOLLOW = 53;
       /** CAN Bus ID of primary right drive Talon */
-      public final static int RIGHT_MAIN = 2;
+      public final static int RIGHT_MAIN = 1;
       /** CAN Bus ID of follower right drive Talon or Victor */
-      public final static int RIGHT_FOLLOW = 52;
+      public final static int RIGHT_FOLLOW = 51;
+      /** Left side Talons are inverted */
+      public final static boolean LEFT_INVERTED = false;
+      /** Right side Talons are inverted */
+      public final static boolean RIGHT_INVERTED = false;
     }
 
   }
