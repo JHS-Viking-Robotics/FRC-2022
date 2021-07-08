@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase {
@@ -17,9 +20,12 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX rightMain;
   private final WPI_TalonSRX rightFollow;
 
-  private final DifferentialDrive diffDrivetrain;
+  private DifferentialDrive diffDrivetrain;
 
-  /** Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor controllers. */
+  /**
+   * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
+   * controllers.
+   */
   public Drivetrain() {
 
     // Initialize new Talon controllers and set followers
@@ -29,6 +35,10 @@ public class Drivetrain extends SubsystemBase {
     rightFollow = new WPI_TalonSRX(Constants.Talon.Drivetrain.RIGHT_FOLLOW);
     leftFollow.follow(leftMain);
     rightFollow.follow(rightMain);
+
+    // Connect encoders to Talons
+    leftMain.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    rightMain.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
     // Set parameters, PID values, and safety config
     leftMain.configFactoryDefault();
@@ -42,24 +52,87 @@ public class Drivetrain extends SubsystemBase {
     leftMain.setSafetyEnabled(true);
     rightMain.setSafetyEnabled(true);
 
-    // Initialize new differential drivetrain with the new left and right controllers
-    diffDrivetrain = new DifferentialDrive(leftMain, rightMain);
-
   }
-  
+
   /** Arcade drive using percent output to the motor controllers */
   public void arcadeDrivePercentOutput(double throttle, double rotation) {
+    // Configure left and right talons as WPI DifferentialDrive type, and drive with arcade drive
+    diffDrivetrain = new DifferentialDrive(leftMain, rightMain);
     diffDrivetrain.arcadeDrive(throttle, rotation);
   }
 
-/*
-  // Arcade drive using velocity control onboard the motor controllers
-  public void arcadeDriveVelocity() {
-  
-    // TODO: Add velocity controlled drive (requires encoders to be set up)
-  
+  /** Arcade drive using velocity control onboard the motor controllers */
+  public void arcadeDriveVelocity(double throttle, double rotation) {
+    /*
+      Convert inputs to actual motor velocity values in arcade style. Input throttle
+      is only called throttle to parallel DifferentialDrive.arcadeDrive(), but is
+      actually passed as a double between 0.0 and 1.0 from a joystick axis. Therefore,
+      we need to do a conversion like the one described here:
+      https://electronics.stackexchange.com/questions/19669/algorithm-for-mixing-2-axis-analog-input-to-control-a-differential-motor-drive
+
+      Because this.arcadeDriveVelocity() is meant to parallel this.arcadeDrivePercentOutput(),
+      which utilizes the WPI Lib DifferentialDrive.arcadeDrive(), we will use their
+      conversion so the performance is similar.
+    */
+    double xSpeed = throttle;
+    double zRotation = rotation;
+    double leftOutput;
+    double rightOutput;
+    // double maxVelocityFPS = 1; // Max velocity in feet / s
+    double maxVelocityTicks = 100; // Max velocity in encoder ticks / 100ms
+
+    // Convert values from analog input to motor outputs
+    // TODO: clean up this math and/or put it in another method
+    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+    if (Math.abs(xSpeed) > 0.2) {
+      if (xSpeed > 0.0) {
+        xSpeed = (xSpeed - 0.2) / (1.0 - 0.2);
+      } else {
+        xSpeed = (xSpeed + 0.2) / (1.0 - 0.2);
+      }
+    } else {
+      xSpeed = 0.0;
+    }
+    xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+
+    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+    if (Math.abs(zRotation) > 0.2) {
+      if (zRotation > 0.0) {
+        zRotation = (zRotation - 0.2) / (1.0 - 0.2);
+      } else {
+        zRotation = (zRotation + 0.2) / (1.0 - 0.2);
+      }
+    } else {
+      xSpeed = 0.0;
+    }
+    zRotation = Math.copySign(zRotation * zRotation, zRotation);
+
+    if (xSpeed >= 0.0) {
+      // First quadrant, else second quadrant
+      if (zRotation >= 0.0) {
+        leftOutput = 1.0;
+        rightOutput = xSpeed - zRotation;
+      } else {
+        leftOutput = xSpeed + zRotation;
+        rightOutput = 1.0;
+      }
+    } else {
+      // Third quadrant, else fourth quadrant
+      if (zRotation >= 0.0) {
+        leftOutput = xSpeed + zRotation;
+        rightOutput = 1.0;
+      } else {
+        leftOutput = 1.0;
+        rightOutput = xSpeed - zRotation;
+      }
+    }
+    
+    leftOutput = MathUtil.clamp(leftOutput, -1.0, 1.0) * maxVelocityTicks;
+    rightOutput = MathUtil.clamp(rightOutput, -1.0, 1.0) * maxVelocityTicks;
+
+    leftMain.set(ControlMode.Velocity, leftOutput);
+    rightMain.set(ControlMode.Velocity, rightOutput);
   }
-*/
 
   @Override
   public void periodic() {
