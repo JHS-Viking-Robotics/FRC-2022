@@ -14,6 +14,22 @@ package frc.robot;
  */
 public final class Constants {
 
+  /** Math and conversion constants to 6 significant figures.
+   * 
+   * NOTE: The library epu.wpi.first.wpiutil.math.MathUtil contains non-static
+   * methods for several of these conversions, but these static constants are
+   * available for the constants chassis measurements in
+   * frc.robot.Constants.Chassis
+  */
+  public final class Math {
+    /** The mathematical constant pi */
+    public final static double PI = 3.14159;
+    /** Multiply to get from inches to meters */
+    public final static double INCHES_2_METERS = 0.0254000;
+    /** Multiply to get from meters to inches */
+    public final static double METERS_2_INCHES = 39.3701;
+
+  }
   /** Talon CAN Bus ID's for various subsystems */
   public final class Talon {
 
@@ -43,4 +59,17 @@ public final class Constants {
     public final static int SUPPORT = 1;
   }
 
+  /** Chassis measurements */
+  public final class Chassis {
+    /** Wheel diameter in meters */
+    public final static double WHEEL_DIAMETER = 6 * Math.INCHES_2_METERS;
+    /** Wheel circumference in meters */
+    public final static double WHEEL_CIRCUM = WHEEL_DIAMETER * Math.PI;
+    /** Width between two wheels (axle length) in meters */
+    public final static double TRACK_WIDTH = 23 * Math.INCHES_2_METERS;
+    /** Width of the robot in meters */
+    public final static double WIDTH = 27 * Math.INCHES_2_METERS;
+    /** Length of the robot in meters */
+    public final static double LENGTH = 32.3 * Math.INCHES_2_METERS;
+  }
 }
