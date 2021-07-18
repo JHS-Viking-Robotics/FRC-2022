@@ -19,10 +19,21 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX leftFollow;
   private final WPI_TalonSRX rightMain;
   private final WPI_TalonSRX rightFollow;
+  private final DifferentialDrive driveDifferential;
+  private final DifferentialDriveKinematics driveKinematics;
+  
+  private ShuffleboardTab shuffleboardTab;
+  private NetworkTableEntry driveP;
+  private NetworkTableEntry driveI;
+  private NetworkTableEntry driveD;
+  private NetworkTableEntry driveF;
+  private NetworkTableEntry driveLeftSetpoint;
+  private NetworkTableEntry driveRightSetpoint;
 
-  private final DifferentialDrive diffDrivetrain;
-
-  /** Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor controllers. */
+  /**
+   * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
+   * controllers.
+   */
   public Drivetrain() {
 
     // Initialize new Talon controllers and set followers
@@ -37,18 +48,35 @@ public class Drivetrain extends SubsystemBase {
     leftFollow.follow(leftMain);
     rightFollow.follow(rightMain);
 
-    // Set parameters, PID values, and safety config
+    // Set Talon safety parameters
     leftMain.configFactoryDefault();
-    rightMain.configFactoryDefault();
     leftMain.configPeakCurrentLimit(0);
-    rightMain.configPeakCurrentLimit(0);
     leftMain.configContinuousCurrentLimit(35);
-    rightMain.configContinuousCurrentLimit(35);
     leftMain.configPeakCurrentDuration(100);
-    rightMain.configPeakCurrentDuration(100);
+    leftMain.enableCurrentLimit(true);
     leftMain.setSafetyEnabled(true);
+    rightMain.configFactoryDefault();
+    rightMain.configPeakCurrentLimit(0);
+    rightMain.configContinuousCurrentLimit(35);
+    rightMain.configPeakCurrentDuration(100);
+    rightMain.enableCurrentLimit(true);
     rightMain.setSafetyEnabled(true);
 
+    // Configure encoders and PID settings
+    setPID(
+        Talon.Drivetrain.P,
+        Talon.Drivetrain.I,
+        Talon.Drivetrain.D,
+        Talon.Drivetrain.F);
+
+    // Configure differential drive, kinematics, and odometry
+    driveDifferential = new DifferentialDrive(leftMain, rightMain);
+    driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
+
+    // Configure Shuffleboard dashboard tab
+    shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+
+  }
 
   /** Get the left encoder total distance travelled in meters*/
   public double getLeftDistance() {
@@ -75,12 +103,45 @@ public class Drivetrain extends SubsystemBase {
     leftMain.setSelectedSensorPosition(0);
     rightMain.setSelectedSensorPosition(0);
   }
-  
+
+  /** Update the PIDF configuration for both encoders from the Shuffleboard Net Tables values */
+  public void setPID() {
+    // Configure the Talon closed-loop PID values from the dashboard
+    setPID(
+      driveP.getDouble(0),
+      driveI.getDouble(0),
+      driveD.getDouble(0),
+      driveF.getDouble(0));
+  }
+
+  /** Update the PIDF configuration for both encoders manually
+   * 
+   * @param P constant
+   * @param I constant
+   * @param D constant
+   * @param F constant
+  */
+  public void setPID(double P, double I, double D, double F) {
+    // Configure the Talon closed-loop PID values
+    leftMain.config_kP(0, P);
+    leftMain.config_kI(0, I);
+    leftMain.config_kD(0, D);
+    leftMain.config_kF(0, F);
+    rightMain.config_kP(0, P);
+    rightMain.config_kI(0, I);
+    rightMain.config_kD(0, D);
+    rightMain.config_kF(0, F);
+
+    // Push the new values to the Shuffleboard
+    driveP.setDouble(P);
+    driveI.setDouble(I);
+    driveD.setDouble(D);
+    driveF.setDouble(F);
+  }
+
   /** Arcade drive using percent output to the motor controllers */
   public void arcadeDrivePercentOutput(double throttle, double rotation) {
-    // Configure left and right talons as WPI DifferentialDrive type, and drive with arcade drive
-    diffDrivetrain = new DifferentialDrive(leftMain, rightMain);
-    diffDrivetrain.arcadeDrive(throttle, rotation);
+    driveDifferential.arcadeDrive(throttle, rotation);
   }
 
   /** Arcade drive using velocity control onboard the motor controllers */
@@ -159,6 +220,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    setPID();
   }
 
   @Override
