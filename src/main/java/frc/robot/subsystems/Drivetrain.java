@@ -49,8 +49,33 @@ public class Drivetrain extends SubsystemBase {
     leftMain.setSafetyEnabled(true);
     rightMain.setSafetyEnabled(true);
 
+
+  /** Get the left encoder total distance travelled in meters*/
+  public double getLeftDistance() {
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Convert from raw ticks and return distance in meters
+    return leftMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
+  /** Get the right encoder total distance travelled in meters*/
+  public double getRightDistance() {
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Convert from raw ticks and return distance in meters
+    return rightMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
+  }
+
+  /** Get the average total distance travelled in meters from both encoders */
+  public double getTotalDistance() {
+    // Average the left and right encoder distances
+    return (getRightDistance() + getLeftDistance()) / 2;
+  }
+
+  /** Reset the distance travelled for both encoders */
+  public void resetDistance() {
+    leftMain.setSelectedSensorPosition(0);
+    rightMain.setSelectedSensorPosition(0);
+  }
+  
   /** Arcade drive using percent output to the motor controllers */
   public void arcadeDrivePercentOutput(double throttle, double rotation) {
     // Configure left and right talons as WPI DifferentialDrive type, and drive with arcade drive
