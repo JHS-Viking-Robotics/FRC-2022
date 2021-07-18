@@ -55,6 +55,10 @@ public final class Constants {
       public final static double D = 0;
       /** F constant for Talon onboard PID control */
       public final static double F = 0;
+      /** Maximum forward driving velocity in m/s */
+      public final static double MAX_VELOCITY = 1.0;
+      /** Maximum rotational velocity in rad/s */
+      public final static double MAX_ROTATION = Math.PI;
     }
 
   }

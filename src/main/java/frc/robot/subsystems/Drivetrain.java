@@ -4,14 +4,20 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants.Chassis;
+import frc.robot.Constants.Talon;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.Constants.Talon;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -146,75 +152,22 @@ public class Drivetrain extends SubsystemBase {
 
   /** Arcade drive using velocity control onboard the motor controllers */
   public void arcadeDriveVelocity(double throttle, double rotation) {
-    /*
-      Convert inputs to actual motor velocity values in arcade style. Input throttle
-      is only called throttle to parallel DifferentialDrive.arcadeDrive(), but is
-      actually passed as a double between 0.0 and 1.0 from a joystick axis. Therefore,
-      we need to do a conversion like the one described here:
-      https://electronics.stackexchange.com/questions/19669/algorithm-for-mixing-2-axis-analog-input-to-control-a-differential-motor-drive
+    // Convert joystick input to left and right motor output.
+    // NOTE: The ChassisSpeeds constructor vy arguement is 0 as the robot can
+    //       only drive forwards/backwards
+    DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
+        new ChassisSpeeds(
+            throttle * Talon.Drivetrain.MAX_VELOCITY,
+            0,
+            rotation * Talon.Drivetrain.MAX_ROTATION));
 
-      Because this.arcadeDriveVelocity() is meant to parallel this.arcadeDrivePercentOutput(),
-      which utilizes the WPI Lib DifferentialDrive.arcadeDrive(), we will use their
-      conversion so the performance is similar.
-    */
-    double xSpeed = throttle;
-    double zRotation = rotation;
-    double leftOutput;
-    double rightOutput;
-    // double maxVelocityFPS = 1; // Max velocity in feet / s
-    double maxVelocityTicks = 100; // Max velocity in encoder ticks / 100ms
-
-    // Convert values from analog input to motor outputs
-    // TODO: clean up this math and/or put it in another method
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-    if (Math.abs(xSpeed) > 0.2) {
-      if (xSpeed > 0.0) {
-        xSpeed = (xSpeed - 0.2) / (1.0 - 0.2);
-      } else {
-        xSpeed = (xSpeed + 0.2) / (1.0 - 0.2);
-      }
-    } else {
-      xSpeed = 0.0;
-    }
-    xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
-
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-    if (Math.abs(zRotation) > 0.2) {
-      if (zRotation > 0.0) {
-        zRotation = (zRotation - 0.2) / (1.0 - 0.2);
-      } else {
-        zRotation = (zRotation + 0.2) / (1.0 - 0.2);
-      }
-    } else {
-      xSpeed = 0.0;
-    }
-    zRotation = Math.copySign(zRotation * zRotation, zRotation);
-
-    if (xSpeed >= 0.0) {
-      // First quadrant, else second quadrant
-      if (zRotation >= 0.0) {
-        leftOutput = 1.0;
-        rightOutput = xSpeed - zRotation;
-      } else {
-        leftOutput = xSpeed + zRotation;
-        rightOutput = 1.0;
-      }
-    } else {
-      // Third quadrant, else fourth quadrant
-      if (zRotation >= 0.0) {
-        leftOutput = xSpeed + zRotation;
-        rightOutput = 1.0;
-      } else {
-        leftOutput = 1.0;
-        rightOutput = xSpeed - zRotation;
-      }
-    }
-    
-    leftOutput = MathUtil.clamp(leftOutput, -1.0, 1.0) * maxVelocityTicks;
-    rightOutput = MathUtil.clamp(rightOutput, -1.0, 1.0) * maxVelocityTicks;
-
-    leftMain.set(ControlMode.Velocity, leftOutput);
-    rightMain.set(ControlMode.Velocity, rightOutput);
+    // Convert m/s and set motor output to velocity in ticks/100ms
+    leftMain.set(
+        ControlMode.Velocity,
+        wheelSpeeds.leftMetersPerSecond * (1/10) * (4096/Chassis.WHEEL_CIRCUM));
+    rightMain.set(
+        ControlMode.Velocity,
+        wheelSpeeds.rightMetersPerSecond * (1/10) * (4096/Chassis.WHEEL_CIRCUM));
   }
 
   @Override
