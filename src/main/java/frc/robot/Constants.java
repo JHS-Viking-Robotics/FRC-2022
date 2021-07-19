@@ -61,6 +61,27 @@ public final class Constants {
       public final static double MAX_ROTATION = Math.PI;
     }
 
+    /** Talon CAN Bus ID for {@link Hopper} subsystem */
+    public final class Hopper {
+      /** CAN Bus ID of lift Talon controller */
+      public final static int LIFT_ID = 2;
+      /** CAN Bus ID of intake Victor controller */
+      public final static int INTAKE_ID = 52;
+      /** Lift Talon controller is inverted */
+      public final static boolean LIFT_CONTROLLER_INVERTED = false;
+      /** Lift Talon encoder is inverted */
+      public final static boolean LIFT_ENCODER_INVERTED = false;
+      /** Intake Talon is inverted */
+      public final static boolean INTAKE_CONTROLLER_INVERTED = false;
+      /** P constant for Lift Talon onboard PID control */
+      public final static double LIFT_P = 0;
+      /** I constant for Lift Talon onboard PID control */
+      public final static double LIFT_I = 0;
+      /** D constant for Lift Talon onboard PID control */
+      public final static double LIFT_D = 0;
+      /** F constant for Lift Talon onboard PID control */
+      public final static double LIFT_F = 0;
+    }
   }
 
   /** Joystick USB ports */
