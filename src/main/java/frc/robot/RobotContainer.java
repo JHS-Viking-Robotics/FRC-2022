@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.commands.DriveStandard;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,8 +34,8 @@ public class RobotContainer {
     m_driveController = new XboxController(Constants.Joystick.DRIVER);
     m_driveStandard = new DriveStandard(
                           m_drivetrain,
-                          () -> m_driveController.getY(GenericHID.Hand.kLeft),
-                          () -> m_driveController.getX(GenericHID.Hand.kLeft));
+                          () -> m_driveController.getY(Hand.kLeft),
+                          () -> m_driveController.getX(Hand.kLeft));
 
     // Set subsystem default commands
     m_drivetrain.setDefaultCommand(m_driveStandard);
