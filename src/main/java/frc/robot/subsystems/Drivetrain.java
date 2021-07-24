@@ -27,7 +27,7 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX rightFollow;
   private final DifferentialDrive driveDifferential;
   private final DifferentialDriveKinematics driveKinematics;
-  
+  /*
   private ShuffleboardTab shuffleboardTab;
   private NetworkTableEntry driveP;
   private NetworkTableEntry driveI;
@@ -35,6 +35,7 @@ public class Drivetrain extends SubsystemBase {
   private NetworkTableEntry driveF;
   private NetworkTableEntry driveLeftSetpoint;
   private NetworkTableEntry driveRightSetpoint;
+  */
 
   /**
    * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
@@ -51,6 +52,8 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
     leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
     rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    leftMain.setSensorPhase(true);
+    rightMain.setSensorPhase(true);
     leftFollow.follow(leftMain);
     rightFollow.follow(rightMain);
 
@@ -68,19 +71,24 @@ public class Drivetrain extends SubsystemBase {
     rightMain.enableCurrentLimit(true);
     rightMain.setSafetyEnabled(true);
 
+    
+    // Configure differential drive, kinematics, and odometry
+    driveDifferential = new DifferentialDrive(leftMain, rightMain);
+    driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
+    /*
+    // Configure Shuffleboard dashboard tab
+    shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+    driveP = shuffleboardTab.add("Drive P", driveP).getEntry();
+    driveI = shuffleboardTab.add("Drive I", driveI).getEntry();
+    driveD = shuffleboardTab.add("Drive D", driveD).getEntry();
+    driveF = shuffleboardTab.add("Drive F", driveF).getEntry();
+    */
     // Configure encoders and PID settings
     setPID(
         Talon.Drivetrain.P,
         Talon.Drivetrain.I,
         Talon.Drivetrain.D,
         Talon.Drivetrain.F);
-
-    // Configure differential drive, kinematics, and odometry
-    driveDifferential = new DifferentialDrive(leftMain, rightMain);
-    driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
-
-    // Configure Shuffleboard dashboard tab
-    shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
   }
 
@@ -110,14 +118,19 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setSelectedSensorPosition(0);
   }
 
-  /** Update the PIDF configuration for both encoders from the Shuffleboard Net Tables values */
+  /**
+   * Update the PIDF configuration for both encoders from the Shuffleboard Net
+   * Tables values
+  */
   public void setPID() {
     // Configure the Talon closed-loop PID values from the dashboard
+    /*
     setPID(
       driveP.getDouble(0),
       driveI.getDouble(0),
       driveD.getDouble(0),
       driveF.getDouble(0));
+      */
   }
 
   /** Update the PIDF configuration for both encoders manually
@@ -137,12 +150,13 @@ public class Drivetrain extends SubsystemBase {
     rightMain.config_kI(0, I);
     rightMain.config_kD(0, D);
     rightMain.config_kF(0, F);
-
+/*
     // Push the new values to the Shuffleboard
     driveP.setDouble(P);
     driveI.setDouble(I);
     driveD.setDouble(D);
     driveF.setDouble(F);
+    */
   }
 
   /** Arcade drive using percent output to the motor controllers */
@@ -161,19 +175,24 @@ public class Drivetrain extends SubsystemBase {
             0,
             rotation * Talon.Drivetrain.MAX_ROTATION));
 
+    System.out.println("Got:    " + throttle * Talon.Drivetrain.MAX_VELOCITY + "    " + rotation * Talon.Drivetrain.MAX_ROTATION);
     // Convert m/s and set motor output to velocity in ticks/100ms
+    System.out.println("Set:    " + 
+        (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
+        + "    "
+        + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
     leftMain.set(
         ControlMode.Velocity,
-        wheelSpeeds.leftMetersPerSecond * (1/10) * (4096/Chassis.WHEEL_CIRCUM));
+        wheelSpeeds.leftMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
     rightMain.set(
         ControlMode.Velocity,
-        wheelSpeeds.rightMetersPerSecond * (1/10) * (4096/Chassis.WHEEL_CIRCUM));
+        wheelSpeeds.rightMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setPID();
+    // setPID();
   }
 
   @Override
