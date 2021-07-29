@@ -54,6 +54,7 @@ public class Drivetrain extends SubsystemBase {
     
     // Configure differential drive, kinematics, and odometry
     driveDifferential = new DifferentialDrive(leftMain, rightMain);
+    driveDifferential.setRightSideInverted(false);
     driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
