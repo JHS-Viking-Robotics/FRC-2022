@@ -46,19 +46,19 @@ public final class Constants {
       /** Left side Talons are inverted */
       public final static boolean LEFT_INVERTED = false;
       /** Right side Talons are inverted */
-      public final static boolean RIGHT_INVERTED = false;
+      public final static boolean RIGHT_INVERTED = true;
       /** P constant for Talon onboard PID control */
-      public final static double P = 0;
+      public final static double P = 10.0;
       /** I constant for Talon onboard PID control */
-      public final static double I = 0;
+      public final static double I = 0.0;
       /** D constant for Talon onboard PID control */
-      public final static double D = 0;
+      public final static double D = 0.0;
       /** F constant for Talon onboard PID control */
-      public final static double F = 0;
+      public final static double F = 0.0;
       /** Maximum forward driving velocity in m/s */
-      public final static double MAX_VELOCITY = 1.0;
+      public final static double MAX_VELOCITY = 0.25;
       /** Maximum rotational velocity in rad/s */
-      public final static double MAX_ROTATION = Math.PI;
+      public final static double MAX_ROTATION = Math.PI/4.0;
     }
 
     /** Talon CAN Bus ID for {@link Hopper} subsystem */

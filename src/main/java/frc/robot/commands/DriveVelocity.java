@@ -15,7 +15,8 @@ public class DriveVelocity extends CommandBase {
   private final DoubleSupplier throttle;
   private final DoubleSupplier rotation;
   
-  /** Creates a new DriveVelocity.
+  /**
+   * Creates a new DriveVelocity.
    * 
    * @param subsystem The drivetrain subsystem used by this command.
    * @param throttle The Supplier from a joystick for the throttle (through x axis)
