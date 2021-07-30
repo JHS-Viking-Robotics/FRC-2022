@@ -16,7 +16,7 @@ public final class Constants {
 
   /** Math and conversion constants to 6 significant figures.
    * 
-   * NOTE: The library epu.wpi.first.wpiutil.math.MathUtil contains non-static
+   * <p>NOTE: The library {@link edu.wpi.first.wpiutil.math.MathUtil WPI MathUtil Class} contains non-static
    * methods for several of these conversions, but these static constants are
    * available for the constants chassis measurements in
    * frc.robot.Constants.Chassis
@@ -30,10 +30,10 @@ public final class Constants {
     public final static double METERS_2_INCHES = 39.3701;
 
   }
-  /** Talon CAN Bus ID's for various subsystems */
-  public final class Talon {
+  /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
+  public final class Subsystem {
 
-    /** Talon CAN Bus ID for {@link Drivetrain} subsystem */
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
     public final class Drivetrain {
       /** CAN Bus ID of primary left drive Talon */
       public final static int LEFT_MAIN = 3;
@@ -61,7 +61,7 @@ public final class Constants {
       public final static double MAX_ROTATION = Math.PI/4.0;
     }
 
-    /** Talon CAN Bus ID for {@link Hopper} subsystem */
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
     public final class Hopper {
       /** CAN Bus ID of lift Talon controller */
       public final static int LIFT_ID = 2;
@@ -69,7 +69,7 @@ public final class Constants {
       public final static int INTAKE_ID = 52;
       /** Lift Talon controller is inverted */
       public final static boolean LIFT_CONTROLLER_INVERTED = false;
-      /** Lift Talon encoder is inverted */
+      /** Lift Talon sensor is inverted */
       public final static boolean LIFT_SENSOR_INVERTED = false;
       /** Intake Talon is inverted */
       public final static boolean INTAKE_CONTROLLER_INVERTED = false;
@@ -92,7 +92,7 @@ public final class Constants {
     public final static int SUPPORT = 1;
   }
 
-  /** Chassis measurements */
+  /** Physical chassis measurements and dimensions */
   public final class Chassis {
     /** Wheel diameter in meters */
     public final static double WHEEL_DIAMETER = 6 * Math.INCHES_2_METERS;

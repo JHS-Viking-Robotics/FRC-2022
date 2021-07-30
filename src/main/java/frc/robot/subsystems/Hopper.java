@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.Talon;
+import frc.robot.Constants.Subsystem;
 
 import java.util.Map;
 
@@ -38,8 +38,8 @@ public class Hopper extends SubsystemBase {
   public Hopper() {
 
     // Initialize new Talon controllers and configure them
-    liftController = new WPI_TalonSRX(Talon.Hopper.LIFT_ID);
-    intakeController = new WPI_TalonSRX(Talon.Hopper.INTAKE_ID);
+    liftController = new WPI_TalonSRX(Subsystem.Hopper.LIFT_ID);
+    intakeController = new WPI_TalonSRX(Subsystem.Hopper.INTAKE_ID);
     configureTalons();
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
@@ -49,12 +49,12 @@ public class Hopper extends SubsystemBase {
   /** Configures the Talon motor controllers and safety settings */
   private void configureTalons() {
     // Set Talon inversion, sensor phase, and sensor type
-    liftController.setInverted(Talon.Hopper.LIFT_CONTROLLER_INVERTED);
+    liftController.setInverted(Subsystem.Hopper.LIFT_CONTROLLER_INVERTED);
     liftController.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    liftController.setSensorPhase(Talon.Hopper.LIFT_SENSOR_INVERTED);
+    liftController.setSensorPhase(Subsystem.Hopper.LIFT_SENSOR_INVERTED);
     liftController.setSelectedSensorPosition(0.0);
 
-    intakeController.setInverted(Talon.Hopper.INTAKE_CONTROLLER_INVERTED);
+    intakeController.setInverted(Subsystem.Hopper.INTAKE_CONTROLLER_INVERTED);
 
     // Set Talon safety parameters
     liftController.configFactoryDefault();
@@ -84,19 +84,19 @@ public class Hopper extends SubsystemBase {
 
     // Configure PID list widget, and set default values from Constants
     liftP = shufflePIDLayout
-        .add("P", Talon.Hopper.LIFT_P)
+        .add("P", Subsystem.Hopper.LIFT_P)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     liftI = shufflePIDLayout
-        .add("I", Talon.Hopper.LIFT_I)
+        .add("I", Subsystem.Hopper.LIFT_I)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     liftD = shufflePIDLayout
-        .add("D", Talon.Hopper.LIFT_D)
+        .add("D", Subsystem.Hopper.LIFT_D)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     liftF = shufflePIDLayout
-        .add("F", Talon.Hopper.LIFT_F)
+        .add("F", Subsystem.Hopper.LIFT_F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     liftSetpoint = shuffleHopperTab
@@ -139,10 +139,10 @@ public class Hopper extends SubsystemBase {
   public void setLiftPIDF() {
     // Configure the Talon closed-loop PID values from the Shuffleboard
     // NetworkTables values
-    liftController.config_kP(0, liftP.getDouble(Talon.Hopper.LIFT_P));
-    liftController.config_kI(0, liftI.getDouble(Talon.Hopper.LIFT_I));
-    liftController.config_kD(0, liftD.getDouble(Talon.Hopper.LIFT_D));
-    liftController.config_kF(0, liftF.getDouble(Talon.Hopper.LIFT_F));
+    liftController.config_kP(0, liftP.getDouble(Subsystem.Hopper.LIFT_P));
+    liftController.config_kI(0, liftI.getDouble(Subsystem.Hopper.LIFT_I));
+    liftController.config_kD(0, liftD.getDouble(Subsystem.Hopper.LIFT_D));
+    liftController.config_kF(0, liftF.getDouble(Subsystem.Hopper.LIFT_F));
   }
 
   /** Sets the PIDF configuration for the lift encoder by writing to the

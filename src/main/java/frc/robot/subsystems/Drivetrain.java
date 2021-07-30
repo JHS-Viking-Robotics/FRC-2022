@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.Chassis;
-import frc.robot.Constants.Talon;
+import frc.robot.Constants.Subsystem;
 
 import java.util.Map;
 
@@ -47,10 +47,10 @@ public class Drivetrain extends SubsystemBase {
    */
   public Drivetrain() {
     // Initialize new Talon controllers and configure them
-    leftMain = new WPI_TalonSRX(Talon.Drivetrain.LEFT_MAIN);
-    rightMain = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_TalonSRX(Talon.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_FOLLOW);
+    leftMain = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_MAIN);
+    rightMain = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_MAIN);
+    leftFollow = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_FOLLOW);
+    rightFollow = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_FOLLOW);
     configureTalons();
     
     // Configure differential drive, kinematics, and odometry
@@ -65,18 +65,18 @@ public class Drivetrain extends SubsystemBase {
   /** Configures the Talon motor controllers and safety settings */
   private void configureTalons() {
     // Set Talon inversion, encoder phase and type, and set followers
-    leftMain.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    leftMain.setInverted(Subsystem.Drivetrain.LEFT_INVERTED);
     leftMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     leftMain.setSensorPhase(true);
 
-    rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    rightMain.setInverted(Subsystem.Drivetrain.RIGHT_INVERTED);
     rightMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     rightMain.setSensorPhase(true);
 
-    leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    leftFollow.setInverted(Subsystem.Drivetrain.LEFT_INVERTED);
     leftFollow.follow(leftMain);
 
-    rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    rightFollow.setInverted(Subsystem.Drivetrain.RIGHT_INVERTED);
     rightFollow.follow(rightMain);
 
     // Set Talon safety parameters
@@ -113,19 +113,19 @@ public class Drivetrain extends SubsystemBase {
 
     // Configure PID list widget, and set default values from Constants
     driveP = shufflePIDLayout
-        .add("P", Talon.Drivetrain.P)
+        .add("P", Subsystem.Drivetrain.P)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveI = shufflePIDLayout
-        .add("I", Talon.Drivetrain.I)
+        .add("I", Subsystem.Drivetrain.I)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveD = shufflePIDLayout
-        .add("D", Talon.Drivetrain.D)
+        .add("D", Subsystem.Drivetrain.D)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveF = shufflePIDLayout
-        .add("F", Talon.Drivetrain.F)
+        .add("F", Subsystem.Drivetrain.F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
   }
@@ -165,14 +165,14 @@ public class Drivetrain extends SubsystemBase {
   public void setPIDF() {
     // Configure the Talon closed-loop PID values from the Shuffleboard
     // NetworkTables values
-    leftMain.config_kP(0, driveP.getDouble(Talon.Drivetrain.P));
-    leftMain.config_kI(0, driveI.getDouble(Talon.Drivetrain.I));
-    leftMain.config_kD(0, driveD.getDouble(Talon.Drivetrain.D));
-    leftMain.config_kF(0, driveF.getDouble(Talon.Drivetrain.F));
-    rightMain.config_kP(0, driveP.getDouble(Talon.Drivetrain.P));
-    rightMain.config_kI(0, driveI.getDouble(Talon.Drivetrain.I));
-    rightMain.config_kD(0, driveD.getDouble(Talon.Drivetrain.D));
-    rightMain.config_kF(0, driveF.getDouble(Talon.Drivetrain.F));
+    leftMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
+    leftMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
+    leftMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
+    leftMain.config_kF(0, driveF.getDouble(Subsystem.Drivetrain.F));
+    rightMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
+    rightMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
+    rightMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
+    rightMain.config_kF(0, driveF.getDouble(Subsystem.Drivetrain.F));
   }
 
   /** Updates the PIDF configuration for both encoders by writing to the
@@ -209,11 +209,11 @@ public class Drivetrain extends SubsystemBase {
     //       only drive forwards/backwards
     DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
         new ChassisSpeeds(
-            throttle * Talon.Drivetrain.MAX_VELOCITY,
+            throttle * Subsystem.Drivetrain.MAX_VELOCITY,
             0,
-            rotation * Talon.Drivetrain.MAX_ROTATION));
+            rotation * Subsystem.Drivetrain.MAX_ROTATION));
 
-    System.out.println("Got:    " + throttle * Talon.Drivetrain.MAX_VELOCITY + "    " + rotation * Talon.Drivetrain.MAX_ROTATION);
+    System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY + "    " + rotation * Subsystem.Drivetrain.MAX_ROTATION);
     // Convert m/s and set motor output to velocity in ticks/100ms
     System.out.println("Set:    " + 
         (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
