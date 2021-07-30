@@ -10,6 +10,7 @@ import frc.robot.Constants.Talon;
 import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -63,14 +64,19 @@ public class Drivetrain extends SubsystemBase {
 
   /** Configures the Talon motor controllers and safety settings */
   private void configureTalons() {
-    // Set Talon and encoder phase and set followers
+    // Set Talon inversion, encoder phase and type, and set followers
     leftMain.setInverted(Talon.Drivetrain.LEFT_INVERTED);
-    rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
-    leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
-    rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    leftMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     leftMain.setSensorPhase(true);
+
+    rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    rightMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     rightMain.setSensorPhase(true);
+
+    leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
     leftFollow.follow(leftMain);
+
+    rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
     rightFollow.follow(rightMain);
 
     // Set Talon safety parameters
@@ -80,6 +86,7 @@ public class Drivetrain extends SubsystemBase {
     leftMain.configPeakCurrentDuration(100);
     leftMain.enableCurrentLimit(true);
     leftMain.setSafetyEnabled(true);
+
     rightMain.configFactoryDefault();
     rightMain.configPeakCurrentLimit(0);
     rightMain.configContinuousCurrentLimit(35);
@@ -94,28 +101,32 @@ public class Drivetrain extends SubsystemBase {
     ShuffleboardTab shuffleDrivetrainTab = Shuffleboard.getTab("Drivetrain");
     ShuffleboardLayout shufflePIDLayout = shuffleDrivetrainTab
         .getLayout("PID", BuiltInLayouts.kList)
-        .withSize(4,4)
-        .withProperties(Map.of("Label position", "HIDDEN"));
+        .withProperties(Map.of("Label position", "LEFT"))
+        .withPosition(3, 0)
+        .withSize(1, 2);
 
     // Add drivetrain objects to tab
-    shuffleDrivetrainTab.add("Differential Drivetrain", driveDifferential);
+    shuffleDrivetrainTab
+        .add("Differential Drivetrain", driveDifferential)
+        .withPosition(0, 0)
+        .withSize(3, 3);
 
     // Configure PID list widget, and set default values from Constants
     driveP = shufflePIDLayout
-        .add("Drive P", Talon.Drivetrain.P)
-        .withWidget(BuiltInWidgets.kNumberSlider)
+        .add("P", Talon.Drivetrain.P)
+        .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveI = shufflePIDLayout
-        .add("Drive I", Talon.Drivetrain.I)
-        .withWidget(BuiltInWidgets.kNumberSlider)
+        .add("I", Talon.Drivetrain.I)
+        .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveD = shufflePIDLayout
-        .add("Drive D", Talon.Drivetrain.D)
-        .withWidget(BuiltInWidgets.kNumberSlider)
+        .add("D", Talon.Drivetrain.D)
+        .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveF = shufflePIDLayout
-        .add("Drive F", Talon.Drivetrain.F)
-        .withWidget(BuiltInWidgets.kNumberSlider)
+        .add("F", Talon.Drivetrain.F)
+        .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
   }
 

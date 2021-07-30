@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.Map;
-
 import frc.robot.commands.DriveStandard;
 import frc.robot.commands.DriveVelocity;
 import frc.robot.subsystems.Drivetrain;
@@ -13,11 +11,9 @@ import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -78,16 +74,19 @@ public class RobotContainer {
    * RobotContainer that need to go on the Shuffleboard.
    */
   private void configureShuffleboard() {
-    // Add subsystems and other competition widgets to the default tab
+    // Add subsystems and command scheduler to the default tab
+    SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData(m_drivetrain);
 
     // Add command lists to each subsystem tab on the Shuffleboard
+    /* NOTE: The following is not currently used, but is left here as a
+             reference.
+
     ShuffleboardLayout shuffleDrivetrainCommandLayout = Shuffleboard.getTab("Drivetrain")
         .getLayout("Commands", BuiltInLayouts.kList)
         .withSize(4,4)
         .withProperties(Map.of("Label position", "HIDDEN"));
-    shuffleDrivetrainCommandLayout.add("Drive Standard", m_driveStandard);
-    shuffleDrivetrainCommandLayout.add("Drive Velocity", m_driveVelocity);
+    */
   }
 
   /**
