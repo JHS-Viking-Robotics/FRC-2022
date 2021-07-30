@@ -4,11 +4,17 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveStandard;
+import frc.robot.commands.DriveVelocity;
 import frc.robot.subsystems.Drivetrain;
+
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,25 +26,32 @@ public class RobotContainer {
   // Define robot subsystems, commands, input devices, and buttons
   private final Drivetrain m_drivetrain;
   private final Command m_driveStandard;
-  public final XboxController m_driveController;
-  // TODO: Issue #3 add toggle for Velocity/PercentOutput driving
-  // private final JoystickButton m_driveControllerButtonA = new JoystickButton(m_driveController, XboxController.Button.kA.value);
+  private final Command m_driveVelocity;
+  private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-
+    
     // Instantiate robot subsystems, commands, input devices, and buttons
     m_drivetrain = new Drivetrain();
     m_driveController = new XboxController(Constants.Joystick.DRIVER);
     m_driveStandard = new DriveStandard(
-                          m_drivetrain,
-                          () -> m_driveController.getY(GenericHID.Hand.kLeft),
-                          () -> m_driveController.getX(GenericHID.Hand.kLeft));
+        m_drivetrain,
+        () -> m_driveController.getY(Hand.kLeft),
+        () -> m_driveController.getX(Hand.kLeft));
+    m_driveVelocity = new DriveVelocity(
+        m_drivetrain,
+        () -> m_driveController.getY(Hand.kLeft),
+        () -> m_driveController.getX(Hand.kLeft));
+      
+    // Configure the button bindings
+    configureButtonBindings();
 
     // Set subsystem default commands
     m_drivetrain.setDefaultCommand(m_driveStandard);
+
+    // Configure Shuffleboard
+    configureShuffleboard();
   }
 
   /**
@@ -47,7 +60,34 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    new JoystickButton(m_driveController, Button.kA.value)
+        .whenHeld(m_driveVelocity);
+  }
+
+  /**
+   * Configures the Shuffleboard default tab with all subsystems and basic
+   * information, as well as the subsystem tabs with their command lists.
+   * 
+   * <p>This method should not be used for sending NetworkTables values specific
+   * to subsystems or commands, but instead is for objects used in
+   * RobotContainer that need to go on the Shuffleboard.
+   */
+  private void configureShuffleboard() {
+    // Add subsystems and command scheduler to the default tab
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData(m_drivetrain);
+
+    // Add command lists to each subsystem tab on the Shuffleboard
+    /* NOTE: The following is not currently used, but is left here as a
+             reference.
+
+    ShuffleboardLayout shuffleDrivetrainCommandLayout = Shuffleboard.getTab("Drivetrain")
+        .getLayout("Commands", BuiltInLayouts.kList)
+        .withSize(4,4)
+        .withProperties(Map.of("Label position", "HIDDEN"));
+    */
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
