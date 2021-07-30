@@ -70,7 +70,7 @@ public final class Constants {
       /** Lift Talon controller is inverted */
       public final static boolean LIFT_CONTROLLER_INVERTED = false;
       /** Lift Talon encoder is inverted */
-      public final static boolean LIFT_ENCODER_INVERTED = false;
+      public final static boolean LIFT_SENSOR_INVERTED = false;
       /** Intake Talon is inverted */
       public final static boolean INTAKE_CONTROLLER_INVERTED = false;
       /** P constant for Lift Talon onboard PID control */

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.DriveStandard;
 import frc.robot.commands.DriveVelocity;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Hopper;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // Define robot subsystems, commands, input devices, and buttons
   private final Drivetrain m_drivetrain;
+  private final Hopper m_hopper;
   private final Command m_driveStandard;
   private final Command m_driveVelocity;
   private final XboxController m_driveController;
@@ -34,6 +36,7 @@ public class RobotContainer {
     
     // Instantiate robot subsystems, commands, input devices, and buttons
     m_drivetrain = new Drivetrain();
+    m_hopper = new Hopper();
     m_driveController = new XboxController(Constants.Joystick.DRIVER);
     m_driveStandard = new DriveStandard(
         m_drivetrain,
@@ -77,6 +80,7 @@ public class RobotContainer {
     // Add subsystems and command scheduler to the default tab
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData(m_drivetrain);
+    SmartDashboard.putData(m_hopper);
 
     // Add command lists to each subsystem tab on the Shuffleboard
     /* NOTE: The following is not currently used, but is left here as a

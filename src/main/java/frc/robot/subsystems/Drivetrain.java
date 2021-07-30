@@ -184,7 +184,7 @@ public class Drivetrain extends SubsystemBase {
    * @param D constant
    * @param F constant
   */
-  public void setPID(double P, double I, double D, double F) {
+  public void setPIDF(double P, double I, double D, double F) {
     // Manually update the PIDF values in NetworkTables
     boolean a = !driveP.setDouble(P);
     boolean b = !driveI.setDouble(I);
@@ -192,7 +192,7 @@ public class Drivetrain extends SubsystemBase {
     boolean d = !driveF.setDouble(F);
 
     // Print an error message if any of the updates failed
-    String errorMsg = "Error in Drivetrain.setPID(double,double,double,double):"
+    String errorMsg = "Error in Drivetrain.setPIDF(double,double,double,double):"
     + "Entry already exists with different type";
     if (a||b||c||d) {System.out.println(errorMsg);}
   }
@@ -236,5 +236,6 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    setPIDF();
   }
 }
