@@ -156,15 +156,12 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setSelectedSensorPosition(0);
   }
 
-  /**
-   * Update the PIDF configuration for both encoders from the NetworkTables values
-   * configured on the Shuffleboard
-   * 
-   * @see Drivetrain#setPIDF(double, double, double, double)
+  /** 
+   * Synchronizes member variables and motor controller values with those
+   * in NetworkTables
    */
-  public void setPIDF() {
-    // Configure the Talon closed-loop PID values from the Shuffleboard
-    // NetworkTables values
+  public void syncNetworkTables() {
+    // Pull the current values for the Lift PIDF controller
     leftMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
     leftMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
     leftMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
@@ -176,8 +173,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /** Updates the PIDF configuration for both encoders by writing to the
-   * NetworkTables entry. Note that the values will only be applied after the
-   * next PeriodicTask cycle is done
+   * NetworkTables entry.
+   * 
+   * <p>Note that the values will only be applied after the
+   * next {@link #syncNetworkTables() NetworkTables synchronization} is ran
+   * during the next PeriodicTask
    * 
    * @param P constant
    * @param I constant
@@ -230,12 +230,12 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setPIDF();
+    syncNetworkTables();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    setPIDF();
+    syncNetworkTables();
   }
 }

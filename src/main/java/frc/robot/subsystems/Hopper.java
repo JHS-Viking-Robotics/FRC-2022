@@ -30,6 +30,7 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry liftD;
   private NetworkTableEntry liftF;
   private NetworkTableEntry liftSetpoint;
+  private NetworkTableEntry liftPosition;
 
   /**
    * Creates a new Hopper subsystem with a Lift arm controlled with a Talon SRX
@@ -104,18 +105,39 @@ public class Hopper extends SubsystemBase {
         .withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("Min", 0, "Max", 800))
         .withSize(4, 1)
+        .withPosition(1, 1)
+        .getEntry();
+    liftPosition = shuffleHopperTab
+        .add("Lift Position", 0.0)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withSize(4, 1)
         .withPosition(1, 0)
         .getEntry();
   }
 
   /** Gets the current Lift position in sensor ticks */
-  public double getLiftHeightTicks() {
+  public double getLiftPositionTicks() {
     return liftController.getSelectedSensorPosition();
   }
 
-  /** Sets a new Lift position in sensor ticks */
-  public void setLiftHeightTicks(double position) {
+  /**
+   * Sets the Lift setpoint to a specified position in ticks
+   */
+  public void setLiftSetpointTicks(double position) {
+    // Update the NetworkTables entry and set the new setpoint on the controller
+    liftSetpoint.setDouble(position);
     liftController.set(ControlMode.Position, position);
+  }
+
+  /**
+   * Sets the Lift setpoint from the NetworkTables entry
+   * 
+   * @see #setLiftSetpointTicks(double)
+  */
+  public void setLiftSetpointTicks() {
+    // Set the new setpoint on the controller from NetworkTables
+    liftController.set(ControlMode.Position, liftSetpoint.getDouble(0.0));
   }
   
   public void setIntakeIn() {
@@ -130,24 +152,27 @@ public class Hopper extends SubsystemBase {
     intakeController.set(ControlMode.PercentOutput, 0.00);
   }
 
-  /**
-   * Updates the PIDF configuration for the Lift encoder from the NetworkTables
-   * values configured on the Shuffleboard
-   * 
-   * @see Hopper#setLiftPIDF(double, double, double, double)
+  /** 
+   * Synchronizes member variables and motor controller values with those
+   * in NetworkTables
    */
-  public void setLiftPIDF() {
-    // Configure the Talon closed-loop PID values from the Shuffleboard
-    // NetworkTables values
+  public void syncNetworkTables() {
+    // Pull the current Lift PIDF constants and apply them
     liftController.config_kP(0, liftP.getDouble(Subsystem.Hopper.LIFT_P));
     liftController.config_kI(0, liftI.getDouble(Subsystem.Hopper.LIFT_I));
     liftController.config_kD(0, liftD.getDouble(Subsystem.Hopper.LIFT_D));
     liftController.config_kF(0, liftF.getDouble(Subsystem.Hopper.LIFT_F));
+    
+    // Push the current position from the Lift sensor
+    liftPosition.setDouble(getLiftPositionTicks());
   }
 
   /** Sets the PIDF configuration for the lift encoder by writing to the
-   * NetworkTables entry. Note that the values will only be applied after the
-   * next PeriodicTask cycle is done
+   * NetworkTables entry.
+   * 
+   * <p>Note that the values will only be applied after the
+   * next {@link #syncNetworkTables() synchronization cycle} is ran
+   * during the next PeriodicTask
    * 
    * @param P constant
    * @param I constant
@@ -167,14 +192,16 @@ public class Hopper extends SubsystemBase {
     if (a||b||c||d) {System.out.println(errorMsg);}
   }
 
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setLiftPIDF();
+    syncNetworkTables();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    setLiftPIDF();
-  }}
+    syncNetworkTables();
+  }
+}
