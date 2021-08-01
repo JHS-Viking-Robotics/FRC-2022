@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import frc.robot.commands.DriveStandard;
-import frc.robot.commands.DriveVelocity;
+import frc.robot.commands.drivetrain.DriveStandard;
+import frc.robot.commands.drivetrain.DriveVelocity;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 
