@@ -31,6 +31,9 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry liftF;
   private NetworkTableEntry liftSetpoint;
   private NetworkTableEntry liftPosition;
+  private NetworkTableEntry liftUpSetpoint;
+  private NetworkTableEntry liftDispenseSetpoint;
+  private NetworkTableEntry liftDownSetpoint;
   private NetworkTableEntry intakeInSpeed;
   private NetworkTableEntry intakeOutSpeed;
   private NetworkTableEntry intakeHoldCurrent;
@@ -44,8 +47,8 @@ public class Hopper extends SubsystemBase {
 
   public enum Lift {
     UP,
-    DOWN,
-    DISPENSE;
+    DISPENSE,
+    DOWN;
   }
 
   /**
@@ -93,47 +96,66 @@ public class Hopper extends SubsystemBase {
   private void configureShuffleboard() {
     // Create references to Hopper tab and PID layout
     ShuffleboardTab shuffleHopperTab = Shuffleboard.getTab("Hopper");
-    ShuffleboardLayout shufflePIDLayout = shuffleHopperTab
+    ShuffleboardLayout shuffleLiftPIDLayout = shuffleHopperTab
         .getLayout("Lift PID", BuiltInLayouts.kList)
         .withProperties(Map.of("Label position", "LEFT"))
         .withPosition(0, 0)
         .withSize(1, 2);
+    ShuffleboardLayout shuffleLiftSetpointsLayout = shuffleHopperTab
+        .getLayout("Lift Setpoints", BuiltInLayouts.kList)
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(1, 0)
+        .withSize(1, 2);
     ShuffleboardLayout shuffleIntakeLayout = shuffleHopperTab
         .getLayout("Intake Modes", BuiltInLayouts.kList)
-        .withProperties(Map.of("Label position", "LEFT"))
-        .withPosition(1, 0)
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(6, 0)
         .withSize(1, 2);
 
     // Configure Lift PID list, and set default values from frc.robot.Constants
-    liftP = shufflePIDLayout
+    liftP = shuffleLiftPIDLayout
         .add("P", Subsystem.Hopper.LIFT_P)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    liftI = shufflePIDLayout
+    liftI = shuffleLiftPIDLayout
         .add("I", Subsystem.Hopper.LIFT_I)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    liftD = shufflePIDLayout
+    liftD = shuffleLiftPIDLayout
         .add("D", Subsystem.Hopper.LIFT_D)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    liftF = shufflePIDLayout
+    liftF = shuffleLiftPIDLayout
         .add("F", Subsystem.Hopper.LIFT_F)
         .withWidget(BuiltInWidgets.kTextView)
-        .getEntry();
-    liftSetpoint = shuffleHopperTab
-        .add("Lift Setpoint", 0.0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("Min", 0, "Max", 800))
-        .withSize(4, 1)
-        .withPosition(1, 1)
         .getEntry();
     liftPosition = shuffleHopperTab
         .add("Lift Position", 0.0)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("Min", 0, "Max", 800))
         .withSize(4, 1)
-        .withPosition(1, 0)
+        .withPosition(2, 0)
+        .getEntry();
+   liftSetpoint = shuffleHopperTab
+        .add("Lift Setpoint", 0.0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withSize(4, 1)
+        .withPosition(2, 1)
+        .getEntry();
+    
+    // Configure Lift positions and set default values from frc.robot.Constants
+    liftUpSetpoint = shuffleLiftSetpointsLayout
+        .add("Up", Subsystem.Hopper.LIFT_UP)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    liftDispenseSetpoint = shuffleLiftSetpointsLayout
+        .add("Dispense", Subsystem.Hopper.LIFT_DISPENSE)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    liftDownSetpoint = shuffleLiftSetpointsLayout
+        .add("Down", Subsystem.Hopper.LIFT_DOWN)
+        .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
 
     // Configure Intake Speeds and set default values from frc.robot.Constants
@@ -156,13 +178,70 @@ public class Hopper extends SubsystemBase {
     return liftController.getSelectedSensorPosition();
   }
 
+  /** Gets the current Lift position in meters <p>WARNING: Not yet implemented */
+  public double getLiftPositionMeters() {
+    // TODO: Implement issue #18
+    System.out.println("Error in frc.robot.subsystems.Hopper.getLiftPositionMeters(): Feature not yet implemented");
+    return -1234.5678;
+  }
+
+  /** Gets the current Lift error */
+  public double getLiftPositionError() {
+    return liftController.getClosedLoopError();
+  }
+
+  /**
+   * Resets the sensor position to 0
+   * 
+   * @see #resetLiftSensorPosition(double)
+   */
+  public void resetLiftSensorPosition() {
+    resetLiftSensorPosition(0.0);
+  }
+  
+  /** Resets the sensor position to the given position */
+  public void resetLiftSensorPosition(double sensorPosition) {
+    liftController.setSelectedSensorPosition(sensorPosition);
+  }
+
+  /** Sets the Lift to the specified operating position */
+  public void setLiftSetpoint(Lift setpoint) {
+    // Use Lift enum to set Lift output and mode
+    switch (setpoint) {
+        case UP: {
+            liftController.set(
+                ControlMode.Position,
+                liftUpSetpoint.getDouble(Subsystem.Hopper.LIFT_UP));
+            break;
+        }
+        case DISPENSE: {
+            liftController.set(
+                ControlMode.Position,
+                liftDispenseSetpoint.getDouble(Subsystem.Hopper.LIFT_DISPENSE));
+            break;
+        }
+        case DOWN: {
+            liftController.set(
+                ControlMode.Position,
+                liftDownSetpoint.getDouble(Subsystem.Hopper.LIFT_DOWN));
+            break;
+        }
+        default: {
+            liftController.set(
+                ControlMode.Disabled,
+                0);
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setLiftSetpoint(Lift): Cannot handle " + setpoint);
+        }
+    }
+  }
+
   /**
    * Sets the Lift setpoint to a specified position in ticks
    */
-  public void setLiftSetpointTicks(double position) {
+  public void setLiftSetpointTicks(double setpoint) {
     // Update the NetworkTables entry and set the new setpoint on the controller
-    liftSetpoint.setDouble(position);
-    liftController.set(ControlMode.Position, position);
+    liftSetpoint.setDouble(setpoint);
+    liftController.set(ControlMode.Position, setpoint);
   }
 
   /**
@@ -174,7 +253,18 @@ public class Hopper extends SubsystemBase {
     // Set the new setpoint on the controller from NetworkTables
     liftController.set(ControlMode.Position, liftSetpoint.getDouble(0.0));
   }
-  
+
+  /**
+   * Sets the Lift setpoint to the specified height in meters
+   * 
+   * <p> WARNING: Not yet implemented
+   */
+  public void setLiftSetpointMeters(double setpoint) {
+    // TODO: Implement set lift height in meters, issue #18
+    System.out.println("Error in Hopper.setLiftSetpointMeters(double): Not yet implemented");
+  }
+
+  /** Sets the Intake to the specified operating mode */
   public void setIntake(Intake mode) {
     // Use Intake enum to set Intake output and mode
     switch (mode) {
@@ -206,8 +296,8 @@ public class Hopper extends SubsystemBase {
         }
         default: {
             intakeController.set(
-                ControlMode.PercentOutput,
-                0.0);
+                ControlMode.Disabled,
+                0);
         throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Cannot handle " + mode);
         }
     }
