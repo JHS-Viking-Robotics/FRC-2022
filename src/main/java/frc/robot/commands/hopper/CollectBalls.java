@@ -4,8 +4,9 @@
 
 package frc.robot.commands.hopper;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CollectBalls extends CommandBase {
 
@@ -33,14 +34,14 @@ public class CollectBalls extends CommandBase {
   @Override
   public void execute() {
     // Run the Intake in continuously
-    hopper.setIntakeIn();
+    hopper.setIntake(Hopper.Intake.IN);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     // Stop running the Intake and return the Lift to rest position
-    hopper.setIntakeNeutral();
+    hopper.setIntake(Hopper.Intake.NEUTRAL);
     hopper.setLiftSetpointTicks(800);
   }
 

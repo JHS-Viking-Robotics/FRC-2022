@@ -6,6 +6,7 @@ package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
 import frc.robot.subsystems.Hopper;
 
 public class DispenseBalls extends CommandBase {
@@ -39,7 +40,7 @@ public class DispenseBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    hopper.setIntake(Hopper.Intake.OUT);
   }
 
   // Called once the command ends or is interrupted.

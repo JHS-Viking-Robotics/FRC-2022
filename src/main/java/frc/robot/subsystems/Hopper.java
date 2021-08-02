@@ -31,6 +31,22 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry liftF;
   private NetworkTableEntry liftSetpoint;
   private NetworkTableEntry liftPosition;
+  private NetworkTableEntry intakeInSpeed;
+  private NetworkTableEntry intakeOutSpeed;
+  private NetworkTableEntry intakeHoldCurrent;
+
+  public enum Intake {
+    IN,
+    OUT,
+    HOLD,
+    NEUTRAL;
+  }
+
+  public enum Lift {
+    UP,
+    DOWN,
+    DISPENSE;
+  }
 
   /**
    * Creates a new Hopper subsystem with a Lift arm controlled with a Talon SRX
@@ -82,8 +98,13 @@ public class Hopper extends SubsystemBase {
         .withProperties(Map.of("Label position", "LEFT"))
         .withPosition(0, 0)
         .withSize(1, 2);
+    ShuffleboardLayout shuffleIntakeLayout = shuffleHopperTab
+        .getLayout("Intake Modes", BuiltInLayouts.kList)
+        .withProperties(Map.of("Label position", "LEFT"))
+        .withPosition(1, 0)
+        .withSize(1, 2);
 
-    // Configure PID list widget, and set default values from Constants
+    // Configure Lift PID list, and set default values from frc.robot.Constants
     liftP = shufflePIDLayout
         .add("P", Subsystem.Hopper.LIFT_P)
         .withWidget(BuiltInWidgets.kTextView)
@@ -114,6 +135,20 @@ public class Hopper extends SubsystemBase {
         .withSize(4, 1)
         .withPosition(1, 0)
         .getEntry();
+
+    // Configure Intake Speeds and set default values from frc.robot.Constants
+    intakeInSpeed = shuffleIntakeLayout
+        .add("In speed", Subsystem.Hopper.INTAKE_IN)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    intakeOutSpeed = shuffleIntakeLayout
+        .add("Out speed", Subsystem.Hopper.INTAKE_OUT)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    intakeHoldCurrent = shuffleIntakeLayout
+        .add("Hold current", Subsystem.Hopper.INTAKE_HOLD)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
   }
 
   /** Gets the current Lift position in sensor ticks */
@@ -140,16 +175,42 @@ public class Hopper extends SubsystemBase {
     liftController.set(ControlMode.Position, liftSetpoint.getDouble(0.0));
   }
   
-  public void setIntakeIn() {
-    intakeController.set(ControlMode.PercentOutput, .50);
-  }
-  
-  public void setIntakeOut() {
-    intakeController.set(ControlMode.PercentOutput, -.50);
-  }
-  
-  public void setIntakeNeutral() {
-    intakeController.set(ControlMode.PercentOutput, 0.00);
+  public void setIntake(Intake mode) {
+    // Use Intake enum to set Intake output and mode
+    switch (mode) {
+        case IN: {
+            intakeController.set(
+                ControlMode.PercentOutput,
+                intakeInSpeed.getDouble(Subsystem.Hopper.INTAKE_IN));
+            break;
+        }
+        case OUT: {
+            intakeController.set(
+                ControlMode.PercentOutput,
+                intakeOutSpeed.getDouble(-Subsystem.Hopper.INTAKE_OUT));
+            break;
+        }
+        case HOLD: {
+            // TODO: Implement current control, issue #31
+            System.out.println("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Feature not yet implemented");
+            intakeController.set(
+                ControlMode.Current,
+                intakeHoldCurrent.getDouble(Subsystem.Hopper.INTAKE_HOLD));
+            break;
+        }
+        case NEUTRAL: {
+            intakeController.set(
+                ControlMode.PercentOutput,
+                0.0);
+            break;
+        }
+        default: {
+            intakeController.set(
+                ControlMode.PercentOutput,
+                0.0);
+        throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Cannot handle " + mode);
+        }
+    }
   }
 
   /** 
@@ -167,7 +228,8 @@ public class Hopper extends SubsystemBase {
     liftPosition.setDouble(getLiftPositionTicks());
   }
 
-  /** Sets the PIDF configuration for the lift encoder by writing to the
+  /**
+   * Sets the PIDF configuration for the lift encoder by writing to the
    * NetworkTables entry.
    * 
    * <p>Note that the values will only be applied after the
@@ -191,7 +253,6 @@ public class Hopper extends SubsystemBase {
     + "Entry already exists with different type";
     if (a||b||c||d) {System.out.println(errorMsg);}
   }
-
 
   @Override
   public void periodic() {

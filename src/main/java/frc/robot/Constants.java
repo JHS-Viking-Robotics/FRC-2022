@@ -81,6 +81,12 @@ public final class Constants {
       public final static double LIFT_D = 0;
       /** F constant for Lift Talon onboard PID control */
       public final static double LIFT_F = 0;
+      /** Percent output for Intake In mode */
+      public final static double INTAKE_IN = 0.5;
+      /** Percent output for Intake Out mode */
+      public final static double INTAKE_OUT = 0.5;
+      /** Current output for Intake Hold mode */
+      public final static double INTAKE_HOLD = 0.5;
     }
   }
 
