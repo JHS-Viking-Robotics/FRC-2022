@@ -184,10 +184,19 @@ public class Hopper extends SubsystemBase {
     System.out.println("Error in frc.robot.subsystems.Hopper.getLiftPositionMeters(): Feature not yet implemented");
     return -1234.5678;
   }
-
+  
   /** Gets the current Lift error */
   public double getLiftPositionError() {
     return liftController.getClosedLoopError();
+  }
+  
+  /**
+   * Gets the current Lift setpoint in sensor ticks.
+   * 
+   * <p> Returns -123456.7 if there is an error fetching the value.
+   */
+  public double getLiftSetpointTicks() {
+    return liftSetpoint.getDouble(-123456.7);
   }
 
   /**
@@ -202,6 +211,53 @@ public class Hopper extends SubsystemBase {
   /** Resets the sensor position to the given position */
   public void resetLiftSensorPosition(double sensorPosition) {
     liftController.setSelectedSensorPosition(sensorPosition);
+  }
+
+  /**
+   * Resets the setpoint value to the default in
+   * {@link frc.robot.Constants Constants.java}
+   * 
+   * {@see resetLiftSetpoint(Lift, double)}
+   */
+  public void resetLiftSetpoint(Lift setpoint) {
+    switch (setpoint) {
+        case UP: {
+            liftUpSetpoint.setDouble(Subsystem.Hopper.LIFT_UP);
+            break;
+        }
+        case DISPENSE: {
+            liftDispenseSetpoint.setDouble(Subsystem.Hopper.LIFT_DISPENSE);
+            break;
+        }
+        case DOWN: {
+            liftDownSetpoint.setDouble(Subsystem.Hopper.LIFT_DOWN);
+            break;
+        }
+        default: {
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.resetLiftSetpoint(Lift): Cannot handle " + setpoint);
+        }
+    }
+  }
+
+  /** Resets the setpoint value to the specified value */
+  public void resetLiftSetpoint(Lift setpoint, double value) {
+    switch (setpoint) {
+        case UP: {
+            liftUpSetpoint.setDouble(value);
+            break;
+        }
+        case DISPENSE: {
+            liftDispenseSetpoint.setDouble(value);
+            break;
+        }
+        case DOWN: {
+            liftDownSetpoint.setDouble(value);
+            break;
+        }
+        default: {
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.resetLiftSetpoint(Lift, double): Cannot handle " + setpoint);
+        }
+    }
   }
 
   /** Sets the Lift to the specified operating position */
@@ -301,6 +357,15 @@ public class Hopper extends SubsystemBase {
         throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Cannot handle " + mode);
         }
     }
+  }
+
+  /**
+   * Sets all Hopper motors to neutral. Useful for an emergency situation
+   * to quickly disable the Hopper
+   */
+  public void setAllNeutral() {
+    liftController.set(ControlMode.Disabled, 0);
+    intakeController.set(ControlMode.Disabled, 0);
   }
 
   /** 
