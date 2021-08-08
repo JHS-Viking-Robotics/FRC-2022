@@ -186,15 +186,10 @@ public class Drivetrain extends SubsystemBase {
   */
   public void setPIDF(double P, double I, double D, double F) {
     // Manually update the PIDF values in NetworkTables
-    boolean a = !driveP.setDouble(P);
-    boolean b = !driveI.setDouble(I);
-    boolean c = !driveD.setDouble(D);
-    boolean d = !driveF.setDouble(F);
-
-    // Print an error message if any of the updates failed
-    String errorMsg = "Error in Drivetrain.setPIDF(double,double,double,double):"
-    + "Entry already exists with different type";
-    if (a||b||c||d) {System.out.println(errorMsg);}
+    driveP.setDouble(P);
+    driveI.setDouble(I);
+    driveD.setDouble(D);
+    driveF.setDouble(F);
   }
 
   /** Arcade drive using percent output to the motor controllers */

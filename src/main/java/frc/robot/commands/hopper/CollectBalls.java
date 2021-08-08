@@ -27,7 +27,7 @@ public class CollectBalls extends CommandBase {
   @Override
   public void initialize() {
     // Put the Lift on the floor on start
-    hopper.setLiftSetpointTicks(0.0);
+    hopper.setLift(0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,7 +42,7 @@ public class CollectBalls extends CommandBase {
   public void end(boolean interrupted) {
     // Stop running the Intake and return the Lift to rest position
     hopper.setIntake(Hopper.Intake.NEUTRAL);
-    hopper.setLiftSetpointTicks(800);
+    hopper.setLift(800);
   }
 
   // Returns true when the command should end.

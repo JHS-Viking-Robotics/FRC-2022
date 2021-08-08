@@ -34,9 +34,11 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry liftUpSetpoint;
   private NetworkTableEntry liftDispenseSetpoint;
   private NetworkTableEntry liftDownSetpoint;
+  private NetworkTableEntry intakeSetpoint;
   private NetworkTableEntry intakeInSpeed;
   private NetworkTableEntry intakeOutSpeed;
   private NetworkTableEntry intakeHoldCurrent;
+  private NetworkTableEntry subsystemEnabled;
 
   public enum Intake {
     IN,
@@ -99,18 +101,49 @@ public class Hopper extends SubsystemBase {
     ShuffleboardLayout shuffleLiftPIDLayout = shuffleHopperTab
         .getLayout("Lift PID", BuiltInLayouts.kList)
         .withProperties(Map.of("Label position", "LEFT"))
-        .withPosition(0, 0)
+        .withPosition(2, 0)
         .withSize(1, 2);
     ShuffleboardLayout shuffleLiftSetpointsLayout = shuffleHopperTab
         .getLayout("Lift Setpoints", BuiltInLayouts.kList)
         .withProperties(Map.of("Label position", "TOP"))
-        .withPosition(1, 0)
+        .withPosition(3, 0)
         .withSize(1, 2);
     ShuffleboardLayout shuffleIntakeLayout = shuffleHopperTab
         .getLayout("Intake Modes", BuiltInLayouts.kList)
         .withProperties(Map.of("Label position", "TOP"))
-        .withPosition(6, 0)
+        .withPosition(4, 0)
         .withSize(1, 2);
+
+    // Configure safety override button
+    subsystemEnabled = shuffleHopperTab
+        .add("Subsystem Enabled", false)
+        .withWidget(BuiltInWidgets.kToggleButton)
+        .withPosition(0, 0)
+        .withSize(2,2)
+        .getEntry();
+
+    // Configure Intake and Lift setpoint indicator and controller
+    liftPosition = shuffleHopperTab
+        .add("Lift Position", 0.0)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withSize(4, 1)
+        .withPosition(0, 2)
+        .getEntry();
+    liftSetpoint = shuffleHopperTab
+        .add("Lift Setpoint", 0.0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withSize(4, 1)
+        .withPosition(0, 3)
+        .getEntry();
+    intakeSetpoint = shuffleHopperTab
+        .add("Intake Setpoint", 0.0)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(Map.of("Min", -1.0, "Max", 1.0, "Num tick marks", 1))
+        .withSize(1,1)
+        .withPosition(4,2)
+        .getEntry();
 
     // Configure Lift PID list, and set default values from frc.robot.Constants
     liftP = shuffleLiftPIDLayout
@@ -129,22 +162,9 @@ public class Hopper extends SubsystemBase {
         .add("F", Subsystem.Hopper.LIFT_F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
-    liftPosition = shuffleHopperTab
-        .add("Lift Position", 0.0)
-        .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", 0, "Max", 800))
-        .withSize(4, 1)
-        .withPosition(2, 0)
-        .getEntry();
-   liftSetpoint = shuffleHopperTab
-        .add("Lift Setpoint", 0.0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("Min", 0, "Max", 800))
-        .withSize(4, 1)
-        .withPosition(2, 1)
-        .getEntry();
-    
-    // Configure Lift positions and set default values from frc.robot.Constants
+
+    // Configure Lift setpoints list and set default values from
+    // frc.robot.Constants
     liftUpSetpoint = shuffleLiftSetpointsLayout
         .add("Up", Subsystem.Hopper.LIFT_UP)
         .withWidget(BuiltInWidgets.kTextView)
@@ -173,34 +193,106 @@ public class Hopper extends SubsystemBase {
         .getEntry();
   }
 
-  /** Gets the current Lift position in sensor ticks */
+  /** Returns whether the subsystem is enabled or not */
+  public boolean getIsEnabled() {
+    return subsystemEnabled.getBoolean(false);
+  }
+
+  /**
+   * Checks the current status of all Hopper motors and determines if they
+   * are operating within safe parameters
+   */
+  public boolean getIsOperatingSafely() {
+    // Run several checks on the motors to ensure they are running safely
+    return (liftController.getStatorCurrent() < 30.0)
+    && (intakeController.getStatorCurrent() < 30.0)
+    && (liftController.isSafetyEnabled())
+    && (intakeController.isSafetyEnabled());
+  }
+
+  /** Gets the current Lift position in sensor ticks from the Lift controller */
   public double getLiftPositionTicks() {
     return liftController.getSelectedSensorPosition();
   }
 
-  /** Gets the current Lift position in meters <p>WARNING: Not yet implemented */
+  /**
+   * Gets the current Lift position in meters from the Lift controller
+   * <p>WARNING: Not yet implemented
+   */
   public double getLiftPositionMeters() {
     // TODO: Implement issue #18
     System.out.println("Error in frc.robot.subsystems.Hopper.getLiftPositionMeters(): Feature not yet implemented");
     return -1234.5678;
   }
-  
-  /** Gets the current Lift error */
+
+  /** Gets the current Lift error in sensor ticks from the Lift controller */
   public double getLiftPositionError() {
     return liftController.getClosedLoopError();
   }
-  
+
   /**
-   * Gets the current Lift setpoint in sensor ticks.
-   * 
-   * <p> Returns -123456.7 if there is an error fetching the value.
+   * Gets the current Lift setpoint in sensor ticks from the NetworkTable.
+   * Returns 0.0 if there is an error fetching the value.
    */
-  public double getLiftSetpointTicks() {
-    return liftSetpoint.getDouble(-123456.7);
+  public double getLiftSetpoint() {
+    return liftSetpoint.getDouble(0.0);
   }
 
   /**
-   * Resets the sensor position to 0
+   * Gets the value of the specified Lift setpoint in sensor ticks from the
+   * NetworkTable
+   * */
+  public double getLiftSetpointValue(Lift setpoint) {
+    switch (setpoint) {
+        case UP: {
+            return liftUpSetpoint.getDouble(Subsystem.Hopper.LIFT_UP);
+        }
+        case DISPENSE: {
+            return liftDispenseSetpoint.getDouble(Subsystem.Hopper.LIFT_DISPENSE);
+        }
+        case DOWN: {
+            return liftDownSetpoint.getDouble(Subsystem.Hopper.LIFT_DOWN);
+        }
+        default: {
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.getLiftSetpointValue(Lift): Cannot handle " + setpoint);
+        }
+    }
+  }
+
+  /**
+   * Gets the current Intake setpoint in percent output (-1.0 to 1.0)
+   * from the NetworkTable. Returns 0.0 if there is an error.
+   */
+  public double getIntakeSetpoint() {
+    return intakeSetpoint.getDouble(0.0);
+  }
+
+  /**
+   * Gets the value of the specified Intake setpoint in terms of percent output
+   * (-1.0 to 1.0) from the NetworkTable
+   */
+  public double getIntakeSetpointValue(Intake setpoint) {
+    switch (setpoint) {
+        case IN: {
+            return intakeInSpeed.getDouble(Subsystem.Hopper.INTAKE_IN);
+        }
+        case OUT: {
+            return intakeOutSpeed.getDouble(Subsystem.Hopper.INTAKE_OUT);
+        }
+        case HOLD: {
+            return intakeHoldCurrent.getDouble(Subsystem.Hopper.INTAKE_HOLD);
+        }
+        case NEUTRAL: {
+            return 0.0;
+        }
+        default: {
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.getIntakeSetpointValue(Intake): Cannot handle " + setpoint);
+        }
+    }
+  }
+
+  /**
+   * Resets the Lift sensor position to 0
    * 
    * @see #resetLiftSensorPosition(double)
    */
@@ -214,7 +306,7 @@ public class Hopper extends SubsystemBase {
   }
 
   /**
-   * Resets the setpoint value to the default in
+   * Resets the Lift setpoint value in NetworkTables to the default in
    * {@link frc.robot.Constants Constants.java}
    * 
    * {@see resetLiftSetpoint(Lift, double)}
@@ -239,7 +331,7 @@ public class Hopper extends SubsystemBase {
     }
   }
 
-  /** Resets the setpoint value to the specified value */
+  /** Resets the Lift setpoint value in NetworkTables to the specified value */
   public void resetLiftSetpoint(Lift setpoint, double value) {
     switch (setpoint) {
         case UP: {
@@ -260,54 +352,38 @@ public class Hopper extends SubsystemBase {
     }
   }
 
-  /** Sets the Lift to the specified operating position */
-  public void setLiftSetpoint(Lift setpoint) {
+  /** Sets the Lift setpoint to the specified operating position */
+  public void setLift(Lift setpoint) {
     // Use Lift enum to set Lift output and mode
     switch (setpoint) {
         case UP: {
-            liftController.set(
-                ControlMode.Position,
-                liftUpSetpoint.getDouble(Subsystem.Hopper.LIFT_UP));
-            break;
+            setLift(
+                getLiftSetpointValue(Lift.UP));
+            return;
         }
         case DISPENSE: {
-            liftController.set(
-                ControlMode.Position,
-                liftDispenseSetpoint.getDouble(Subsystem.Hopper.LIFT_DISPENSE));
-            break;
+            setLift(
+                getLiftSetpointValue(Lift.DISPENSE));
+            return;
         }
         case DOWN: {
-            liftController.set(
-                ControlMode.Position,
-                liftDownSetpoint.getDouble(Subsystem.Hopper.LIFT_DOWN));
-            break;
+            setLift(
+                getLiftSetpointValue(Lift.DOWN));
+            return;
         }
         default: {
-            liftController.set(
-                ControlMode.Disabled,
-                0);
             throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setLiftSetpoint(Lift): Cannot handle " + setpoint);
         }
     }
   }
 
   /**
-   * Sets the Lift setpoint to a specified position in ticks
+   * Sets the Lift setpoint to a specified position in ticks, and applies the
+   * new setpoint to the controller.
    */
-  public void setLiftSetpointTicks(double setpoint) {
+  public void setLift(double setpoint) {
     // Update the NetworkTables entry and set the new setpoint on the controller
     liftSetpoint.setDouble(setpoint);
-    liftController.set(ControlMode.Position, setpoint);
-  }
-
-  /**
-   * Sets the Lift setpoint from the NetworkTables entry
-   * 
-   * @see #setLiftSetpointTicks(double)
-  */
-  public void setLiftSetpointTicks() {
-    // Set the new setpoint on the controller from NetworkTables
-    liftController.set(ControlMode.Position, liftSetpoint.getDouble(0.0));
   }
 
   /**
@@ -315,7 +391,7 @@ public class Hopper extends SubsystemBase {
    * 
    * <p> WARNING: Not yet implemented
    */
-  public void setLiftSetpointMeters(double setpoint) {
+  public void setLiftMeters(double setpoint) {
     // TODO: Implement set lift height in meters, issue #18
     System.out.println("Error in Hopper.setLiftSetpointMeters(double): Not yet implemented");
   }
@@ -325,47 +401,63 @@ public class Hopper extends SubsystemBase {
     // Use Intake enum to set Intake output and mode
     switch (mode) {
         case IN: {
-            intakeController.set(
-                ControlMode.PercentOutput,
-                intakeInSpeed.getDouble(Subsystem.Hopper.INTAKE_IN));
-            break;
+            setIntake(
+                getIntakeSetpointValue(Intake.IN));
+            return;
         }
         case OUT: {
-            intakeController.set(
-                ControlMode.PercentOutput,
-                intakeOutSpeed.getDouble(-Subsystem.Hopper.INTAKE_OUT));
+            setIntake(
+                getIntakeSetpointValue(Intake.OUT));
             break;
         }
         case HOLD: {
             // TODO: Implement current control, issue #31
-            System.out.println("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Feature not yet implemented");
-            intakeController.set(
-                ControlMode.Current,
-                intakeHoldCurrent.getDouble(Subsystem.Hopper.INTAKE_HOLD));
-            break;
+            // intakeController.set(
+            //     ControlMode.Current,
+            //     intakeHoldCurrent.getDouble(Subsystem.Hopper.INTAKE_HOLD));
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): " + mode + " not yet implemented");
         }
         case NEUTRAL: {
-            intakeController.set(
-                ControlMode.PercentOutput,
-                0.0);
-            break;
+            setIntake(
+                getIntakeSetpointValue(Intake.NEUTRAL));
+            return;
         }
         default: {
-            intakeController.set(
-                ControlMode.Disabled,
-                0);
-        throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Cannot handle " + mode);
+            throw new IllegalArgumentException("Error in frc.robot.subsystems.Hopper.setIntake(Intake): Cannot handle " + mode);
         }
     }
   }
 
+  /** Sets the Intake setpoint to the specified percent output (-1.0 to 1.0) */
+  public void setIntake(double percentOutput) {
+    intakeSetpoint.setDouble(percentOutput);
+  }
+
   /**
-   * Sets all Hopper motors to neutral. Useful for an emergency situation
-   * to quickly disable the Hopper
+   * Sets the Intake setpoint to the specified current output between 0.0
+   * and 40.0
+   * 
+   * @deprecated Not yet implemented, see issue #18
+   */
+  public void setIntakeCurrent(double currentOutput) {
+    throw new IllegalCallerException("Error in frc.robot.subsystems.Hopper.setIntakeCurrent(double): Not yet implemented");
+  }
+
+  /**
+   * Sets all Hopper motors to neutral, useful for safety reasons
    */
   public void setAllNeutral() {
     liftController.set(ControlMode.Disabled, 0);
     intakeController.set(ControlMode.Disabled, 0);
+  }
+
+  /**
+   * Disable or enable the Hopper subsystem, and set the motors to neutral
+   */
+  public void setEnabled(boolean enabled) {
+      // Disable or enable the subsystem
+      setAllNeutral();
+      subsystemEnabled.setBoolean(enabled);
   }
 
   /** 
@@ -373,13 +465,21 @@ public class Hopper extends SubsystemBase {
    * in NetworkTables
    */
   public void syncNetworkTables() {
-    // Pull the current Lift PIDF constants and apply them
+    // Push the Lift PIDF constants from NetworkTable to the Lift controller
     liftController.config_kP(0, liftP.getDouble(Subsystem.Hopper.LIFT_P));
     liftController.config_kI(0, liftI.getDouble(Subsystem.Hopper.LIFT_I));
     liftController.config_kD(0, liftD.getDouble(Subsystem.Hopper.LIFT_D));
     liftController.config_kF(0, liftF.getDouble(Subsystem.Hopper.LIFT_F));
-    
-    // Push the current position from the Lift sensor
+
+    // Pull the Lift and Intake setpoints from NetworkTable to the Lift and
+    // Intake controllers. If the robot is in the disabled state, switch to
+    // manual control with percent output
+    if (getIsEnabled()) {
+        liftController.set(ControlMode.Position, getLiftSetpoint());
+        intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
+    }
+
+    // Push the current position from the Lift sensor to the NetworkTable
     liftPosition.setDouble(getLiftPositionTicks());
   }
 
@@ -395,29 +495,27 @@ public class Hopper extends SubsystemBase {
    * @param I constant
    * @param D constant
    * @param F constant
-  */
-  public void setLiftPIDF(double P, double I, double D, double F) {
+   */
+  public void configureLiftPIDF(double P, double I, double D, double F) {
     // Manually update the PIDF values in NetworkTables
-    boolean a = !liftP.setDouble(P);
-    boolean b = !liftI.setDouble(I);
-    boolean c = !liftD.setDouble(D);
-    boolean d = !liftF.setDouble(F);
-  
-    // Print an error message if any of the updates failed
-    String errorMsg = "Error in Hopper.setLiftPIDF(double,double,double,double):"
-    + "Entry already exists with different type";
-    if (a||b||c||d) {System.out.println(errorMsg);}
+    liftP.setDouble(P);
+    liftI.setDouble(I);
+    liftD.setDouble(D);
+    liftF.setDouble(F);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // Synchronize motor controllers with NetworkTable values, and run a safety
+    // check on the subsystem
     syncNetworkTables();
+    if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     syncNetworkTables();
+    if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
   }
 }

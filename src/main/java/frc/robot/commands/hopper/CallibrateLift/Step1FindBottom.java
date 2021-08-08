@@ -29,8 +29,8 @@ public class Step1FindBottom extends CommandBase {
   @Override
   public void execute() {
     // Increment the Lift down until the error is more than double our increment
-    hopper.setLiftSetpointTicks(
-        hopper.getLiftSetpointTicks() - 2);
+    hopper.setLift(
+        hopper.getLiftSetpoint() - 2);
   }
 
   // Called once the command ends or is interrupted.

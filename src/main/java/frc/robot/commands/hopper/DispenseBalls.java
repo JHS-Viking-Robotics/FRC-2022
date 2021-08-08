@@ -30,7 +30,7 @@ public class DispenseBalls extends CommandBase {
   @Override
   public void initialize() {
     // Put the Hopper in the dispense position
-    hopper.setLiftSetpointTicks(800.0);
+    hopper.setLift(800.0);
 
     // Start the timer
     timer.reset();

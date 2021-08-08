@@ -26,15 +26,15 @@ public class Step2FindTop extends CommandBase {
     // motion is about 890 ticks. Therefore the Lift should have around 2.5
     // seconds to reach 600 ticks. If this is a problem, step 1.5 can be made
     // which waits for the Lift to get to 850, then we can run this step
-    hopper.setLiftSetpointTicks(600);
+    hopper.setLift(600);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // Increment the Lift up until the error is more than double our increment
-    hopper.setLiftSetpointTicks(
-        hopper.getLiftSetpointTicks() + 2);
+    hopper.setLift(
+        hopper.getLiftSetpoint() + 2);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,7 +44,7 @@ public class Step2FindTop extends CommandBase {
     if (!interrupted) {
       hopper.resetLiftSetpoint(
         Hopper.Lift.UP,
-        hopper.getLiftSetpointTicks());
+        hopper.getLiftSetpoint());
     }
     hopper.setAllNeutral();
   }

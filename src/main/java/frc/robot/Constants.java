@@ -82,9 +82,9 @@ public final class Constants {
       /** F constant for Lift Talon onboard PID control */
       public final static double LIFT_F = 0;
       /** Tick position for Lift Up setpoint */
-      public final static double LIFT_UP = 800;
+      public final static double LIFT_UP = 890;
       /** Tick position for Lift Dispense setpoint */
-      public final static double LIFT_DISPENSE = 750;
+      public final static double LIFT_DISPENSE = 728;
       /** Tick position for Lift Down setpoint */
       public final static double LIFT_DOWN = 0;
       /** Percent output for Intake In mode */
