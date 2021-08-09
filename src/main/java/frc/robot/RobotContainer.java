@@ -4,8 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.commands.drivetrain.DriveStandard;
-import frc.robot.commands.drivetrain.DriveVelocity;
+import frc.robot.commands.drivetrain.*;
+import frc.robot.commands.hopper.*;
+import frc.robot.commands.hopper.CallibrateLift.*;
+
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 
@@ -29,6 +31,9 @@ public class RobotContainer {
   private final Hopper m_hopper;
   private final Command m_driveStandard;
   private final Command m_driveVelocity;
+  private final Command m_hopperCollectBalls;
+  private final Command m_hopperDispenseBalls;
+  private final Command m_hopperCallibrate;
   private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -46,6 +51,9 @@ public class RobotContainer {
         m_drivetrain,
         () -> m_driveController.getY(Hand.kLeft),
         () -> m_driveController.getX(Hand.kLeft));
+    m_hopperCollectBalls = new CollectBalls(m_hopper);
+    m_hopperDispenseBalls = new DispenseBalls(m_hopper);
+    m_hopperCallibrate = new Sequence(m_hopper);
       
     // Configure the button bindings
     configureButtonBindings();
@@ -64,8 +72,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driveController, Button.kA.value)
+    new JoystickButton(m_driveController, Button.kBumperRight.value)
         .whenHeld(m_driveVelocity);
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenPressed(m_hopperDispenseBalls, true);
+    new JoystickButton(m_driveController, Button.kA.value)
+        .whenHeld(m_hopperCollectBalls, true);
+    new JoystickButton(m_driveController, Button.kStart.value)
+        .whenPressed(m_hopperCallibrate, false);
   }
 
   /**
