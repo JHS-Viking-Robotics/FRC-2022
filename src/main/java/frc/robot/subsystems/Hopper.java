@@ -11,6 +11,7 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -23,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Hopper extends SubsystemBase {
 
   private final WPI_TalonSRX liftController;
-  private final WPI_TalonSRX intakeController;
+  private final WPI_VictorSPX intakeController;
 
   private NetworkTableEntry liftP;
   private NetworkTableEntry liftI;
@@ -61,7 +62,7 @@ public class Hopper extends SubsystemBase {
 
     // Initialize new Talon controllers and configure them
     liftController = new WPI_TalonSRX(Subsystem.Hopper.LIFT_ID);
-    intakeController = new WPI_TalonSRX(Subsystem.Hopper.INTAKE_ID);
+    intakeController = new WPI_VictorSPX(Subsystem.Hopper.INTAKE_ID);
     configureTalons();
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
@@ -87,10 +88,6 @@ public class Hopper extends SubsystemBase {
     liftController.setSafetyEnabled(true);
 
     intakeController.configFactoryDefault();
-    intakeController.configPeakCurrentLimit(0);
-    intakeController.configContinuousCurrentLimit(35);
-    intakeController.configPeakCurrentDuration(100);
-    intakeController.enableCurrentLimit(true);
     intakeController.setSafetyEnabled(true);
   }
 
@@ -205,7 +202,6 @@ public class Hopper extends SubsystemBase {
   public boolean getIsOperatingSafely() {
     // Run several checks on the motors to ensure they are running safely
     return (liftController.getStatorCurrent() < 30.0)
-    && (intakeController.getStatorCurrent() < 30.0)
     && (liftController.isSafetyEnabled())
     && (intakeController.isSafetyEnabled());
   }

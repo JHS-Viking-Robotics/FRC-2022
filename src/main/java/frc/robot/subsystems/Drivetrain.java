@@ -38,8 +38,6 @@ public class Drivetrain extends SubsystemBase {
   private NetworkTableEntry driveI;
   private NetworkTableEntry driveD;
   private NetworkTableEntry driveF;
-  private NetworkTableEntry driveLeftSetpoint;
-  private NetworkTableEntry driveRightSetpoint;
 
   /**
    * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor

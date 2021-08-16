@@ -68,10 +68,10 @@ public final class Constants {
       /** CAN Bus ID of intake Victor controller */
       public final static int INTAKE_ID = 52;
       /** Lift Talon controller is inverted */
-      public final static boolean LIFT_CONTROLLER_INVERTED = false;
+      public final static boolean LIFT_CONTROLLER_INVERTED = true;
       /** Lift Talon sensor is inverted */
       public final static boolean LIFT_SENSOR_INVERTED = false;
-      /** Intake Talon is inverted */
+      /** Intake Victor is inverted */
       public final static boolean INTAKE_CONTROLLER_INVERTED = false;
       /** P constant for Lift Talon onboard PID control */
       public final static double LIFT_P = 0;
