@@ -42,7 +42,7 @@ public class CollectBalls extends CommandBase {
   public void end(boolean interrupted) {
     // Stop running the Intake and return the Lift to rest position
     hopper.setIntake(Hopper.Intake.NEUTRAL);
-    hopper.setLift(800);
+    hopper.setLift(Hopper.Lift.UP);
   }
 
   // Returns true when the command should end.

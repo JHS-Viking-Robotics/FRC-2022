@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Hopper.Intake;
+import frc.robot.subsystems.Hopper.Lift;
 
 public class DispenseBalls extends CommandBase {
 
@@ -30,7 +32,7 @@ public class DispenseBalls extends CommandBase {
   @Override
   public void initialize() {
     // Put the Hopper in the dispense position
-    hopper.setLift(800.0);
+    hopper.setLift(Lift.UP);
 
     // Start the timer
     timer.reset();
@@ -40,12 +42,14 @@ public class DispenseBalls extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hopper.setIntake(Hopper.Intake.OUT);
+    hopper.setIntake(Intake.OUT);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    hopper.setIntake(Intake.NEUTRAL);
+  }
 
   // Returns true when the command should end.
   @Override

@@ -51,7 +51,8 @@ public class Hopper extends SubsystemBase {
   public enum Lift {
     UP,
     DISPENSE,
-    DOWN;
+    DOWN,
+    NEUTRAL;
   }
 
   /**
@@ -76,8 +77,10 @@ public class Hopper extends SubsystemBase {
     liftController.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     liftController.setSensorPhase(Subsystem.Hopper.LIFT_SENSOR_INVERTED);
     liftController.setSelectedSensorPosition(0.0);
+    liftController.set(ControlMode.Disabled, 0.0);
 
     intakeController.setInverted(Subsystem.Hopper.INTAKE_CONTROLLER_INVERTED);
+    intakeController.set(ControlMode.Disabled, 0.0);
 
     // Set Talon safety parameters
     liftController.configFactoryDefault();
@@ -85,10 +88,8 @@ public class Hopper extends SubsystemBase {
     liftController.configContinuousCurrentLimit(35);
     liftController.configPeakCurrentDuration(100);
     liftController.enableCurrentLimit(true);
-    liftController.setSafetyEnabled(true);
 
     intakeController.configFactoryDefault();
-    intakeController.setSafetyEnabled(true);
   }
 
   /** Configures the Shuffleboard dashboard "Hopper" tab */
@@ -123,14 +124,14 @@ public class Hopper extends SubsystemBase {
     liftPosition = shuffleHopperTab
         .add("Lift Position", 0.0)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withProperties(Map.of("Min", 0.0, "Max", 890.0))
         .withSize(4, 1)
         .withPosition(0, 2)
         .getEntry();
     liftSetpoint = shuffleHopperTab
         .add("Lift Setpoint", 0.0)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("Min", 0, "Max", 800))
+        .withProperties(Map.of("Min", 0.0, "Max", 890.0))
         .withSize(4, 1)
         .withPosition(0, 3)
         .getEntry();
@@ -201,9 +202,7 @@ public class Hopper extends SubsystemBase {
    */
   public boolean getIsOperatingSafely() {
     // Run several checks on the motors to ensure they are running safely
-    return (liftController.getStatorCurrent() < 30.0)
-    && (liftController.isSafetyEnabled())
-    && (intakeController.isSafetyEnabled());
+    return (liftController.getStatorCurrent() < 30.0);
   }
 
   /** Gets the current Lift position in sensor ticks from the Lift controller */
@@ -460,7 +459,7 @@ public class Hopper extends SubsystemBase {
    * Synchronizes member variables and motor controller values with those
    * in NetworkTables
    */
-  public void syncNetworkTables() {
+  private void syncNetworkTables() {
     // Push the Lift PIDF constants from NetworkTable to the Lift controller
     liftController.config_kP(0, liftP.getDouble(Subsystem.Hopper.LIFT_P));
     liftController.config_kI(0, liftI.getDouble(Subsystem.Hopper.LIFT_I));
@@ -505,7 +504,8 @@ public class Hopper extends SubsystemBase {
     // Synchronize motor controllers with NetworkTable values, and run a safety
     // check on the subsystem
     syncNetworkTables();
-    if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
+    // Perform a safety check
+    // if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
   }
 
   @Override

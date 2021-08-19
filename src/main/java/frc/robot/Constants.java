@@ -66,27 +66,27 @@ public final class Constants {
       /** CAN Bus ID of lift Talon controller */
       public final static int LIFT_ID = 2;
       /** CAN Bus ID of intake Victor controller */
-      public final static int INTAKE_ID = 52;
+      public final static int INTAKE_ID = 54;
       /** Lift Talon controller is inverted */
       public final static boolean LIFT_CONTROLLER_INVERTED = true;
       /** Lift Talon sensor is inverted */
       public final static boolean LIFT_SENSOR_INVERTED = false;
       /** Intake Victor is inverted */
-      public final static boolean INTAKE_CONTROLLER_INVERTED = false;
+      public final static boolean INTAKE_CONTROLLER_INVERTED = true;
       /** P constant for Lift Talon onboard PID control */
-      public final static double LIFT_P = 0;
+      public final static double LIFT_P = 1.0;
       /** I constant for Lift Talon onboard PID control */
-      public final static double LIFT_I = 0;
+      public final static double LIFT_I = 0.0;
       /** D constant for Lift Talon onboard PID control */
-      public final static double LIFT_D = 0;
+      public final static double LIFT_D = 0.0;
       /** F constant for Lift Talon onboard PID control */
-      public final static double LIFT_F = 0;
+      public final static double LIFT_F = 0.0;
       /** Tick position for Lift Up setpoint */
-      public final static double LIFT_UP = 890;
+      public final static double LIFT_UP = 890.0;
       /** Tick position for Lift Dispense setpoint */
-      public final static double LIFT_DISPENSE = 728;
+      public final static double LIFT_DISPENSE = 728.0;
       /** Tick position for Lift Down setpoint */
-      public final static double LIFT_DOWN = 0;
+      public final static double LIFT_DOWN = 0.0;
       /** Percent output for Intake In mode */
       public final static double INTAKE_IN = 0.5;
       /** Percent output for Intake Out mode */
