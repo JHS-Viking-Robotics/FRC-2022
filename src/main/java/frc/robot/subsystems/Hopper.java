@@ -98,17 +98,23 @@ public class Hopper extends SubsystemBase {
     ShuffleboardTab shuffleHopperTab = Shuffleboard.getTab("Hopper");
     ShuffleboardLayout shuffleLiftPIDLayout = shuffleHopperTab
         .getLayout("Lift PID", BuiltInLayouts.kList)
-        .withProperties(Map.of("Label position", "LEFT"))
+        .withProperties(
+            Map.of(
+                "Label position", "LEFT"))
         .withPosition(2, 0)
         .withSize(1, 2);
     ShuffleboardLayout shuffleLiftSetpointsLayout = shuffleHopperTab
         .getLayout("Lift Setpoints", BuiltInLayouts.kList)
-        .withProperties(Map.of("Label position", "TOP"))
+        .withProperties(
+            Map.of(
+                "Label position", "TOP"))
         .withPosition(3, 0)
         .withSize(1, 2);
     ShuffleboardLayout shuffleIntakeLayout = shuffleHopperTab
         .getLayout("Intake Modes", BuiltInLayouts.kList)
-        .withProperties(Map.of("Label position", "TOP"))
+        .withProperties(
+            Map.of(
+                "Label position", "TOP"))
         .withPosition(4, 0)
         .withSize(1, 2);
 
@@ -124,21 +130,31 @@ public class Hopper extends SubsystemBase {
     liftPosition = shuffleHopperTab
         .add("Lift Position", 0.0)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", 0.0, "Max", 890.0))
+        .withProperties(
+            Map.of(
+                "Min", Subsystem.Hopper.LIFT_DOWN,
+                "Max", Subsystem.Hopper.LIFT_UP))
         .withSize(4, 1)
         .withPosition(0, 2)
         .getEntry();
     liftSetpoint = shuffleHopperTab
         .add("Lift Setpoint", 0.0)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("Min", 0.0, "Max", 890.0))
+        .withProperties(
+            Map.of(
+                "Min", Subsystem.Hopper.LIFT_DOWN,
+                "Max", Subsystem.Hopper.LIFT_UP))
         .withSize(4, 1)
         .withPosition(0, 3)
         .getEntry();
     intakeSetpoint = shuffleHopperTab
         .add("Intake Setpoint", 0.0)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", -1.0, "Max", 1.0, "Num tick marks", 1))
+        .withProperties(
+            Map.of(
+                "Min", -1.0,
+                "Max", 1.0,
+                "Num tick marks", 1))
         .withSize(1,1)
         .withPosition(4,2)
         .getEntry();
