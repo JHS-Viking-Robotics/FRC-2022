@@ -19,12 +19,15 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hopper extends SubsystemBase {
 
   private final WPI_TalonSRX liftController;
   private final WPI_VictorSPX intakeController;
+
+  private int safetyScore;        // Current safety score of subsystem [0, 100]
 
   private NetworkTableEntry liftP;
   private NetworkTableEntry liftI;
@@ -60,7 +63,6 @@ public class Hopper extends SubsystemBase {
    * and mag encoder, and a roller intake controlled by a Victor SPX.
    */
   public Hopper() {
-
     // Initialize new Talon controllers and configure them
     liftController = new WPI_TalonSRX(Subsystem.Hopper.LIFT_ID);
     intakeController = new WPI_VictorSPX(Subsystem.Hopper.INTAKE_ID);
@@ -68,6 +70,10 @@ public class Hopper extends SubsystemBase {
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
     configureShuffleboard();
+
+    // Start the safety score at maximum, and enable the subsystem
+    safetyScore = 100;
+    setSubsystemEnabled(true);
   }
 
   /** Configures the Talon motor controllers and safety settings */
@@ -85,7 +91,7 @@ public class Hopper extends SubsystemBase {
     // Set Talon safety parameters
     liftController.configFactoryDefault();
     liftController.configPeakCurrentLimit(0);
-    liftController.configContinuousCurrentLimit(35);
+    liftController.configContinuousCurrentLimit(30);
     liftController.configPeakCurrentDuration(100);
     liftController.enableCurrentLimit(true);
 
@@ -208,17 +214,51 @@ public class Hopper extends SubsystemBase {
   }
 
   /** Returns whether the subsystem is enabled or not */
-  public boolean getIsEnabled() {
+  public boolean isEnabled() {
     return subsystemEnabled.getBoolean(false);
   }
 
   /**
-   * Checks the current status of all Hopper motors and determines if they
-   * are operating within safe parameters
+   * Change the safety score for the subsystem by some amount
+   * 
+   * @param change amount +/- to change safety score by
    */
-  public boolean getIsOperatingSafely() {
-    // Run several checks on the motors to ensure they are running safely
-    return (liftController.getStatorCurrent() < 30.0);
+  private void changeSafetyScore(int change) {
+    safetyScore += change;
+    if (safetyScore < 0) {safetyScore = 0;}
+    if (safetyScore > 100) {safetyScore = 100;}
+  }
+
+  /**
+   * Do some checks on the subsystem and update the safety rating accordingly.
+   * 
+   * Will slowly return the rating to maximum if everything is working correctly.
+   */
+  private void performSafetyTest() {
+    // Ensure the safety score is able to return to 100 by slowly increasing it
+    changeSafetyScore(1);
+
+    // Calculate the maximum range of motion for the Lift, plus some wiggle room
+    int maxRangeMotion = 200 + (int) Math.abs(
+      getLiftSetpointValue(Lift.UP)
+      - getLiftSetpointValue(Lift.DOWN));
+
+    // Run checks on the motors to ensure they are running safely. Note that
+    // the score should be decreased by 1 extra unit to compensate for this
+    // method trying to return the score to maximum
+    if (liftController.getStatorCurrent() > 10.0) {
+      changeSafetyScore(-2);
+    } if (getLiftPositionError() > maxRangeMotion) {
+      changeSafetyScore(-21);
+    }
+
+    // Disable the subsystem if we are not operating safely, otherwise check
+    // the dashboard button to see if we are disabled there
+    if (safetyScore < 10) {
+      setSubsystemEnabled(false);
+    } else {
+      setSubsystemEnabled(isEnabled());
+    }
   }
 
   /** Gets the current Lift position in sensor ticks from the Lift controller */
@@ -272,7 +312,7 @@ public class Hopper extends SubsystemBase {
 
   /**
    * Gets the current Intake setpoint in percent output (-1.0 to 1.0)
-   * from the NetworkTable. Returns 0.0 if there is an error.
+   * from the NetworkTable
    */
   public double getIntakeSetpoint() {
     return intakeSetpoint.getDouble(0.0);
@@ -455,7 +495,7 @@ public class Hopper extends SubsystemBase {
   }
 
   /**
-   * Sets all Hopper motors to neutral, useful for safety reasons
+   * Sets all Hopper motors to neutral
    */
   public void setAllNeutral() {
     liftController.set(ControlMode.Disabled, 0);
@@ -465,10 +505,24 @@ public class Hopper extends SubsystemBase {
   /**
    * Disable or enable the Hopper subsystem, and set the motors to neutral
    */
-  public void setEnabled(boolean enabled) {
-      // Disable or enable the subsystem
+  public void setSubsystemEnabled(boolean enabled) {
+    // We are already in desired state, so skip everything
+    if (subsystemEnabled.getBoolean(false) == enabled) {
+      return;
+    }
+  
+    // Update subsystemEnabled and get a reference to the CommandScheduler
+    CommandScheduler cmd = CommandScheduler.getInstance();
+    subsystemEnabled.setBoolean(enabled);
+    if (enabled) {
+      // Re-enable the subsystem
+      cmd.cancel(cmd.getDefaultCommand(this));
+    } else {
+      // Disable the subsystem and revert to the default manual control command
       setAllNeutral();
-      subsystemEnabled.setBoolean(enabled);
+      cmd.cancel(cmd.requiring(this));
+      cmd.schedule(cmd.getDefaultCommand(this));
+    }
   }
 
   /** 
@@ -485,9 +539,9 @@ public class Hopper extends SubsystemBase {
     // Pull the Lift and Intake setpoints from NetworkTable to the Lift and
     // Intake controllers. If the robot is in the disabled state, switch to
     // manual control with percent output
-    if (getIsEnabled()) {
-        liftController.set(ControlMode.Position, getLiftSetpoint());
-        intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
+    if (isEnabled()) {
+      liftController.set(ControlMode.Position, getLiftSetpoint());
+      intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
     }
 
     // Push the current position from the Lift sensor to the NetworkTable
@@ -520,14 +574,13 @@ public class Hopper extends SubsystemBase {
     // Synchronize motor controllers with NetworkTable values, and run a safety
     // check on the subsystem
     syncNetworkTables();
-    // Perform a safety check
-    // if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
+    performSafetyTest();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     syncNetworkTables();
-    if (getIsEnabled()) {setEnabled(getIsOperatingSafely());}
+    performSafetyTest();
   }
 }
