@@ -12,6 +12,7 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,9 +29,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Drivetrain extends SubsystemBase {
 
   private final WPI_TalonSRX leftMain;
-  private final WPI_TalonSRX leftFollow;
+  private final WPI_VictorSPX leftFollow;
   private final WPI_TalonSRX rightMain;
-  private final WPI_TalonSRX rightFollow;
+  private final WPI_VictorSPX rightFollow;
   private final DifferentialDrive driveDifferential;
   private final DifferentialDriveKinematics driveKinematics;
 
@@ -47,8 +48,8 @@ public class Drivetrain extends SubsystemBase {
     // Initialize new Talon controllers and configure them
     leftMain = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_MAIN);
     rightMain = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_FOLLOW);
+    leftFollow = new WPI_VictorSPX(Subsystem.Drivetrain.LEFT_FOLLOW);
+    rightFollow = new WPI_VictorSPX(Subsystem.Drivetrain.RIGHT_FOLLOW);
     configureTalons();
     
     // Configure differential drive, kinematics, and odometry
@@ -63,21 +64,23 @@ public class Drivetrain extends SubsystemBase {
   /** Configures the Talon motor controllers and safety settings */
   private void configureTalons() {
     // Set Talon inversion, encoder phase and type, and set followers
-    leftMain.setInverted(Subsystem.Drivetrain.LEFT_INVERTED);
+    leftMain.setInverted(Subsystem.Drivetrain.LEFT_CONTROLLER_INVERTED);
     leftMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    leftMain.setSensorPhase(true);
+    leftMain.setSensorPhase(Subsystem.Drivetrain.LEFT_SENSOR_INVERTED);
 
-    rightMain.setInverted(Subsystem.Drivetrain.RIGHT_INVERTED);
+    rightMain.setInverted(Subsystem.Drivetrain.RIGHT_CONTROLLER_INVERTED);
     rightMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    rightMain.setSensorPhase(true);
+    rightMain.setSensorPhase(Subsystem.Drivetrain.RIGHT_SENSOR_INVERTED);
 
-    leftFollow.setInverted(Subsystem.Drivetrain.LEFT_INVERTED);
+    leftFollow.setInverted(Subsystem.Drivetrain.LEFT_CONTROLLER_INVERTED);
     leftFollow.follow(leftMain);
 
-    rightFollow.setInverted(Subsystem.Drivetrain.RIGHT_INVERTED);
+    rightFollow.setInverted(Subsystem.Drivetrain.RIGHT_CONTROLLER_INVERTED);
     rightFollow.follow(rightMain);
 
-    // Set Talon safety parameters
+    // Set Talon safety parameters. Note that Victor controllers do not have
+    // these options, but by following the main controllers output they should
+    // also stay in reasonable current output ranges
     leftMain.configFactoryDefault();
     leftMain.configPeakCurrentLimit(0);
     leftMain.configContinuousCurrentLimit(35);
@@ -130,14 +133,14 @@ public class Drivetrain extends SubsystemBase {
 
   /** Get the left encoder total distance travelled in meters*/
   public double getLeftDistance() {
-    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
     return leftMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
   /** Get the right encoder total distance travelled in meters*/
   public double getRightDistance() {
-    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
     return rightMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
@@ -184,10 +187,15 @@ public class Drivetrain extends SubsystemBase {
   */
   public void setPIDF(double P, double I, double D, double F) {
     // Manually update the PIDF values in NetworkTables
-    driveP.setDouble(P);
-    driveI.setDouble(I);
-    driveD.setDouble(D);
-    driveF.setDouble(F);
+    boolean a = !driveP.setDouble(P);
+    boolean b = !driveI.setDouble(I);
+    boolean c = !driveD.setDouble(D);
+    boolean d = !driveF.setDouble(F);
+
+    // Print an error message if any of the updates failed
+    String errorMsg = "Error in Drivetrain.setPID(double,double,double,double):"
+    + " Entry already exists with different type";
+    if (a||b||c||d) {System.out.println(errorMsg);}
   }
 
   /** Arcade drive using percent output to the motor controllers */
@@ -197,23 +205,32 @@ public class Drivetrain extends SubsystemBase {
 
   /** Arcade drive using velocity control onboard the motor controllers */
   public void arcadeDriveVelocity(double throttle, double rotation) {
+    // Check our input parameters
+    if (   (throttle < -1.0 || 1.0 < throttle)
+        || (rotation < -1.0 || 1.0 < rotation)) {
+      System.out.println("ERROR: In Drivetrain.ardadeDriveVelocity(), throttle "
+          + "and rotation must be between -1.0 and 1.0");
+    }
+
     // Convert joystick input to left and right motor output.
-    // NOTE: The ChassisSpeeds constructor vy arguement is 0 as the robot can
-    //       only drive forwards/backwards
+    // Note that the ChassisSpeeds constructor vy arguement is 0 as the robot
+    // can only drive forwards/backwards, not left/right
     DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
         new ChassisSpeeds(
             throttle * Subsystem.Drivetrain.MAX_VELOCITY,
             0,
             rotation * Subsystem.Drivetrain.MAX_ROTATION));
 
-    System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY + "    " + rotation * Subsystem.Drivetrain.MAX_ROTATION);
-    // Convert m/s and set motor output to velocity in ticks/100ms
-    System.out.println("Set:    " + 
-        (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
-        + "    "
-        + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
+    // Print out debugging information
+    System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY
+        + "    " + rotation * Subsystem.Drivetrain.MAX_ROTATION);
+    System.out.println("Set:    "
+        + (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
+        + "    " + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
+
+    // Convert from m/s and set motor output to velocity in ticks/100ms
     leftMain.set(
-        ControlMode.Velocity,
+      ControlMode.Velocity,
         wheelSpeeds.leftMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
     rightMain.set(
         ControlMode.Velocity,

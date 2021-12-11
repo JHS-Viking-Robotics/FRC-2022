@@ -44,9 +44,13 @@ public final class Constants {
       /** CAN Bus ID of follower right drive Talon or Victor */
       public final static int RIGHT_FOLLOW = 51;
       /** Left side Talons are inverted */
-      public final static boolean LEFT_INVERTED = false;
+      public final static boolean LEFT_CONTROLLER_INVERTED = false;
       /** Right side Talons are inverted */
-      public final static boolean RIGHT_INVERTED = true;
+      public final static boolean RIGHT_CONTROLLER_INVERTED = true;
+      /** Left side sensor is inverted */
+      public final static boolean LEFT_SENSOR_INVERTED = true;
+      /** Right side sensor is inverted */
+      public final static boolean RIGHT_SENSOR_INVERTED = true;
       /** P constant for Talon onboard PID control */
       public final static double P = 10.0;
       /** I constant for Talon onboard PID control */
