@@ -12,6 +12,7 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,9 +29,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Drivetrain extends SubsystemBase {
 
   private final WPI_TalonSRX leftMain;
-  private final WPI_TalonSRX leftFollow;
+  private final WPI_VictorSPX leftFollow;
   private final WPI_TalonSRX rightMain;
-  private final WPI_TalonSRX rightFollow;
+  private final WPI_VictorSPX rightFollow;
   private final DifferentialDrive driveDifferential;
   private final DifferentialDriveKinematics driveKinematics;
 
@@ -49,8 +50,8 @@ public class Drivetrain extends SubsystemBase {
     // Initialize new Talon controllers and configure them
     leftMain = new WPI_TalonSRX(Talon.Drivetrain.LEFT_MAIN);
     rightMain = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_TalonSRX(Talon.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_FOLLOW);
+    leftFollow = new WPI_VictorSPX(Talon.Drivetrain.LEFT_FOLLOW);
+    rightFollow = new WPI_VictorSPX(Talon.Drivetrain.RIGHT_FOLLOW);
     configureTalons();
     
     // Configure differential drive, kinematics, and odometry
@@ -79,7 +80,9 @@ public class Drivetrain extends SubsystemBase {
     rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
     rightFollow.follow(rightMain);
 
-    // Set Talon safety parameters
+    // Set Talon safety parameters. Note that Victor controllers do not have
+    // these options, but by following the main controllers output they should
+    // also stay in reasonable current output ranges
     leftMain.configFactoryDefault();
     leftMain.configPeakCurrentLimit(0);
     leftMain.configContinuousCurrentLimit(35);
