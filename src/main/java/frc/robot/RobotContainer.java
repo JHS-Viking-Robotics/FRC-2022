@@ -34,6 +34,7 @@ public class RobotContainer {
   private final Command m_hopperCollectBalls;
   private final Command m_hopperDispenseBalls;
   private final Command m_hopperCallibrate;
+  private final Command m_hopperManual;
   private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -54,12 +55,18 @@ public class RobotContainer {
     m_hopperCollectBalls = new CollectBalls(m_hopper);
     m_hopperDispenseBalls = new DispenseBalls(m_hopper);
     m_hopperCallibrate = new Sequence(m_hopper);
-      
+    m_hopperManual = new Manual(
+        m_hopper,
+        () -> m_driveController.getBumper(Hand.kLeft),
+        () -> m_driveController.getBumper(Hand.kRight),
+        () -> m_driveController.getY(Hand.kRight));
+
     // Configure the button bindings
     configureButtonBindings();
 
     // Set subsystem default commands
     m_drivetrain.setDefaultCommand(m_driveStandard);
+    m_hopper.setDefaultCommand(m_hopperManual);
 
     // Configure Shuffleboard
     configureShuffleboard();
