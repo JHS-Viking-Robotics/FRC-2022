@@ -135,14 +135,14 @@ public class Drivetrain extends SubsystemBase {
 
   /** Get the left encoder total distance travelled in meters*/
   public double getLeftDistance() {
-    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
     return leftMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
   /** Get the right encoder total distance travelled in meters*/
   public double getRightDistance() {
-    // Get the quadrature encoder position in ticks (4096 ticks/rotation)    
+    // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
     return rightMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
@@ -196,7 +196,7 @@ public class Drivetrain extends SubsystemBase {
 
     // Print an error message if any of the updates failed
     String errorMsg = "Error in Drivetrain.setPID(double,double,double,double):"
-    + "Entry already exists with different type";
+    + " Entry already exists with different type";
     if (a||b||c||d) {System.out.println(errorMsg);}
   }
 
@@ -207,23 +207,32 @@ public class Drivetrain extends SubsystemBase {
 
   /** Arcade drive using velocity control onboard the motor controllers */
   public void arcadeDriveVelocity(double throttle, double rotation) {
+    // Check our input parameters
+    if (   (throttle < -1.0 || 1.0 < throttle)
+        || (rotation < -1.0 || 1.0 < rotation)) {
+      System.out.println("ERROR: In Drivetrain.ardadeDriveVelocity(), throttle "
+          + "and rotation must be between -1.0 and 1.0");
+    }
+
     // Convert joystick input to left and right motor output.
-    // NOTE: The ChassisSpeeds constructor vy arguement is 0 as the robot can
-    //       only drive forwards/backwards
+    // Note that the ChassisSpeeds constructor vy arguement is 0 as the robot
+    // can only drive forwards/backwards, not left/right
     DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
         new ChassisSpeeds(
             throttle * Talon.Drivetrain.MAX_VELOCITY,
             0,
             rotation * Talon.Drivetrain.MAX_ROTATION));
 
-    System.out.println("Got:    " + throttle * Talon.Drivetrain.MAX_VELOCITY + "    " + rotation * Talon.Drivetrain.MAX_ROTATION);
-    // Convert m/s and set motor output to velocity in ticks/100ms
-    System.out.println("Set:    " + 
-        (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
-        + "    "
-        + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
+    // Print out debugging information
+    System.out.println("Got:    " + throttle * Talon.Drivetrain.MAX_VELOCITY
+        + "    " + rotation * Talon.Drivetrain.MAX_ROTATION);
+    System.out.println("Set:    "
+        + (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
+        + "    " + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
+
+    // Convert from m/s and set motor output to velocity in ticks/100ms
     leftMain.set(
-        ControlMode.Velocity,
+      ControlMode.Velocity,
         wheelSpeeds.leftMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
     rightMain.set(
         ControlMode.Velocity,
