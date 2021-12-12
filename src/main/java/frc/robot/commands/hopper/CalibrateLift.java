@@ -4,19 +4,48 @@
 
 package frc.robot.commands.hopper;
 
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
 import frc.robot.subsystems.Hopper;
-import frc.robot.commands.hopper.sequences.CalibrateLift.*;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class CalibrateLift extends SequentialCommandGroup {
-  /** Creates a new Sequence. */
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
+public class CalibrateLift extends CommandBase {
+
+  private final Hopper hopper;
+
+  /** Creates a new Step1FindBottom. */
   public CalibrateLift(Hopper subsystem) {
-    addCommands(
-        new Step1FindBottom(subsystem),
-        new Step2FindTop(subsystem));
+    // Use addRequirements() here to declare subsystem dependencies.
+    this.hopper = subsystem;
+    addRequirements(this.hopper);
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    hopper.resetLiftSensorPosition();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    // Increment the Lift down until the error is high
+    hopper.setLift(
+        hopper.getLiftSetpoint() - 10);
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    // Reset the Lift sensor 
+    hopper.resetLiftSensorPosition();
+    hopper.setLift(Hopper.Lift.DOWN);
+    hopper.setAllNeutral();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    // Keep going down until the error gets higher than our increment
+    return hopper.getLiftPositionError() > 100;
   }
 }
