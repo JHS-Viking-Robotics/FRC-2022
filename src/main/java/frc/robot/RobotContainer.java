@@ -6,9 +6,8 @@ package frc.robot;
 
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.hopper.*;
-import frc.robot.commands.hopper.CallibrateLift.Sequence;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Hopper;
+import frc.robot.commands.hopper.sequences.Dispense.*;
+import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -28,11 +27,12 @@ public class RobotContainer {
   // Define robot subsystems, commands, input devices, and buttons
   private final Drivetrain m_drivetrain;
   private final Hopper m_hopper;
-  private final Command m_driveStandard;
-  private final Command m_driveVelocity;
-  private final Command m_hopperCollectBalls;
-  private final Command m_hopperDispenseBalls;
-  private final Sequence m_hopperCalibrate;
+  private final DriveStandard m_driveStandard;
+  private final DriveVelocity m_driveVelocity;
+  private final CollectBalls m_hopperCollectBalls;
+  private final Step1DispensePosition m_hopperDispensePosition;
+  private final Step2Unload m_hopperDispenseUnload;
+  private final CalibrateLift m_hopperCalibrate;
   private final Manual m_hopperManual;
   private final XboxController m_driveController;
 
@@ -51,8 +51,9 @@ public class RobotContainer {
         () -> m_driveController.getY(Hand.kLeft),
         () -> m_driveController.getX(Hand.kLeft));
     m_hopperCollectBalls = new CollectBalls(m_hopper);
-    m_hopperDispenseBalls = new DispenseBalls(m_hopper);
-    m_hopperCalibrate = new Sequence(m_hopper);
+    m_hopperDispensePosition = new Step1DispensePosition(m_hopper);
+    m_hopperDispenseUnload = new Step2Unload(m_hopper);
+    m_hopperCalibrate = new CalibrateLift(m_hopper);
     m_hopperManual = new Manual(
         m_hopper,
         () -> m_driveController.getBumper(Hand.kLeft),
@@ -79,9 +80,11 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kBumperRight.value)
         .whenHeld(m_driveVelocity);
     new JoystickButton(m_driveController, Button.kY.value)
-        .whenPressed(m_hopperDispenseBalls, true);
+        .whenHeld(m_hopperDispensePosition);
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenReleased(m_hopperDispenseUnload);
     new JoystickButton(m_driveController, Button.kA.value)
-        .whenHeld(m_hopperCollectBalls, true);
+        .whenHeld(m_hopperCollectBalls);
     new JoystickButton(m_driveController, Button.kStart.value)
         .whenPressed(m_hopperCalibrate, false);
   }

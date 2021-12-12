@@ -2,18 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.hopper.CallibrateLift;
+package frc.robot.commands.hopper.sequences.Dispense;
 
 import frc.robot.subsystems.Hopper;
-
+import frc.robot.subsystems.Hopper.Lift;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class Step1FindBottom extends CommandBase {
+public class Step1DispensePosition extends CommandBase {
 
   private final Hopper hopper;
 
-  /** Creates a new Step1FindBottom. */
-  public Step1FindBottom(Hopper subsystem) {
+  /** Creates a new Step1DispensePosition command. */
+  public Step1DispensePosition(Hopper subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.hopper = subsystem;
     addRequirements(this.hopper);
@@ -21,33 +21,23 @@ public class Step1FindBottom extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    hopper.resetLiftSensorPosition();
-  }
+  public void initialize() { }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // Increment the Lift down until the error is more than double our increment
-    hopper.setLift(
-        hopper.getLiftSetpoint() - 2);
+    hopper.setLift(Lift.DISPENSE);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    // Reset the Lift down setpoint to the new 0 position on the sensor
-    if (!interrupted) {
-        hopper.resetLiftSensorPosition();
-        hopper.resetLiftSetpoint(Hopper.Lift.DOWN, 0);
-    }
-    hopper.setAllNeutral();
-  }
+  public void end(boolean interrupted) { }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // Keep going down until the error gets higher than our increment
-    return hopper.getLiftPositionError() > 4;
+    // Wait until we get to the dispense position
+    return Math.abs(hopper.getLiftPositionError()) < 50;
   }
 }
