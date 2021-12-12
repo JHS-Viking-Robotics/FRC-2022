@@ -6,8 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.hopper.*;
-import frc.robot.commands.hopper.CallibrateLift.*;
-
+import frc.robot.commands.hopper.CallibrateLift.Sequence;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 
@@ -33,13 +32,12 @@ public class RobotContainer {
   private final Command m_driveVelocity;
   private final Command m_hopperCollectBalls;
   private final Command m_hopperDispenseBalls;
-  private final Command m_hopperCallibrate;
-  private final Command m_hopperManual;
+  private final Sequence m_hopperCalibrate;
+  private final Manual m_hopperManual;
   private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
     // Instantiate robot subsystems, commands, input devices, and buttons
     m_drivetrain = new Drivetrain();
     m_hopper = new Hopper();
@@ -54,7 +52,7 @@ public class RobotContainer {
         () -> m_driveController.getX(Hand.kLeft));
     m_hopperCollectBalls = new CollectBalls(m_hopper);
     m_hopperDispenseBalls = new DispenseBalls(m_hopper);
-    m_hopperCallibrate = new Sequence(m_hopper);
+    m_hopperCalibrate = new Sequence(m_hopper);
     m_hopperManual = new Manual(
         m_hopper,
         () -> m_driveController.getBumper(Hand.kLeft),
@@ -66,7 +64,6 @@ public class RobotContainer {
 
     // Set subsystem default commands
     m_drivetrain.setDefaultCommand(m_driveStandard);
-    m_hopper.setDefaultCommand(m_hopperManual);
 
     // Configure Shuffleboard
     configureShuffleboard();
@@ -86,7 +83,7 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kA.value)
         .whenHeld(m_hopperCollectBalls, true);
     new JoystickButton(m_driveController, Button.kStart.value)
-        .whenPressed(m_hopperCallibrate, false);
+        .whenPressed(m_hopperCalibrate, false);
   }
 
   /**
@@ -102,6 +99,9 @@ public class RobotContainer {
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_hopper);
+
+    // Add manual overrides to the Dashboard
+    SmartDashboard.putData("Hopper Manual Override", m_hopperManual);
 
     // Add command lists to each subsystem tab on the Shuffleboard
     /* NOTE: The following is not currently used, but is left here as a

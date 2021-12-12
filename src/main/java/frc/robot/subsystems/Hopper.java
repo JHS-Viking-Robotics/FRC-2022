@@ -27,7 +27,8 @@ public class Hopper extends SubsystemBase {
   private final WPI_TalonSRX liftController;
   private final WPI_VictorSPX intakeController;
 
-  private int safetyScore;        // Current safety score of subsystem [0, 100]
+  private int safetyScore;           // Current safety score of subsystem [0, 100]
+  private boolean subsystemEnabled;  // Is the subsystem currently enabled
 
   private NetworkTableEntry liftP;
   private NetworkTableEntry liftI;
@@ -42,7 +43,6 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry intakeInSpeed;
   private NetworkTableEntry intakeOutSpeed;
   private NetworkTableEntry intakeHoldCurrent;
-  private NetworkTableEntry subsystemEnabled;
 
   public enum Intake {
     IN,
@@ -73,7 +73,7 @@ public class Hopper extends SubsystemBase {
 
     // Start the safety score at maximum, and enable the subsystem
     safetyScore = 100;
-    setSubsystemEnabled(true);
+    subsystemEnabled = true;
   }
 
   /** Configures the Talon motor controllers and safety settings */
@@ -123,14 +123,6 @@ public class Hopper extends SubsystemBase {
                 "Label position", "TOP"))
         .withPosition(4, 0)
         .withSize(1, 2);
-
-    // Configure safety override button
-    subsystemEnabled = shuffleHopperTab
-        .add("Subsystem Enabled", false)
-        .withWidget(BuiltInWidgets.kToggleButton)
-        .withPosition(0, 0)
-        .withSize(2,2)
-        .getEntry();
 
     // Configure Intake and Lift setpoint indicator and controller
     liftPosition = shuffleHopperTab
@@ -215,7 +207,7 @@ public class Hopper extends SubsystemBase {
 
   /** Returns whether the subsystem is enabled or not */
   public boolean isEnabled() {
-    return subsystemEnabled.getBoolean(false);
+    return subsystemEnabled;
   }
 
   /**
@@ -507,21 +499,23 @@ public class Hopper extends SubsystemBase {
    */
   public void setSubsystemEnabled(boolean enabled) {
     // We are already in desired state, so skip everything
-    if (subsystemEnabled.getBoolean(false) == enabled) {
+    if (subsystemEnabled == enabled) {
       return;
     }
   
     // Update subsystemEnabled and get a reference to the CommandScheduler
     CommandScheduler cmd = CommandScheduler.getInstance();
-    subsystemEnabled.setBoolean(enabled);
+    subsystemEnabled = enabled;
     if (enabled) {
-      // Re-enable the subsystem
-      cmd.cancel(cmd.getDefaultCommand(this));
+      // Re-enable the subsystem and clear any running commands
+      subsystemEnabled = enabled;
+      cmd.cancel(cmd.requiring(this));
     } else {
-      // Disable the subsystem and revert to the default manual control command
+      // Disable the subsystem by cancelling all commands and reverting back
+      // to neutral
+      subsystemEnabled = enabled;
       setAllNeutral();
       cmd.cancel(cmd.requiring(this));
-      cmd.schedule(cmd.getDefaultCommand(this));
     }
   }
 
