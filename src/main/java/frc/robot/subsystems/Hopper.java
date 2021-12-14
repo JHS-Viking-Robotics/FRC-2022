@@ -38,32 +38,60 @@ public class Hopper extends SubsystemBase {
   private NetworkTableEntry liftPosition;
   private NetworkTableEntry intakeSetpoint;
 
-  /** Hopper Intake modes */
+  /** Hopper Intake modes of operation */
   public enum Intake {
-    IN(Subsystem.Hopper.INTAKE_IN),
-    OUT(Subsystem.Hopper.INTAKE_OUT),
-    HOLD(Subsystem.Hopper.INTAKE_HOLD),
-    NEUTRAL(0.0);
+    /** Hopper Intake pulling in mode */
+    IN(ControlMode.PercentOutput, Subsystem.Hopper.INTAKE_IN),
+    /** Hopper Intake pushing out mode */
+    OUT(ControlMode.PercentOutput, Subsystem.Hopper.INTAKE_OUT),
+    /** Hopper Intake hold mode */
+    HOLD(ControlMode.Current, Subsystem.Hopper.INTAKE_HOLD),
+    /** Hopper Intake motor output disabled */
+    NEUTRAL(ControlMode.Disabled, 0.0),
+    /** Hopper Intake manual control mode using NetworkTables input.
+     * <p> Used for testing the Intake */
+    TESTING(ControlMode.PercentOutput, 0.0);
 
-    private double speed;
+    private double output;
+    private ControlMode mode;
 
-    private Intake(double speed) {this.speed = speed;}
+    private Intake(ControlMode mode, double output) {
+      this.output = output;
+      this.mode = mode;
+    }
 
-    public double getValue() {return this.speed;}
+    /** Get the motor output value */
+    public double getValue() {return this.output;}
+    /** Get the motor control mode */
+    public ControlMode getMode() {return this.mode;}
   }
 
-  /** Hopper Lift positions */
+  /** Hopper Lift modes of operation */
   public enum Lift {
-    UP(Subsystem.Hopper.LIFT_UP),
-    DISPENSE(Subsystem.Hopper.LIFT_DISPENSE),
-    DOWN(Subsystem.Hopper.LIFT_DOWN),
-    NEUTRAL(0.0);
+    /** Hopper Lift p position */
+    UP(ControlMode.Position, Subsystem.Hopper.LIFT_UP),
+    /** Hopper Lift dispense position */
+    DISPENSE(ControlMode.Position, Subsystem.Hopper.LIFT_DISPENSE),
+    /** Hopper Lift down position */
+    DOWN(ControlMode.Position, Subsystem.Hopper.LIFT_DOWN),
+    /** Hopper Lift neutral mode, motor output disabled */
+    NEUTRAL(ControlMode.Disabled, 0.0),
+    /** Hopper Lift manual control mode using NetworkTables input.
+     * <p> Used for testing the Lift */
+    TESTING(ControlMode.Position, 0.0);
 
-    private double position;
-    
-    private Lift(double position) {this.position = position;}
-    
-    public double getValue() {return this.position;}
+    private double output;
+    private ControlMode mode;
+
+    private Lift(ControlMode mode, double output) {
+      this.output = output;
+      this.mode = mode;
+    }
+
+    /** Get the motor output value */
+    public double getValue() {return this.output;}
+    /** Get the motor control mode */
+    public ControlMode getMode() {return this.mode;}
   }
 
   /**
@@ -246,7 +274,7 @@ public class Hopper extends SubsystemBase {
   }
 
   /**
-   * Gets the current Intake setpoint in percent output (-1.0 to 1.0)
+   * Gets the current Intake setpoint in percent output [-1.0, 1.0]
    * from the NetworkTable
    */
   public double getIntakeSetpoint() {
@@ -267,25 +295,41 @@ public class Hopper extends SubsystemBase {
     liftController.setSelectedSensorPosition(sensorPosition);
   }
 
-  /** Sets the Lift setpoint to the specified operating position
+  /**
+   * Sets the Lift to the specified operating mode.
    * 
-   * @param setpoint desired Lift position
+   * <p> Will do nothing and print a warning to the console if the subsystem
+   * is disabled
    * 
-   * @see #setLift(double)
+   * @param mode desired Lift operating mode
    */
-  public void setLift(Lift setpoint) {
-    setLift(setpoint.getValue());
+  public void setLift(Lift mode) {
+    if (!isEnabled()) {
+      System.out.println("WARNING: Hopper subsystem is disabled");
+      return;
+    }
+    switch (mode) {
+      case TESTING:
+        liftController.set(ControlMode.Position, getLiftSetpoint());
+        break;
+      default:
+        if (mode.getMode() == ControlMode.PercentOutput) {
+          liftSetpoint.setDouble(mode.getValue());
+        }
+        liftController.set(mode.getMode(), mode.getValue());
+        break;
+    }
   }
 
   /**
-   * Sets the Lift setpoint to a specified position in ticks, and applies the
-   * new setpoint to the controller.
+   * Manually sets the Lift motor to the specified output between [-1, 1]
    * 
-   * @param setpoint desired encoder position to send to the controller
+   * @param percentOut desired motor output as a percent of maximum
+   * 
+   * @see #setLift(Lift)
    */
-  public void setLift(double setpoint) {
-    // Update the NetworkTables entry and set the new setpoint on the controller
-    liftSetpoint.setDouble(setpoint);
+  public void setLift(double percentOut) {
+    liftController.set(ControlMode.PercentOutput, percentOut);
   }
 
   /**
@@ -293,38 +337,52 @@ public class Hopper extends SubsystemBase {
    * 
    * <p> WARNING: Not yet implemented
    */
-  public void setLiftMeters(double setpoint) {
+  private void setLiftMeters(double setpoint) {
     // TODO: Implement set lift height in meters, issue #18
     System.out.println("Error in Hopper.setLiftSetpointMeters(double): Not yet implemented");
-  }
-
-  /** Sets the Intake to the specified operating mode */
-  public void setIntake(Intake mode) {
-    setIntake(mode.getValue());
-    // TODO: Implement current control, issue #31
-  }
-
-  /** Sets the Intake setpoint to the specified percent output (-1.0 to 1.0) */
-  public void setIntake(double percentOutput) {
-    intakeSetpoint.setDouble(percentOutput);
+    throw new IllegalAccessError();
   }
 
   /**
-   * Sets the Intake setpoint to the specified current output between 0.0
-   * and 40.0
+   * Sets the Intake to the specified operating mode
    * 
-   * @deprecated Not yet implemented, see issue #18
+   * @param mode desired Intake operating mode
    */
-  public void setIntakeCurrent(double currentOutput) {
-    throw new IllegalCallerException("Error in frc.robot.subsystems.Hopper.setIntakeCurrent(double): Not yet implemented");
+  public void setIntake(Intake mode) {
+    if (!isEnabled()) {
+      System.out.println("WARNING: Hopper subsystem is disabled");
+      return;
+    }
+    switch (mode) {
+      case TESTING:
+        intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
+        break;
+      default:
+        if (mode.getMode() == ControlMode.PercentOutput) {
+          liftSetpoint.setDouble(mode.getValue());
+        }
+        intakeController.set(mode.getMode(), mode.getValue());
+        break;
+    }
+  }
+
+  /**
+   * Manually sets the Intake motor to the specified output between [-1, 1]
+   * 
+   * @param percentOutput desired motor output as a percent of maximum
+   * 
+   * @see #setIntake(Intake)
+   */
+  public void setIntake(double percentOutput) {
+    intakeController.set(ControlMode.PercentOutput, percentOutput);
   }
 
   /**
    * Sets all Hopper motors to neutral
    */
   public void setAllNeutral() {
-    liftController.set(ControlMode.Disabled, 0);
-    intakeController.set(ControlMode.Disabled, 0);
+    setLift(Lift.NEUTRAL);
+    setIntake(Intake.NEUTRAL);
   }
 
   /**
@@ -346,6 +404,7 @@ public class Hopper extends SubsystemBase {
     } else {
       // Disable the subsystem by cancelling all commands and reverting back
       // to neutral
+      System.out.println("WARNING: Hopper subsystem has detected unsafe conditions and is automatically disabling itself");
       subsystemEnabled = enabled;
       setAllNeutral();
       cmd.cancel(cmd.requiring(this));
@@ -362,14 +421,6 @@ public class Hopper extends SubsystemBase {
     liftController.config_kI(0, liftI.getDouble(Subsystem.Hopper.LIFT_I));
     liftController.config_kD(0, liftD.getDouble(Subsystem.Hopper.LIFT_D));
     liftController.config_kF(0, liftF.getDouble(Subsystem.Hopper.LIFT_F));
-
-    // Pull the Lift and Intake setpoints from NetworkTable to the Lift and
-    // Intake controllers. If the robot is in the disabled state, switch to
-    // manual control with percent output
-    if (isEnabled()) {
-      liftController.set(ControlMode.Position, getLiftSetpoint());
-      intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
-    }
 
     // Push the current position from the Lift sensor to the NetworkTable
     liftPosition.setDouble(getLiftPositionTicks());

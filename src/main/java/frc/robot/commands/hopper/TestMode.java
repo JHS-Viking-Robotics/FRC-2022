@@ -5,7 +5,8 @@
 package frc.robot.commands.hopper;
 
 import frc.robot.subsystems.Hopper;
-
+import frc.robot.subsystems.Hopper.Intake;
+import frc.robot.subsystems.Hopper.Lift;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TestMode extends CommandBase {
@@ -33,10 +34,9 @@ public class TestMode extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // The Hopper updates motor output in its periodic call, and during testing
-    // the setpoint is controlled on the dashboard, so we don't need to run
-    // anything here unless the setup changes
-    return;
+    // Testing mode automatically grabs the desired output from the Dashboard
+    hopper.setLift(Lift.TESTING);
+    hopper.setIntake(Intake.TESTING);
   }
 
   // Called once the command ends or is interrupted.

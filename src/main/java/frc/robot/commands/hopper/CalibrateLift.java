@@ -45,7 +45,8 @@ public class CalibrateLift extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // Keep going down until the error gets higher than our increment
+    // Keep going down until the error gets higher than normal
+    // Note there is normally ~100 ticks of slop at the moment
     return hopper.getLiftPositionError() > 100;
   }
 }

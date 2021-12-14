@@ -5,6 +5,7 @@
 package frc.robot.commands.hopper.sequences.Dispense;
 
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Hopper.Intake;
 import frc.robot.subsystems.Hopper.Lift;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -21,14 +22,14 @@ public class Step1DispensePosition extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() { }
+  public void initialize() {
+    hopper.setIntake(Intake.HOLD);
+    hopper.setLift(Lift.DISPENSE);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    // Increment the Lift down until the error is more than double our increment
-    hopper.setLift(Lift.DISPENSE);
-  }
+  public void execute() { }
 
   // Called once the command ends or is interrupted.
   @Override

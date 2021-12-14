@@ -5,7 +5,8 @@
 package frc.robot.commands.hopper.sequences.Dispense;
 
 import frc.robot.subsystems.Hopper;
-
+import frc.robot.subsystems.Hopper.Intake;
+import frc.robot.subsystems.Hopper.Lift;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -25,7 +26,7 @@ public class Step2Unload extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    hopper.setLift(Hopper.Lift.DISPENSE);
+    hopper.setLift(Lift.DISPENSE);
     timer.reset();
     timer.start();
    }
@@ -33,7 +34,7 @@ public class Step2Unload extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hopper.setIntake(Hopper.Intake.OUT);
+    hopper.setIntake(Intake.OUT);
   }
 
   // Called once the command ends or is interrupted.

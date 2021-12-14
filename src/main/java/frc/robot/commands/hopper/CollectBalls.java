@@ -5,7 +5,8 @@
 package frc.robot.commands.hopper;
 
 import frc.robot.subsystems.Hopper;
-
+import frc.robot.subsystems.Hopper.Intake;
+import frc.robot.subsystems.Hopper.Lift;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CollectBalls extends CommandBase {
@@ -27,22 +28,22 @@ public class CollectBalls extends CommandBase {
   @Override
   public void initialize() {
     // Put the Lift on the floor on start
-    hopper.setLift(0.0);
+    hopper.setLift(Lift.DOWN);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // Run the Intake in continuously
-    hopper.setIntake(Hopper.Intake.IN);
+    hopper.setIntake(Intake.IN);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // Stop running the Intake and return the Lift to rest position
-    hopper.setIntake(Hopper.Intake.NEUTRAL);
-    hopper.setLift(Hopper.Lift.UP);
+    // Stop running the Intake and return the Lift to up position
+    hopper.setIntake(Intake.NEUTRAL);
+    hopper.setLift(Lift.UP);
   }
 
   // Returns true when the command should end.
