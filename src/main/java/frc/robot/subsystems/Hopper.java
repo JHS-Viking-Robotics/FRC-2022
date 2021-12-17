@@ -24,19 +24,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hopper extends SubsystemBase {
 
-  private final WPI_TalonSRX liftController;
-  private final WPI_VictorSPX intakeController;
+  private final WPI_TalonSRX liftController;    // Talon controller for Lift motor
+  private final WPI_VictorSPX intakeController; // Victor controller for Intake motor
 
-  private int safetyScore;           // Current safety score of subsystem [0, 100]
-  private boolean subsystemEnabled;  // Is the subsystem currently enabled
+  private int safetyScore;          // Current safety score of subsystem [0, 100]
+  private boolean subsystemEnabled; // Is the subsystem currently enabled
 
-  private NetworkTableEntry liftP;
-  private NetworkTableEntry liftI;
-  private NetworkTableEntry liftD;
-  private NetworkTableEntry liftF;
-  private NetworkTableEntry liftSetpoint;
-  private NetworkTableEntry liftPosition;
-  private NetworkTableEntry intakeSetpoint;
+  private NetworkTableEntry liftP; // kP for Lift Talon closed-loop PID
+  private NetworkTableEntry liftI; // kI for Lift Talon closed-loop PID
+  private NetworkTableEntry liftD; // kD for Lift Talon closed-loop PID
+  private NetworkTableEntry liftF; // kF for Lift Talon closed-loop PID
+  private NetworkTableEntry liftSetpoint;   // In test mode, desired Lift setpoint in Talon sensor ticks
+  private NetworkTableEntry liftPosition;   // NetTables dashboard indicator for Lift position in Talon sensor ticks
+  private NetworkTableEntry intakeSetpoint; // In test mode, desired Intake setpoint in PercentOutput [-1,1]
 
   /** Hopper Intake modes of operation */
   public enum Intake {
@@ -216,8 +216,10 @@ public class Hopper extends SubsystemBase {
 
   /**
    * Do some checks on the subsystem and update the safety rating accordingly.
+   * Disables the subsystem if the test fails, and re-enables it if the test
+   * passes 10 consecutive times.
    * 
-   * Will slowly return the rating to maximum if everything is working correctly.
+   * <p> Note that this test should be ran in {@link #periodic()} every cycle
    */
   private void performSafetyTest() {
     // Ensure the safety score is able to return to 100 by slowly increasing it
@@ -253,11 +255,13 @@ public class Hopper extends SubsystemBase {
   /**
    * Gets the current Lift position in meters from the Lift controller
    * <p>WARNING: Not yet implemented
+   * 
+   * @deprecated
    */
   public double getLiftPositionMeters() {
     // TODO: Implement issue #18
     System.out.println("Error in frc.robot.subsystems.Hopper.getLiftPositionMeters(): Feature not yet implemented");
-    return -1234.5678;
+    throw new IllegalCallerException();
   }
 
   /** Gets the current Lift error in sensor ticks from the Lift controller */
@@ -266,8 +270,7 @@ public class Hopper extends SubsystemBase {
   }
 
   /**
-   * Gets the current Lift setpoint in sensor ticks from the NetworkTable.
-   * Returns 0.0 if there is an error fetching the value.
+   * Gets the current Lift setpoint in sensor ticks from the NetworkTable
    */
   public double getLiftSetpoint() {
     return liftSetpoint.getDouble(0.0);

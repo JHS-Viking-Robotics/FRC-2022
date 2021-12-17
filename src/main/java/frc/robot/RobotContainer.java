@@ -34,6 +34,7 @@ public class RobotContainer {
   private final Step2Unload m_hopperDispenseUnload;
   private final CalibrateLift m_hopperCalibrate;
   private final Manual m_hopperManual;
+  private final TestMode m_hopperTestMode;
   private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -59,6 +60,7 @@ public class RobotContainer {
         () -> m_driveController.getBumper(Hand.kLeft),
         () -> m_driveController.getBumper(Hand.kRight),
         () -> m_driveController.getY(Hand.kRight));
+    m_hopperTestMode = new TestMode(m_hopper);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -103,8 +105,9 @@ public class RobotContainer {
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_hopper);
 
-    // Add manual overrides to the Dashboard
+    // Add manual overrides and test mode toggles to the Dashboard
     SmartDashboard.putData("Hopper Manual Override", m_hopperManual);
+    SmartDashboard.putData("Hopper Test Mode", m_hopperTestMode);
 
     // Add command lists to each subsystem tab on the Shuffleboard
     /* NOTE: The following is not currently used, but is left here as a
@@ -115,6 +118,14 @@ public class RobotContainer {
         .withSize(4,4)
         .withProperties(Map.of("Label position", "HIDDEN"));
     */
+  }
+
+  /**
+   * Schedule any test commands. Should be called from {@link Robot#testInit()}
+   * after clearing all active commands
+   */
+  public void enableTestMode() {
+    m_hopperTestMode.schedule();
   }
 
   /**
