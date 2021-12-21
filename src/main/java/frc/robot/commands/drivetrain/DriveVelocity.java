@@ -38,7 +38,7 @@ public class DriveVelocity extends CommandBase {
   @Override
   public void execute() {
     // Drive with velocity PID from joystick
-    drivetrain.arcadeDriveVelocity(throttle.getAsDouble(), rotation.getAsDouble());
+    drivetrain.arcadeDriveVelocity(-throttle.getAsDouble(), rotation.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
