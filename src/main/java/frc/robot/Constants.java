@@ -48,11 +48,11 @@ public final class Constants {
       /** Right side Talons are inverted */
       public final static boolean RIGHT_CONTROLLER_INVERTED = true;
       /** Left side sensor is inverted */
-      public final static boolean LEFT_SENSOR_INVERTED = true;
+      public final static boolean LEFT_SENSOR_INVERTED = false;
       /** Right side sensor is inverted */
-      public final static boolean RIGHT_SENSOR_INVERTED = true;
+      public final static boolean RIGHT_SENSOR_INVERTED = false;
       /** P constant for Talon onboard PID control */
-      public final static double P = 10.0;
+      public final static double P = 1.0;
       /** I constant for Talon onboard PID control */
       public final static double I = 0.0;
       /** D constant for Talon onboard PID control */

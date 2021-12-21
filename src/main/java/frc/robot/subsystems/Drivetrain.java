@@ -28,17 +28,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-  private final WPI_TalonSRX leftMain;
-  private final WPI_VictorSPX leftFollow;
-  private final WPI_TalonSRX rightMain;
-  private final WPI_VictorSPX rightFollow;
+  private final WPI_TalonSRX leftMain;     // Talon controller for left side primary motor
+  private final WPI_VictorSPX leftFollow;  // Victor controller for left side follower motor
+  private final WPI_TalonSRX rightMain;    // Talon controller for right side primary motor
+  private final WPI_VictorSPX rightFollow; // Victor controller for right side follower motor
+
   private final DifferentialDrive driveDifferential;
   private final DifferentialDriveKinematics driveKinematics;
+  private NetworkTableEntry leftDistance;  // NetworkTables odometer for left side sensors
+  private NetworkTableEntry rightDistance; // NetworkTables odometer for right side sensors
 
-  private NetworkTableEntry driveP;
-  private NetworkTableEntry driveI;
-  private NetworkTableEntry driveD;
-  private NetworkTableEntry driveF;
+  private NetworkTableEntry driveP; // kP for Talon closed-loop PID
+  private NetworkTableEntry driveI; // kI for Talon closed-loop PID
+  private NetworkTableEntry driveD; // kD for Talon closed-loop PID
+  private NetworkTableEntry driveF; // kF for Talon closed-loop PID
 
   /**
    * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
@@ -105,6 +108,13 @@ public class Drivetrain extends SubsystemBase {
         .withProperties(Map.of("Label position", "LEFT"))
         .withPosition(3, 0)
         .withSize(1, 2);
+    ShuffleboardLayout shuffleDistanceLayout = shuffleDrivetrainTab
+        .getLayout("Odometer (m)", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Label position", "BOTTOM"))
+        .withProperties(Map.of("Number of columns", 2))
+        .withProperties(Map.of("Number of rows", 1))
+        .withPosition(0, 3)
+        .withSize(2, 1);
 
     // Add drivetrain objects to tab
     shuffleDrivetrainTab
@@ -129,16 +139,26 @@ public class Drivetrain extends SubsystemBase {
         .add("F", Subsystem.Drivetrain.F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
+
+    // Set up the encoder indicators
+    leftDistance = shuffleDistanceLayout
+        .add("Left", 0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    rightDistance = shuffleDistanceLayout
+        .add("Right", 0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
   }
 
-  /** Get the left encoder total distance travelled in meters*/
+  /** Get the left encoder total distance travelled in meters */
   public double getLeftDistance() {
     // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
     return leftMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
-  /** Get the right encoder total distance travelled in meters*/
+  /** Get the right encoder total distance travelled in meters */
   public double getRightDistance() {
     // Get the quadrature encoder position in ticks (4096 ticks/rotation)
     // Convert from raw ticks and return distance in meters
@@ -157,12 +177,12 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setSelectedSensorPosition(0);
   }
 
-  /** 
-   * Synchronizes member variables and motor controller values with those
-   * in NetworkTables
+  /**
+   * Update the PIDF configuration for both encoders from the NetworkTables values
+   * configured on the Shuffleboard
    */
   public void syncNetworkTables() {
-    // Pull the current values for the Lift PIDF controller
+    // Push Drivetrain PIDF constants from NetworkTables to the controllers
     leftMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
     leftMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
     leftMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
@@ -171,31 +191,10 @@ public class Drivetrain extends SubsystemBase {
     rightMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
     rightMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
     rightMain.config_kF(0, driveF.getDouble(Subsystem.Drivetrain.F));
-  }
 
-  /** Updates the PIDF configuration for both encoders by writing to the
-   * NetworkTables entry.
-   * 
-   * <p>Note that the values will only be applied after the
-   * next {@link #syncNetworkTables() NetworkTables synchronization} is ran
-   * during the next PeriodicTask
-   * 
-   * @param P constant
-   * @param I constant
-   * @param D constant
-   * @param F constant
-  */
-  public void setPIDF(double P, double I, double D, double F) {
-    // Manually update the PIDF values in NetworkTables
-    boolean a = !driveP.setDouble(P);
-    boolean b = !driveI.setDouble(I);
-    boolean c = !driveD.setDouble(D);
-    boolean d = !driveF.setDouble(F);
-
-    // Print an error message if any of the updates failed
-    String errorMsg = "Error in Drivetrain.setPID(double,double,double,double):"
-    + " Entry already exists with different type";
-    if (a||b||c||d) {System.out.println(errorMsg);}
+    // Push the current potition data from the sensors to the NetworkTables
+    leftDistance.setDouble(getLeftDistance());
+    rightDistance.setDouble(getRightDistance());
   }
 
   /** Arcade drive using percent output to the motor controllers */
@@ -208,8 +207,7 @@ public class Drivetrain extends SubsystemBase {
     // Check our input parameters
     if (   (throttle < -1.0 || 1.0 < throttle)
         || (rotation < -1.0 || 1.0 < rotation)) {
-      System.out.println("ERROR: In Drivetrain.ardadeDriveVelocity(), throttle "
-          + "and rotation must be between -1.0 and 1.0");
+      throw new IllegalArgumentException("Throttle and rotation must be [-1,1]");
     }
 
     // Convert joystick input to left and right motor output.
