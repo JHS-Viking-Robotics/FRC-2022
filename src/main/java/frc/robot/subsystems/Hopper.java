@@ -232,19 +232,19 @@ public class Hopper extends SubsystemBase {
     // Run checks on the motors to ensure they are running safely. Note that
     // the score should be decreased by 1 extra unit to compensate for this
     // method trying to return the score to maximum
-    if (liftController.getStatorCurrent() > 10.0) {
-      changeSafetyScore(-2);
+    if (liftController.getStatorCurrent() > 5.0) {
+      changeSafetyScore(-6);
     } if (getLiftPositionError() > maxRangeMotion) {
+      changeSafetyScore(-101);
+    } if (getLiftPositionTicks() > Lift.UP.getValue() + 50) {
+      changeSafetyScore(-21);
+    } if (getLiftPositionTicks() < Lift.DOWN.getValue() - 50) {
       changeSafetyScore(-21);
     }
 
     // Disable the subsystem if we are not operating safely, otherwise check
     // the dashboard button to see if we are disabled there
-    if (safetyScore < 10) {
-      setSubsystemEnabled(false);
-    } else {
-      setSubsystemEnabled(isEnabled());
-    }
+    setSubsystemEnabled(safetyScore > 25);
   }
 
   /** Gets the current Lift position in sensor ticks from the Lift controller */
