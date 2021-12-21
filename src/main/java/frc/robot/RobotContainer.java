@@ -4,9 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.commands.DriveStandard;
-import frc.robot.commands.DriveVelocity;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.commands.drivetrain.*;
+import frc.robot.commands.hopper.*;
+import frc.robot.commands.hopper.sequences.Dispense.*;
+import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -25,15 +26,22 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // Define robot subsystems, commands, input devices, and buttons
   private final Drivetrain m_drivetrain;
-  private final Command m_driveStandard;
-  private final Command m_driveVelocity;
+  private final Hopper m_hopper;
+  private final DriveStandard m_driveStandard;
+  private final DriveVelocity m_driveVelocity;
+  private final CollectBalls m_hopperCollectBalls;
+  private final Step1DispensePosition m_hopperDispensePosition;
+  private final Step2Unload m_hopperDispenseUnload;
+  private final CalibrateLift m_hopperCalibrate;
+  private final Manual m_hopperManual;
+  private final TestMode m_hopperTestMode;
   private final XboxController m_driveController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
     // Instantiate robot subsystems, commands, input devices, and buttons
     m_drivetrain = new Drivetrain();
+    m_hopper = new Hopper();
     m_driveController = new XboxController(Constants.Joystick.DRIVER);
     m_driveStandard = new DriveStandard(
         m_drivetrain,
@@ -43,7 +51,17 @@ public class RobotContainer {
         m_drivetrain,
         () -> m_driveController.getY(Hand.kLeft),
         () -> m_driveController.getX(Hand.kLeft));
-      
+    m_hopperCollectBalls = new CollectBalls(m_hopper);
+    m_hopperDispensePosition = new Step1DispensePosition(m_hopper);
+    m_hopperDispenseUnload = new Step2Unload(m_hopper);
+    m_hopperCalibrate = new CalibrateLift(m_hopper);
+    m_hopperManual = new Manual(
+        m_hopper,
+        () -> m_driveController.getBumper(Hand.kLeft),
+        () -> m_driveController.getBumper(Hand.kRight),
+        () -> m_driveController.getY(Hand.kRight));
+    m_hopperTestMode = new TestMode(m_hopper);
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -61,8 +79,16 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driveController, Button.kA.value)
+    new JoystickButton(m_driveController, Button.kBumperRight.value)
         .whenHeld(m_driveVelocity);
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenHeld(m_hopperDispensePosition);
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenReleased(m_hopperDispenseUnload);
+    new JoystickButton(m_driveController, Button.kA.value)
+        .whenHeld(m_hopperCollectBalls);
+    new JoystickButton(m_driveController, Button.kStart.value)
+        .whenPressed(m_hopperCalibrate, false);
   }
 
   /**
@@ -77,6 +103,11 @@ public class RobotContainer {
     // Add subsystems and command scheduler to the default tab
     SmartDashboard.putData(CommandScheduler.getInstance());
     SmartDashboard.putData(m_drivetrain);
+    SmartDashboard.putData(m_hopper);
+
+    // Add manual overrides and test mode toggles to the Dashboard
+    SmartDashboard.putData("Hopper Manual Override", m_hopperManual);
+    SmartDashboard.putData("Hopper Test Mode", m_hopperTestMode);
 
     // Add command lists to each subsystem tab on the Shuffleboard
     /* NOTE: The following is not currently used, but is left here as a
@@ -87,6 +118,14 @@ public class RobotContainer {
         .withSize(4,4)
         .withProperties(Map.of("Label position", "HIDDEN"));
     */
+  }
+
+  /**
+   * Schedule any test commands. Should be called from {@link Robot#testInit()}
+   * after clearing all active commands
+   */
+  public void enableTestMode() {
+    m_hopperTestMode.schedule();
   }
 
   /**

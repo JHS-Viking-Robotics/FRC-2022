@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.Chassis;
-import frc.robot.Constants.Talon;
+import frc.robot.Constants.Subsystem;
 
 import java.util.Map;
 
@@ -39,8 +39,6 @@ public class Drivetrain extends SubsystemBase {
   private NetworkTableEntry driveI;
   private NetworkTableEntry driveD;
   private NetworkTableEntry driveF;
-  private NetworkTableEntry driveLeftSetpoint;
-  private NetworkTableEntry driveRightSetpoint;
 
   /**
    * Creates a new Drivetrain subsystem with 2 Talon and 2 Victor motor
@@ -48,10 +46,10 @@ public class Drivetrain extends SubsystemBase {
    */
   public Drivetrain() {
     // Initialize new Talon controllers and configure them
-    leftMain = new WPI_TalonSRX(Talon.Drivetrain.LEFT_MAIN);
-    rightMain = new WPI_TalonSRX(Talon.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_VictorSPX(Talon.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_VictorSPX(Talon.Drivetrain.RIGHT_FOLLOW);
+    leftMain = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_MAIN);
+    rightMain = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_MAIN);
+    leftFollow = new WPI_VictorSPX(Subsystem.Drivetrain.LEFT_FOLLOW);
+    rightFollow = new WPI_VictorSPX(Subsystem.Drivetrain.RIGHT_FOLLOW);
     configureTalons();
     
     // Configure differential drive, kinematics, and odometry
@@ -66,18 +64,18 @@ public class Drivetrain extends SubsystemBase {
   /** Configures the Talon motor controllers and safety settings */
   private void configureTalons() {
     // Set Talon inversion, encoder phase and type, and set followers
-    leftMain.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    leftMain.setInverted(Subsystem.Drivetrain.LEFT_CONTROLLER_INVERTED);
     leftMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    leftMain.setSensorPhase(true);
+    leftMain.setSensorPhase(Subsystem.Drivetrain.LEFT_SENSOR_INVERTED);
 
-    rightMain.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    rightMain.setInverted(Subsystem.Drivetrain.RIGHT_CONTROLLER_INVERTED);
     rightMain.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    rightMain.setSensorPhase(true);
+    rightMain.setSensorPhase(Subsystem.Drivetrain.RIGHT_SENSOR_INVERTED);
 
-    leftFollow.setInverted(Talon.Drivetrain.LEFT_INVERTED);
+    leftFollow.setInverted(Subsystem.Drivetrain.LEFT_CONTROLLER_INVERTED);
     leftFollow.follow(leftMain);
 
-    rightFollow.setInverted(Talon.Drivetrain.RIGHT_INVERTED);
+    rightFollow.setInverted(Subsystem.Drivetrain.RIGHT_CONTROLLER_INVERTED);
     rightFollow.follow(rightMain);
 
     // Set Talon safety parameters. Note that Victor controllers do not have
@@ -116,19 +114,19 @@ public class Drivetrain extends SubsystemBase {
 
     // Configure PID list widget, and set default values from Constants
     driveP = shufflePIDLayout
-        .add("P", Talon.Drivetrain.P)
+        .add("P", Subsystem.Drivetrain.P)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveI = shufflePIDLayout
-        .add("I", Talon.Drivetrain.I)
+        .add("I", Subsystem.Drivetrain.I)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveD = shufflePIDLayout
-        .add("D", Talon.Drivetrain.D)
+        .add("D", Subsystem.Drivetrain.D)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveF = shufflePIDLayout
-        .add("F", Talon.Drivetrain.F)
+        .add("F", Subsystem.Drivetrain.F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
   }
@@ -159,35 +157,35 @@ public class Drivetrain extends SubsystemBase {
     rightMain.setSelectedSensorPosition(0);
   }
 
-  /**
-   * Update the PIDF configuration for both encoders from the NetworkTables values
-   * configured on the Shuffleboard
-   * 
-   * @see Drivetrain#setPIDF(double, double, double, double)
+  /** 
+   * Synchronizes member variables and motor controller values with those
+   * in NetworkTables
    */
-  public void setPIDF() {
-    // Configure the Talon closed-loop PID values from the Shuffleboard
-    // NetworkTables values
-    leftMain.config_kP(0, driveP.getDouble(Talon.Drivetrain.P));
-    leftMain.config_kI(0, driveI.getDouble(Talon.Drivetrain.I));
-    leftMain.config_kD(0, driveD.getDouble(Talon.Drivetrain.D));
-    leftMain.config_kF(0, driveF.getDouble(Talon.Drivetrain.F));
-    rightMain.config_kP(0, driveP.getDouble(Talon.Drivetrain.P));
-    rightMain.config_kI(0, driveI.getDouble(Talon.Drivetrain.I));
-    rightMain.config_kD(0, driveD.getDouble(Talon.Drivetrain.D));
-    rightMain.config_kF(0, driveF.getDouble(Talon.Drivetrain.F));
+  public void syncNetworkTables() {
+    // Pull the current values for the Lift PIDF controller
+    leftMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
+    leftMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
+    leftMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
+    leftMain.config_kF(0, driveF.getDouble(Subsystem.Drivetrain.F));
+    rightMain.config_kP(0, driveP.getDouble(Subsystem.Drivetrain.P));
+    rightMain.config_kI(0, driveI.getDouble(Subsystem.Drivetrain.I));
+    rightMain.config_kD(0, driveD.getDouble(Subsystem.Drivetrain.D));
+    rightMain.config_kF(0, driveF.getDouble(Subsystem.Drivetrain.F));
   }
 
   /** Updates the PIDF configuration for both encoders by writing to the
-   * NetworkTables entry. Note that the values will only be applied after the
-   * next PeriodicTask cycle is done
+   * NetworkTables entry.
+   * 
+   * <p>Note that the values will only be applied after the
+   * next {@link #syncNetworkTables() NetworkTables synchronization} is ran
+   * during the next PeriodicTask
    * 
    * @param P constant
    * @param I constant
    * @param D constant
    * @param F constant
   */
-  public void setPID(double P, double I, double D, double F) {
+  public void setPIDF(double P, double I, double D, double F) {
     // Manually update the PIDF values in NetworkTables
     boolean a = !driveP.setDouble(P);
     boolean b = !driveI.setDouble(I);
@@ -219,13 +217,13 @@ public class Drivetrain extends SubsystemBase {
     // can only drive forwards/backwards, not left/right
     DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
         new ChassisSpeeds(
-            throttle * Talon.Drivetrain.MAX_VELOCITY,
+            throttle * Subsystem.Drivetrain.MAX_VELOCITY,
             0,
-            rotation * Talon.Drivetrain.MAX_ROTATION));
+            rotation * Subsystem.Drivetrain.MAX_ROTATION));
 
     // Print out debugging information
-    System.out.println("Got:    " + throttle * Talon.Drivetrain.MAX_VELOCITY
-        + "    " + rotation * Talon.Drivetrain.MAX_ROTATION);
+    System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY
+        + "    " + rotation * Subsystem.Drivetrain.MAX_ROTATION);
     System.out.println("Set:    "
         + (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
         + "    " + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
@@ -242,11 +240,12 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setPIDF();
+    syncNetworkTables();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    syncNetworkTables();
   }
 }

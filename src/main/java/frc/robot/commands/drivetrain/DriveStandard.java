@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.drivetrain;
 
 import frc.robot.subsystems.Drivetrain;
 import java.util.function.DoubleSupplier;
@@ -18,7 +18,7 @@ public class DriveStandard extends CommandBase {
   /**
    * Creates a new DriveStandard.
    *
-   * @param subsystem The drivetrain subsystem used by this command.
+   * @param subsystem The {@link Drivetrain} subsystem used by this command
    * @param throttle The Supplier from a joystick for the throttle (through x axis)
    * @param rotation The Supplier from a joystick for the rotation (about z axis)
    */
