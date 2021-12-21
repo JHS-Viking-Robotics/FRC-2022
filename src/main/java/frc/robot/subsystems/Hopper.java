@@ -401,16 +401,18 @@ public class Hopper extends SubsystemBase {
     CommandScheduler cmd = CommandScheduler.getInstance();
     subsystemEnabled = enabled;
     if (enabled) {
-      // Re-enable the subsystem and clear any running commands
+      // Re-enable the subsystem. Don't clear running commands, so we don't
+      // interrupt Manual mode
       subsystemEnabled = enabled;
-      cmd.cancel(cmd.requiring(this));
     } else {
       // Disable the subsystem by cancelling all commands and reverting back
       // to neutral
       System.out.println("WARNING: Hopper subsystem has detected unsafe conditions and is automatically disabling itself");
       subsystemEnabled = enabled;
-      setAllNeutral();
       cmd.cancel(cmd.requiring(this));
+      // Note that we call setAllNeutral after cancelling active commands. If
+      // Command.end() gets called, it could update the motors again.
+      setAllNeutral();
     }
   }
 
