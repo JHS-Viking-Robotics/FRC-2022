@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,27 +16,20 @@ package frc.robot;
  */
 public final class Constants {
 
-  /** Math and conversion constants to 6 significant figures.
-   * 
-   * <p>NOTE: The library {@link edu.wpi.first.wpiutil.math.MathUtil WPI MathUtil Class} contains non-static
-   * methods for several of these conversions, but these static constants are
-   * available for the constants chassis measurements in
-   * frc.robot.Constants.Chassis
-  */
-  public final class Math {
+  /** Math and conversion constants to 6 significant figures */
+  public final static class Math {
     /** The mathematical constant pi */
     public final static double PI = 3.14159;
     /** Multiply to get from inches to meters */
     public final static double INCHES_2_METERS = 0.0254000;
     /** Multiply to get from meters to inches */
     public final static double METERS_2_INCHES = 39.3701;
-
   }
   /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
-  public final class Subsystem {
+  public final static class Subsystem {
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
-    public final class Drivetrain {
+    public final static class Drivetrain {
       /** CAN Bus ID of primary left drive Talon */
       public final static int LEFT_MAIN_ID = 3;
       /** CAN Bus ID of follower left drive Talon or Victor */
@@ -82,6 +77,9 @@ public final class Constants {
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
       public final static double A = 0.0;
+      /** DifferentialDriveKinematics object for the Drivetrain */
+      public final static DifferentialDriveKinematics KINEMATICS
+          = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */

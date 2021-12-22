@@ -40,7 +40,6 @@ public class Drivetrain extends SubsystemBase {
   private final Gyro driveGyro;            // Gyroscope for determining robot heading
 
   private final DifferentialDrive driveDifferential;
-  private final DifferentialDriveKinematics driveKinematics;
   private final DifferentialDriveOdometry driveOdometry;
   private NetworkTableEntry leftDistance;  // NetworkTables odometer for left side sensors
   private NetworkTableEntry rightDistance; // NetworkTables odometer for right side sensors
@@ -67,7 +66,6 @@ public class Drivetrain extends SubsystemBase {
     // Configure differential drive, kinematics, and odometry
     driveDifferential = new DifferentialDrive(leftMain, rightMain);
     driveDifferential.setRightSideInverted(false);
-    driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
     driveOdometry = new DifferentialDriveOdometry(getGyroRotation());
     
 
@@ -204,6 +202,11 @@ public class Drivetrain extends SubsystemBase {
     return (getLeftVelocity() + getRightDistance()) / 2.0;
   }
 
+  /** Get the current WheelSpeeds of the robot */
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(getLeftVelocity(), getRightVelocity());
+  }
+
   /** Get the current rotational heading from the Gyroscope in degrees [-180, 180] */
   public double getGyroAngle() {
     return driveGyro.getRotation2d().getDegrees();
@@ -290,6 +293,12 @@ public class Drivetrain extends SubsystemBase {
     driveDifferential.arcadeDrive(throttle, rotation);
   }
 
+  /** Tank drive using voltage output to the motors */
+  public void tankDriveVoltage(double left, double right) {
+    leftMain.setVoltage(left);
+    rightMain.setVoltage(right);
+  }
+
   /** Arcade drive using velocity control onboard the motor controllers */
   public void arcadeDriveVelocity(double throttle, double rotation) {
     // Check our input parameters
@@ -301,11 +310,12 @@ public class Drivetrain extends SubsystemBase {
     // Convert joystick input to left and right motor output.
     // Note that the ChassisSpeeds constructor vy arguement is 0 as the robot
     // can only drive forwards/backwards, not left/right
-    DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
-        new ChassisSpeeds(
-            throttle * Subsystem.Drivetrain.MAX_VELOCITY,
-            0,
-            rotation * Subsystem.Drivetrain.MAX_ROTATION));
+    DifferentialDriveWheelSpeeds wheelSpeeds
+        = Subsystem.Drivetrain.KINEMATICS.toWheelSpeeds(
+            new ChassisSpeeds(
+                throttle * Subsystem.Drivetrain.MAX_VELOCITY,
+                0,
+                rotation * Subsystem.Drivetrain.MAX_ROTATION));
 
     // Print out debugging information
     System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY
