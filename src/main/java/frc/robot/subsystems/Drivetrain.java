@@ -15,9 +15,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -32,9 +37,11 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_VictorSPX leftFollow;  // Victor controller for left side follower motor
   private final WPI_TalonSRX rightMain;    // Talon controller for right side primary motor
   private final WPI_VictorSPX rightFollow; // Victor controller for right side follower motor
+  private final Gyro driveGyro;            // Gyroscope for determining robot heading
 
   private final DifferentialDrive driveDifferential;
   private final DifferentialDriveKinematics driveKinematics;
+  private final DifferentialDriveOdometry driveOdometry;
   private NetworkTableEntry leftDistance;  // NetworkTables odometer for left side sensors
   private NetworkTableEntry rightDistance; // NetworkTables odometer for right side sensors
 
@@ -49,16 +56,20 @@ public class Drivetrain extends SubsystemBase {
    */
   public Drivetrain() {
     // Initialize new Talon controllers and configure them
-    leftMain = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_MAIN);
-    rightMain = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_MAIN);
-    leftFollow = new WPI_VictorSPX(Subsystem.Drivetrain.LEFT_FOLLOW);
-    rightFollow = new WPI_VictorSPX(Subsystem.Drivetrain.RIGHT_FOLLOW);
+    leftMain = new WPI_TalonSRX(Subsystem.Drivetrain.LEFT_MAIN_ID);
+    rightMain = new WPI_TalonSRX(Subsystem.Drivetrain.RIGHT_MAIN_ID);
+    leftFollow = new WPI_VictorSPX(Subsystem.Drivetrain.LEFT_FOLLOW_ID);
+    rightFollow = new WPI_VictorSPX(Subsystem.Drivetrain.RIGHT_FOLLOW_ID);
+    driveGyro = new ADXRS450_Gyro();
+    driveGyro.reset();
     configureTalons();
     
     // Configure differential drive, kinematics, and odometry
     driveDifferential = new DifferentialDrive(leftMain, rightMain);
     driveDifferential.setRightSideInverted(false);
     driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
+    driveOdometry = new DifferentialDriveOdometry(getGyroRotation());
+    
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
     configureShuffleboard();
@@ -158,6 +169,14 @@ public class Drivetrain extends SubsystemBase {
     return leftMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
+  /** Get the left encoder velocity in meters per second */
+  public double getLeftVelocity() {
+   // Get the quadrature encoder position in ticks per 100ms
+   // (4096 ticks/rotation). Then convert from raw ticks and return distance
+   // in meters
+    return leftMain.getSelectedSensorVelocity() * (1.0/10.0) * (Chassis.WHEEL_CIRCUM / 4096);
+  }
+
   /** Get the right encoder total distance travelled in meters */
   public double getRightDistance() {
     // Get the quadrature encoder position in ticks (4096 ticks/rotation)
@@ -165,16 +184,77 @@ public class Drivetrain extends SubsystemBase {
     return rightMain.getSelectedSensorPosition() * (Chassis.WHEEL_CIRCUM / 4096);
   }
 
+  /** Get the left encoder velocity in meters per second */
+  public double getRightVelocity() {
+    // Get the quadrature encoder position in ticks per 100ms
+    // (4096 ticks/rotation). Then convert from raw ticks and return distance
+    // in meters
+     return rightMain.getSelectedSensorVelocity() * (1.0/10.0) * (Chassis.WHEEL_CIRCUM / 4096);
+  }
+
   /** Get the average total distance travelled in meters from both encoders */
   public double getTotalDistance() {
     // Average the left and right encoder distances
-    return (getRightDistance() + getLeftDistance()) / 2;
+    return (getRightDistance() + getLeftDistance()) / 2.0;
   }
 
-  /** Reset the distance travelled for both encoders */
-  public void resetDistance() {
+  /** Get the average total encoder velocity in meters per second */
+  public double getTotalVelocity() {
+    // Average left and right velocities
+    return (getLeftVelocity() + getRightDistance()) / 2.0;
+  }
+
+  /** Get the current rotational heading from the Gyroscope in degrees [-180, 180] */
+  public double getGyroAngle() {
+    return driveGyro.getRotation2d().getDegrees();
+  }
+
+  /** Get the current rotational velocity in degrees per second */
+  public double getGyroVelocity() {
+    return driveGyro.getRate();
+  }
+
+  /** Get the current rotational heading from the Gyroscope as a Rotation2d */
+  public Rotation2d getGyroRotation() {
+    return driveGyro.getRotation2d();
+  }
+
+  /** Return the current estimated Pose2d of the robot */
+  public Pose2d getPose() {
+    return driveOdometry.getPoseMeters();
+  }
+
+  /** Reset the encoders to 0 */
+  public void resetEncoders() {
     leftMain.setSelectedSensorPosition(0);
     rightMain.setSelectedSensorPosition(0);
+  }
+
+  /** Reset the Gyroscope heading to 0. Note that this won't work correctly if
+   * the robot is moving, and the subsystem will refuse to perform the reset
+   * while moving
+   */
+  public void resetGyro() {
+    if (getLeftVelocity() != 0 || getRightVelocity() != 0) {
+      System.out.println("WARNING: Do not try to reset the gyroscope while the robot is moving");
+      return;
+    }
+    driveGyro.reset();
+  }
+
+  /**
+   * Reset the odometry model and the encoders
+   *
+   * @see #resetOdometry(Pose2d)
+   */
+  public void resetOdometry() {
+    resetOdometry(getPose());
+  }
+
+  /** Reset the odometry model to the specified Pose2d */
+  public void resetOdometry(Pose2d pose) {
+    resetEncoders();
+    driveOdometry.resetPosition(pose, getGyroRotation());
   }
 
   /**
@@ -195,6 +275,14 @@ public class Drivetrain extends SubsystemBase {
     // Push the current potition data from the sensors to the NetworkTables
     leftDistance.setDouble(getLeftDistance());
     rightDistance.setDouble(getRightDistance());
+  }
+
+  /**
+   * Arcade drive using voltage output to the motors [-12, 12]. Useful for
+   * trajectory following
+  */
+  public void arcadeDriveVoltage() {
+
   }
 
   /** Arcade drive using percent output to the motor controllers */
@@ -239,6 +327,10 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     syncNetworkTables();
+    driveOdometry.update(
+        getGyroRotation(),
+        getLeftDistance(),
+        getRightDistance());
   }
 
   @Override

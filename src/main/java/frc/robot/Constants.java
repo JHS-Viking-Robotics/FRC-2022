@@ -36,13 +36,13 @@ public final class Constants {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
     public final class Drivetrain {
       /** CAN Bus ID of primary left drive Talon */
-      public final static int LEFT_MAIN = 3;
+      public final static int LEFT_MAIN_ID = 3;
       /** CAN Bus ID of follower left drive Talon or Victor */
-      public final static int LEFT_FOLLOW = 53;
+      public final static int LEFT_FOLLOW_ID = 53;
       /** CAN Bus ID of primary right drive Talon */
-      public final static int RIGHT_MAIN = 1;
+      public final static int RIGHT_MAIN_ID = 1;
       /** CAN Bus ID of follower right drive Talon or Victor */
-      public final static int RIGHT_FOLLOW = 51;
+      public final static int RIGHT_FOLLOW_ID = 51;
       /** Left side Talons are inverted */
       public final static boolean LEFT_CONTROLLER_INVERTED = false;
       /** Right side Talons are inverted */
@@ -59,10 +59,29 @@ public final class Constants {
       public final static double D = 0.0;
       /** F constant for Talon onboard PID control */
       public final static double F = 0.0;
-      /** Maximum forward driving velocity in m/s */
-      public final static double MAX_VELOCITY = 0.25;
+      /** Maximum forward driving velocity in m/s (meters per second). Should
+       * be slightly lower than robot's maximum free speed */
+      public final static double MAX_VELOCITY = 2.0;
+      /** Maximum forward driving acceleration in m/s^2 (meters per second
+       * squared) */
+      public final static double MAX_ACCELERATION = 2.0;
       /** Maximum rotational velocity in rad/s */
       public final static double MAX_ROTATION = Math.PI/4.0;
+      /** kS constant with units V (volts) for Drivetrain motor
+       * characterization. See
+       * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
+       * section on motor characterization for more */
+      public final static double S = 0.0;
+      /** kV constant with units (Vs)/m (volt seconds per meter) for Drivetrain
+       * motor characterization. See
+       * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
+       * section on motor characterization for more */
+      public final static double V = 0.0;
+      /** kA constant with units (Vs^2)/m (volt seconds squared per meter) for
+       * Drivetrain motor characterization. See
+       * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
+       * section on motor characterization for more */
+      public final static double A = 0.0;
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
