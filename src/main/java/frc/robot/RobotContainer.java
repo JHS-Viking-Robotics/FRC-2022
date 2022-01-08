@@ -10,8 +10,12 @@ import frc.robot.commands.hopper.sequences.Dispense.*;
 import frc.robot.subsystems.*;
 import frc.robot.Constants.Subsystem;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -25,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -51,6 +56,8 @@ public class RobotContainer {
   private final Manual m_hopperManual;
   private final TestMode m_hopperTestMode;
   private final XboxController m_driveController;
+  private final String autonTrajectoryJSONPath;
+  private Trajectory autonTrajectory;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -80,6 +87,10 @@ public class RobotContainer {
 
     // Configure Shuffleboard
     configureShuffleboard();
+
+    // Configure the Autonomous trajectories and command selector
+    autonTrajectoryJSONPath = "auton/example.wpilib.json";
+    configureAutonomous();
   }
 
   /**
@@ -135,6 +146,21 @@ public class RobotContainer {
   }
 
   /**
+   * Configures the Autonomous trajectories and determines which command should
+   * be ran
+   */
+  private void configureAutonomous() {
+    // Open the desired Pathweaver trajectory for the auton period
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath()
+                                .resolve(autonTrajectoryJSONPath);
+      autonTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + autonTrajectoryJSONPath, ex.getStackTrace());
+    }
+  }
+
+  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
@@ -165,7 +191,8 @@ public class RobotContainer {
         new Pose2d(3.0, 0.0, new Rotation2d(0.0)),
         config);
 
-    // Generate the Ramsette Controller Command
+    // Generate the Ramsette Controller Command. To use an imported Pathweaver
+    // Trajectory in json format, replace trajectory with autonTrajectory below
     RamseteCommand command = new RamseteCommand(
         trajectory,
         m_drivetrain::getPose,
