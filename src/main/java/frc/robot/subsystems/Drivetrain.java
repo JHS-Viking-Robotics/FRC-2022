@@ -43,6 +43,9 @@ public class Drivetrain extends SubsystemBase {
   private final DifferentialDriveOdometry driveOdometry;
   private NetworkTableEntry leftDistance;  // NetworkTables odometer for left side sensors
   private NetworkTableEntry rightDistance; // NetworkTables odometer for right side sensors
+  private NetworkTableEntry leftVelocity;  // NetworkTables speedometer for left side sensors
+  private NetworkTableEntry rightVelocity; // NetworkTables speedometer for right side sensors
+  private NetworkTableEntry gyroAngle;     // NetworkTables gyro angle indicator for gyroscope
 
   private NetworkTableEntry driveP; // kP for Talon closed-loop PID
   private NetworkTableEntry driveI; // kI for Talon closed-loop PID
@@ -110,7 +113,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Configures the Shuffleboard dashboard "Drivetrain" tab */
   private void configureShuffleboard() {
-    // Create references to Drivetrain tab and PID layout
+    // Create references to Drivetrain tab and its various layouts
     ShuffleboardTab shuffleDrivetrainTab = Shuffleboard.getTab("Drivetrain");
     ShuffleboardLayout shufflePIDLayout = shuffleDrivetrainTab
         .getLayout("PID", BuiltInLayouts.kList)
@@ -124,12 +127,23 @@ public class Drivetrain extends SubsystemBase {
         .withProperties(Map.of("Number of rows", 1))
         .withPosition(0, 3)
         .withSize(2, 1);
+    ShuffleboardLayout shuffleVelocityLayout = shuffleDrivetrainTab
+        .getLayout("Speedometer (m/s)", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Label position", "BOTTOM"))
+        .withProperties(Map.of("Number of columns", 2))
+        .withProperties(Map.of("Number of rows", 1))
+        .withPosition(0, 4)
+        .withSize(2, 1);
 
     // Add drivetrain objects to tab
     shuffleDrivetrainTab
         .add("Differential Drivetrain", driveDifferential)
         .withPosition(0, 0)
         .withSize(3, 3);
+    shuffleDrivetrainTab
+        .add("Gyro Angle (degrees)", driveGyro)
+        .withPosition(0,5)
+        .withSize(1,1);
 
     // Configure PID list widget, and set default values from Constants
     driveP = shufflePIDLayout
@@ -157,6 +171,14 @@ public class Drivetrain extends SubsystemBase {
     rightDistance = shuffleDistanceLayout
         .add("Right", 0)
         .withWidget(BuiltInWidgets.kTextView)
+        .getEntry();
+    leftVelocity = shuffleDistanceLayout
+        .add("Left", 0)
+        .withWidget(BuiltInWidgets.kDial)
+        .getEntry();
+    rightVelocity = shuffleDistanceLayout
+        .add("Right", 0)
+        .withWidget(BuiltInWidgets.kDial)
         .getEntry();
   }
 
@@ -278,14 +300,8 @@ public class Drivetrain extends SubsystemBase {
     // Push the current potition data from the sensors to the NetworkTables
     leftDistance.setDouble(getLeftDistance());
     rightDistance.setDouble(getRightDistance());
-  }
-
-  /**
-   * Arcade drive using voltage output to the motors [-12, 12]. Useful for
-   * trajectory following
-  */
-  public void arcadeDriveVoltage() {
-
+    leftVelocity.setDouble(getLeftVelocity());
+    rightVelocity.setDouble(getRightVelocity());
   }
 
   /** Arcade drive using percent output to the motor controllers */
