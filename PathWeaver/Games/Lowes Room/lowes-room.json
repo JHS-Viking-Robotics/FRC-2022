@@ -1,0 +1,11 @@
+{
+   "game": "Lowes Room",
+   "field-image": "field-image.png",
+   "field-corners": {
+      "top-left": [13, 13],
+      "bottom-right": [956, 956]
+   },
+   "field-size": [4, 4],
+   "field-unit": "meters"
+}
+
