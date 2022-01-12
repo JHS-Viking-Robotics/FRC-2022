@@ -66,17 +66,17 @@ public final class Constants {
        * characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double S = 0.0;
+      public final static double S = 1.48;
       /** kV constant with units (Vs)/m (volt seconds per meter) for Drivetrain
        * motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double V = 0.0;
+      public final static double V = 2.93;
       /** kA constant with units (Vs^2)/m (volt seconds squared per meter) for
        * Drivetrain motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double A = 0.0;
+      public final static double A = 0.0313;
       /** DifferentialDriveKinematics object for the Drivetrain */
       public final static DifferentialDriveKinematics KINEMATICS
           = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
