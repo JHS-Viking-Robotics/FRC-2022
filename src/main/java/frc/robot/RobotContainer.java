@@ -28,7 +28,6 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain;
   private final Hopper m_hopper;
   private final DriveStandard m_driveStandard;
-  private final DriveVelocity m_driveVelocity;
   private final CollectBalls m_hopperCollectBalls;
   private final Step1DispensePosition m_hopperDispensePosition;
   private final Step2Unload m_hopperDispenseUnload;
@@ -44,10 +43,6 @@ public class RobotContainer {
     m_hopper = new Hopper();
     m_driveController = new XboxController(Constants.Joystick.DRIVER);
     m_driveStandard = new DriveStandard(
-        m_drivetrain,
-        () -> m_driveController.getY(Hand.kLeft),
-        () -> m_driveController.getX(Hand.kLeft));
-    m_driveVelocity = new DriveVelocity(
         m_drivetrain,
         () -> m_driveController.getY(Hand.kLeft),
         () -> m_driveController.getX(Hand.kLeft));
@@ -79,8 +74,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driveController, Button.kBumperRight.value)
-        .whenHeld(m_driveVelocity);
     new JoystickButton(m_driveController, Button.kY.value)
         .whenHeld(m_hopperDispensePosition);
     new JoystickButton(m_driveController, Button.kY.value)
@@ -108,16 +101,6 @@ public class RobotContainer {
     // Add manual overrides and test mode toggles to the Dashboard
     SmartDashboard.putData("Hopper Manual Override", m_hopperManual);
     SmartDashboard.putData("Hopper Test Mode", m_hopperTestMode);
-
-    // Add command lists to each subsystem tab on the Shuffleboard
-    /* NOTE: The following is not currently used, but is left here as a
-             reference.
-
-    ShuffleboardLayout shuffleDrivetrainCommandLayout = Shuffleboard.getTab("Drivetrain")
-        .getLayout("Commands", BuiltInLayouts.kList)
-        .withSize(4,4)
-        .withProperties(Map.of("Label position", "HIDDEN"));
-    */
   }
 
   /**

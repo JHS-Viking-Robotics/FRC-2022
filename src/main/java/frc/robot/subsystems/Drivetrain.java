@@ -9,16 +9,13 @@ import frc.robot.Constants.Subsystem;
 
 import java.util.Map;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -34,7 +31,6 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_VictorSPX rightFollow; // Victor controller for right side follower motor
 
   private final DifferentialDrive driveDifferential;
-  private final DifferentialDriveKinematics driveKinematics;
   private NetworkTableEntry leftDistance;  // NetworkTables odometer for left side sensors
   private NetworkTableEntry rightDistance; // NetworkTables odometer for right side sensors
 
@@ -58,7 +54,6 @@ public class Drivetrain extends SubsystemBase {
     // Configure differential drive, kinematics, and odometry
     driveDifferential = new DifferentialDrive(leftMain, rightMain);
     driveDifferential.setRightSideInverted(false);
-    driveKinematics = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
 
     // Configure Shuffleboard dashboard tab and NetworkTable entries
     configureShuffleboard();
@@ -200,39 +195,6 @@ public class Drivetrain extends SubsystemBase {
   /** Arcade drive using percent output to the motor controllers */
   public void arcadeDrivePercentOutput(double throttle, double rotation) {
     driveDifferential.arcadeDrive(throttle, rotation);
-  }
-
-  /** Arcade drive using velocity control onboard the motor controllers */
-  public void arcadeDriveVelocity(double throttle, double rotation) {
-    // Check our input parameters
-    if (   (throttle < -1.0 || 1.0 < throttle)
-        || (rotation < -1.0 || 1.0 < rotation)) {
-      throw new IllegalArgumentException("Throttle and rotation must be [-1,1]");
-    }
-
-    // Convert joystick input to left and right motor output.
-    // Note that the ChassisSpeeds constructor vy arguement is 0 as the robot
-    // can only drive forwards/backwards, not left/right
-    DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(
-        new ChassisSpeeds(
-            throttle * Subsystem.Drivetrain.MAX_VELOCITY,
-            0,
-            rotation * Subsystem.Drivetrain.MAX_ROTATION));
-
-    // Print out debugging information
-    System.out.println("Got:    " + throttle * Subsystem.Drivetrain.MAX_VELOCITY
-        + "    " + rotation * Subsystem.Drivetrain.MAX_ROTATION);
-    System.out.println("Set:    "
-        + (wheelSpeeds.leftMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM))
-        + "    " + (wheelSpeeds.rightMetersPerSecond * (1.0/10.0) * (4096.0/Chassis.WHEEL_CIRCUM)) );
-
-    // Convert from m/s and set motor output to velocity in ticks/100ms
-    leftMain.set(
-      ControlMode.Velocity,
-        wheelSpeeds.leftMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
-    rightMain.set(
-        ControlMode.Velocity,
-        wheelSpeeds.rightMetersPerSecond * (1.0/100.0) * (4096.0/Chassis.WHEEL_CIRCUM));
   }
 
   @Override

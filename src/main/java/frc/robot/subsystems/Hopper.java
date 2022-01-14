@@ -252,18 +252,6 @@ public class Hopper extends SubsystemBase {
     return liftController.getSelectedSensorPosition();
   }
 
-  /**
-   * Gets the current Lift position in meters from the Lift controller
-   * <p>WARNING: Not yet implemented
-   * 
-   * @deprecated
-   */
-  public double getLiftPositionMeters() {
-    // TODO: Implement issue #18
-    System.out.println("Error in frc.robot.subsystems.Hopper.getLiftPositionMeters(): Feature not yet implemented");
-    throw new IllegalCallerException();
-  }
-
   /** Gets the current Lift error in sensor ticks from the Lift controller */
   public double getLiftPositionError() {
     return liftController.getClosedLoopError();
@@ -333,17 +321,6 @@ public class Hopper extends SubsystemBase {
    */
   public void setLift(double percentOut) {
     liftController.set(ControlMode.PercentOutput, percentOut);
-  }
-
-  /**
-   * Sets the Lift setpoint to the specified height in meters
-   * 
-   * <p> WARNING: Not yet implemented
-   */
-  private void setLiftMeters(double setpoint) {
-    // TODO: Implement set lift height in meters, issue #18
-    System.out.println("Error in Hopper.setLiftSetpointMeters(double): Not yet implemented");
-    throw new IllegalAccessError();
   }
 
   /**
