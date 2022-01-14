@@ -125,16 +125,6 @@ public class RobotContainer {
     // Add manual overrides and test mode toggles to the Dashboard
     SmartDashboard.putData("Hopper Manual Override", m_hopperManual);
     SmartDashboard.putData("Hopper Test Mode", m_hopperTestMode);
-
-    // Add command lists to each subsystem tab on the Shuffleboard
-    /*
-     * NOTE: The following is not currently used, but is left here as a reference.
-     * 
-     * ShuffleboardLayout shuffleDrivetrainCommandLayout =
-     * Shuffleboard.getTab("Drivetrain") .getLayout("Commands",
-     * BuiltInLayouts.kList) .withSize(4,4) .withProperties(Map.of("Label position",
-     * "HIDDEN"));
-     */
   }
 
   /**

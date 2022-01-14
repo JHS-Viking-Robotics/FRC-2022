@@ -47,7 +47,7 @@ public class Hopper extends SubsystemBase {
     /** Hopper Intake hold mode */
     HOLD(ControlMode.Current, Subsystem.Hopper.INTAKE_HOLD),
     /** Hopper Intake motor output disabled */
-    NEUTRAL(ControlMode.Disabled, 0.0),
+    NEUTRAL(ControlMode.PercentOutput, 0.0),
     /** Hopper Intake manual control mode using NetworkTables input.
      * <p> Used for testing the Intake */
     TESTING(ControlMode.PercentOutput, 0.0);
@@ -75,7 +75,7 @@ public class Hopper extends SubsystemBase {
     /** Hopper Lift down position */
     DOWN(ControlMode.Position, Subsystem.Hopper.LIFT_DOWN),
     /** Hopper Lift neutral mode, motor output disabled */
-    NEUTRAL(ControlMode.Disabled, 0.0),
+    NEUTRAL(ControlMode.PercentOutput, 0.0),
     /** Hopper Lift manual control mode using NetworkTables input.
      * <p> Used for testing the Lift */
     TESTING(ControlMode.Position, 0.0);
@@ -231,14 +231,13 @@ public class Hopper extends SubsystemBase {
       changeSafetyScore(-6);
     } if (getLiftPositionError() > maxRangeMotion) {
       changeSafetyScore(-101);
-    } if (getLiftPositionTicks() > Lift.UP.getValue() + 50) {
+    } if (getLiftPositionTicks() > (Lift.UP.getValue() + 50)) {
       changeSafetyScore(-21);
-    } if (getLiftPositionTicks() < Lift.DOWN.getValue() - 50) {
+    } if (getLiftPositionTicks() < (Lift.DOWN.getValue() - 50)) {
       changeSafetyScore(-21);
     }
 
-    // Disable the subsystem if we are not operating safely, otherwise check
-    // the dashboard button to see if we are disabled there
+    // Subsystem is only enabled when running with high enough safety score
     setSubsystemEnabled(safetyScore > 25);
   }
 
@@ -355,6 +354,13 @@ public class Hopper extends SubsystemBase {
       case TESTING:
         intakeController.set(ControlMode.PercentOutput, getIntakeSetpoint());
         break;
+      case HOLD:
+        if (intakeController.getClass().getSimpleName() == "WPI_VictorSPX") {
+          System.out.println("ERROR: VictorSPX controllers do not support closed-loop current control");
+          setIntake(Intake.NEUTRAL);
+        } else {
+          intakeController.set(mode.getMode(), mode.getValue());
+        }
       default:
         if (mode.getMode() == ControlMode.PercentOutput) {
           liftSetpoint.setDouble(mode.getValue());
@@ -387,28 +393,22 @@ public class Hopper extends SubsystemBase {
    * Disable or enable the Hopper subsystem, and set the motors to neutral
    */
   public void setSubsystemEnabled(boolean enabled) {
-    // We are already in desired state, so skip everything
+    // We are already in correct state, so skip everything
     if (subsystemEnabled == enabled) {
       return;
     }
-  
-    // Update subsystemEnabled and get a reference to the CommandScheduler
-    CommandScheduler cmd = CommandScheduler.getInstance();
-    subsystemEnabled = enabled;
-    if (enabled) {
-      // Re-enable the subsystem. Don't clear running commands, so we don't
-      // interrupt Manual mode
-      subsystemEnabled = enabled;
-    } else {
-      // Disable the subsystem by cancelling all commands and reverting back
-      // to neutral
+
+    // Check if we need to disable the subsystem. If so, call CommandScheduler
+    // to cancel active command
+    if (!enabled) {
       System.out.println("WARNING: Hopper subsystem has detected unsafe conditions and is automatically disabling itself");
-      subsystemEnabled = enabled;
-      cmd.cancel(cmd.requiring(this));
+      CommandScheduler.getInstance().cancel(
+          CommandScheduler.getInstance().requiring(this));
       // Note that we call setAllNeutral after cancelling active commands. If
       // Command.end() gets called, it could update the motors again.
       setAllNeutral();
     }
+    subsystemEnabled = enabled;
   }
 
   /** 
