@@ -47,7 +47,7 @@ public class Hopper extends SubsystemBase {
     /** Hopper Intake hold mode */
     HOLD(ControlMode.Current, Subsystem.Hopper.INTAKE_HOLD),
     /** Hopper Intake motor output disabled */
-    NEUTRAL(ControlMode.Disabled, 0.0),
+    NEUTRAL(ControlMode.PercentOutput, 0.0),
     /** Hopper Intake manual control mode using NetworkTables input.
      * <p> Used for testing the Intake */
     TESTING(ControlMode.PercentOutput, 0.0);
@@ -75,7 +75,7 @@ public class Hopper extends SubsystemBase {
     /** Hopper Lift down position */
     DOWN(ControlMode.Position, Subsystem.Hopper.LIFT_DOWN),
     /** Hopper Lift neutral mode, motor output disabled */
-    NEUTRAL(ControlMode.Disabled, 0.0),
+    NEUTRAL(ControlMode.PercentOutput, 0.0),
     /** Hopper Lift manual control mode using NetworkTables input.
      * <p> Used for testing the Lift */
     TESTING(ControlMode.Position, 0.0);
@@ -232,14 +232,14 @@ public class Hopper extends SubsystemBase {
     // Run checks on the motors to ensure they are running safely. Note that
     // the score should be decreased by 1 extra unit to compensate for this
     // method trying to return the score to maximum
-    if (liftController.getStatorCurrent() > 5.0) {
+    if (liftController.getStatorCurrent() > 10.0) {
       changeSafetyScore(-6);
     } if (getLiftPositionError() > maxRangeMotion) {
       changeSafetyScore(-101);
-    } if (getLiftPositionTicks() > Lift.UP.getValue() + 50) {
-      changeSafetyScore(-21);
-    } if (getLiftPositionTicks() < Lift.DOWN.getValue() - 50) {
-      changeSafetyScore(-21);
+    } if (getLiftPositionTicks() > (Lift.UP.getValue() + 50)) {
+      changeSafetyScore(-11);
+    } if (getLiftPositionTicks() < (Lift.DOWN.getValue() - 50)) {
+      changeSafetyScore(-11);
     }
 
     // Disable the subsystem if we are not operating safely, otherwise check
@@ -374,23 +374,17 @@ public class Hopper extends SubsystemBase {
       return;
     }
   
-    // Update subsystemEnabled and get a reference to the CommandScheduler
-    CommandScheduler cmd = CommandScheduler.getInstance();
-    subsystemEnabled = enabled;
-    if (enabled) {
-      // Re-enable the subsystem. Don't clear running commands, so we don't
-      // interrupt Manual mode
-      subsystemEnabled = enabled;
-    } else {
-      // Disable the subsystem by cancelling all commands and reverting back
-      // to neutral
+    // Check if we need to disable the subsystem. If so, call the CommandScheduler
+    // to cancel active commands
+    if (!enabled) {
       System.out.println("WARNING: Hopper subsystem has detected unsafe conditions and is automatically disabling itself");
-      subsystemEnabled = enabled;
-      cmd.cancel(cmd.requiring(this));
-      // Note that we call setAllNeutral after cancelling active commands. If
-      // Command.end() gets called, it could update the motors again.
-      setAllNeutral();
-    }
+      CommandScheduler.getInstance().cancel(
+        CommandScheduler.getInstance().requiring(this));
+        // Note that we call setAllNeutral after cancelling active commands. If
+        // Command.end() gets called, it could update the motors again.
+        setAllNeutral();
+      }
+    subsystemEnabled = enabled;
   }
 
   /** 

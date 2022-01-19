@@ -43,7 +43,7 @@ public class Manual extends CommandBase {
   @Override
   public void execute() {
     // Run the Intake and Lift
-    hopper.setLift(liftSpeed.getAsDouble());
+    hopper.setLift(liftSpeed.getAsDouble() * 0.5);
     if (intakeInButton.getAsBoolean()) {
       hopper.setIntake(Intake.IN);
     } else if (intakeOutButton.getAsBoolean()) {
