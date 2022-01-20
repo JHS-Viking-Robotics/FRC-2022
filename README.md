@@ -1,8 +1,6 @@
 # FRC-2022
 
-Team 7221 code for the 2022 FRC season. This project can be found on GitHub at [JHS-Viking-Robotics/FRC-2022](https://github.com/JHS-Viking-Robotics/FRC-2022)
-
-During the off-season, this code will be developed for the 2020 season bot Heimdall (see the 2020 competition code [here](https://github.com/JHS-Viking-Robotics/FRC-2020)). After Kickoff Day on January 8th, we will start development for the 2022 FRC Competition. You can find the competition info on the [FIRST Robotics Website](https://www.firstinspires.org/).
+Team 7221 code for the 2022 FRC season. This project can be found on GitHub at [JHS-Viking-Robotics/FRC-2022](https://github.com/JHS-Viking-Robotics/FRC-2022). You can also find the 2021 code for Heimdall on the ```main-heimdall-2021``` branch.
 
 New to this project? Head on over to our [Java-Hello-World tutorial](https://github.com/JHS-Viking-Robotics/Java-Hello-World) and return back here once you feel comfortable with Java. Then check out the [Getting Started](#getting-started) section for some quick tips, and happy hacking!
 
@@ -28,14 +26,10 @@ The following sections contain useful information if you want to deploy or devel
 
 ### Hardware Setup
 
-Our robot, Heimdall, contains the following general hardware. All devices are updated with the latest firmware, and are always connected pos <--> pos and grd <--> grd (inversion is only handled in the code). You can find pictures of the robot [on our website](https://www.jhsvikingrobotics.com/this-year-s-robots).
+Our robot is still being built, but follows the following conventions. All devices are updated with the latest firmware, and are always connected pos <--> pos and grd <--> grd (inversion is only handled in the code). You can find pictures of the robot [on our website](https://www.jhsvikingrobotics.com/this-year-s-robots).
 
 Subsystem | Motor(s) | Controller(s) | Sensor(s)
 :-:|:-:|:-:|:-:
-Drivetrain (primary motors) | [AndyMark CIM Motor](https://www.andymark.com/categories/motors) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | [CTRE Magnetic Encoder](http://www.ctr-electronics.com/sensors/srx-magnetic-encoder.html)
-Drivetrain (follower motors) | [AndyMark CIM Motor](https://www.andymark.com/categories/motors) | [CTRE Victor SPX](http://www.ctr-electronics.com/control-system/motor-control/victor-spx.html) | N/A
-Hopper Lift | [VexPro Bag Motor](https://www.vexrobotics.com/217-3351.html) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | [CTRE Magnetic Encoder](http://www.ctr-electronics.com/sensors/srx-magnetic-encoder.html)
-Hopper Intake | [AndyMark 775](https://www.andymark.com/categories/motors) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | N/A
 
 ### Deploying To RoboRIO
 
