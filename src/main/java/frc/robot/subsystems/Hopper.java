@@ -68,7 +68,7 @@ public class Hopper extends SubsystemBase {
 
   /** Hopper Lift modes of operation */
   public enum Lift {
-    /** Hopper Lift p position */
+    /** Hopper Lift up position */
     UP(ControlMode.Position, Subsystem.Hopper.LIFT_UP),
     /** Hopper Lift dispense position */
     DISPENSE(ControlMode.Position, Subsystem.Hopper.LIFT_DISPENSE),
@@ -373,6 +373,8 @@ public class Hopper extends SubsystemBase {
     if (subsystemEnabled == enabled) {
       return;
     }
+    System.out.println("Setting Hopper subsystem status to " + enabled
+                       + ", safety score at " + safetyScore);
   
     // Check if we need to disable the subsystem. If so, call the CommandScheduler
     // to cancel active commands

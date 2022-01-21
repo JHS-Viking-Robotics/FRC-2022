@@ -6,9 +6,12 @@ During the off-season, this code will be developed for the 2020 season bot Heimd
 
 New to this project? Head on over to our [Java-Hello-World tutorial](https://github.com/JHS-Viking-Robotics/Java-Hello-World) and return back here once you feel comfortable with Java. Then check out the [Getting Started](#getting-started) section for some quick tips, and happy hacking!
 
+## Quick Setup
+
+Using a computer set up as a [Driver Station](https://jhs-viking-robotics.github.io/Java-Hello-World/Install-Software/Windows-10), pull this repository from GitHub using the instructions on the big green ```Code``` button. Connect the computer to the robot with a USB or Ethernet cable. In ```WPILib 2021```, press ```Ctrl + Shift + P``` to bring up the command palette, type ```WPILib: Deploy Robot Code```, and hit enter. Now you should be able to open the ```Driver Station``` program and connect to the robot. See [Deploying to RoboRIO](#deploying-to-roborio) if you have issues.
+
 ## Contents
 
-- [Quick Setup](#quick-setup)
 - [Getting Started](#getting-started)
   - [Hardware Setup](#hardware-setup)
   - [Deploying To RoboRIO](#deploying-to-roborio)
@@ -17,10 +20,6 @@ New to this project? Head on over to our [Java-Hello-World tutorial](https://git
   - [Other Notes](#other-notes)
 - [Feature Requests And Bug Reporting](#feature-requests-and-bug-reporting)
 - [Learn More About The Team](#learn-more-about-the-team)
-
-## Quick Setup
-
-Using a computer set up as a Driver Station, pull this repository from GitHub using the instructions on the big green ```Code``` button. Connect the computer to the robot with a USB or Ethernet cable. In VS Code, press ```Ctrl + Shift + P``` to bring up the command palette, type ```WPILib: Deploy Robot Code```, and hit enter. Now you should be able to drive the robot using the Driver Station.
 
 ## Getting Started
 
@@ -35,11 +34,15 @@ Subsystem | Motor(s) | Controller(s) | Sensor(s)
 Drivetrain (primary motors) | [AndyMark CIM Motor](https://www.andymark.com/categories/motors) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | [CTRE Magnetic Encoder](http://www.ctr-electronics.com/sensors/srx-magnetic-encoder.html)
 Drivetrain (follower motors) | [AndyMark CIM Motor](https://www.andymark.com/categories/motors) | [CTRE Victor SPX](http://www.ctr-electronics.com/control-system/motor-control/victor-spx.html) | N/A
 Hopper Lift | [VexPro Bag Motor](https://www.vexrobotics.com/217-3351.html) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | [CTRE Magnetic Encoder](http://www.ctr-electronics.com/sensors/srx-magnetic-encoder.html)
-Hopper Intake | [AndyMark 775](https://www.andymark.com/categories/motors) | [CTRE Talon SRX](http://www.ctr-electronics.com/control-system/motor-control/talon-srx.html) | N/A
+Hopper Intake | [AndyMark 775](https://www.andymark.com/categories/motors) | [CTRE Victor SPX](http://www.ctr-electronics.com/control-system/motor-control/victor-spx.html) | N/A
 
 ### Deploying To RoboRIO
 
-To deploy the code to the RoboRIO, pull this repository from GitHub using the instructions on the big green ```Code``` button. Choose the tag on the ```main``` branch depending on which version you need, or leave it alone to use the latest version. Code on the ```development``` branch is under testing and not necessarily functional.
+This code can be deployed from any [Windows/macOS/Linux computer]((https://jhs-viking-robotics.github.io/Java-Hello-World/Install-Software/Windows-10)).
+
+To deploy the code to the RoboRIO, pull this repository from GitHub using the instructions on the big green ```Code``` button. Choose the tag on the ```main``` branch depending on which version you need, or leave it alone to use the latest version. Code on the ```development``` branch is under testing and not necessarily functional. In ```WPILib 2021```, press ```Ctrl + Shift + P``` to bring up the command palette, type ```WPILib: Deploy Robot Code```, and hit enter. There should be a message indicating if the deploy was successful.
+
+To connect to and drive the robot, a Windows computer set up as a [Driver Station](https://jhs-viking-robotics.github.io/Java-Hello-World/Install-Software/Windows-10) needs to be connected to the robot over WiFi, ethernet, or usb. Open the ```Driver Station``` program, make sure the team number is entered, and that ```Shuffleboard``` is selected as the dashboard.
 
 ### Controls Layout
 
