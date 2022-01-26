@@ -18,9 +18,17 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final XboxController m_driveController = new XboxController(0);
+
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Drivetrain m_drivetrain = new Drivetrain();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private final ArcadeDrive m_arcadeDrive
+      = new ArcadeDrive(
+            m_drivetrain,
+            () -> m_driveController.getY(Hand.kLeft),
+            () -> m_driveController.getX(Hand.kLeft));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -34,7 +42,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+      new JoystickButton(m_driveController, Button.kA.value)
+          .whenHeld(m_teleopDriveCommand);
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
