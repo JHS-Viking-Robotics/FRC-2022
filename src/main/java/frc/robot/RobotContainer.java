@@ -33,6 +33,12 @@ public class RobotContainer {
           () -> m_driveController.getY(Hand.kLeft),
           () -> m_driveController.getX(Hand.kLeft),
           () -> m_driveController.getX(Hand.kRight));
+  private final MecanumDriveFOD m_mecanumDriveFOD
+      = new ArcadeDrive(
+          m_drivetrain,
+          () -> m_driveController.getY(Hand.kLeft),
+          () -> m_driveController.getX(Hand.kLeft),
+          () -> m_driveController.getX(Hand.kRight));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -52,6 +58,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
       new JoystickButton(m_driveController, Button.kA.value)
           .onPress(m_mecanumDrive);
+      new JoystickButton(m_driveController, Button.kB.value)
+          .onPress(m_mecanumDriveFOD);
   }
 
   /**

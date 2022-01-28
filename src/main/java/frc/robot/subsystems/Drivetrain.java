@@ -16,6 +16,8 @@ public class Drivetrain extends SubsystemBase {
   private final CANSparkMax rightFront;
   private final CANSparkMax rightBack;
   private final MecanumDrive driveMecanum;
+  private final ADXRS450_Gyro driveGyro;    // Gyroscope for determining robot heading
+
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -25,6 +27,8 @@ public class Drivetrain extends SubsystemBase {
     rightBack = new CANSparkMax(4, MotorType.kBrushless);
 
     driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
+    driveGyro = new ADXRS450_Gyro();
+    driveGyro.reset();
   }
 
   /** Drives the robot using ArcadeDrive style control */
@@ -35,6 +39,16 @@ public class Drivetrain extends SubsystemBase {
   /** Mecanum drive */
   public void mecanumDrive(double throttle, double slide, double rotation) {
     driveMecanum.driveCartesian(throttle, slide, rotation);
+  }
+
+  /** Mecanum drive with Field-Oriented Driving */
+  public void mecanumDriveFOD(double throttle, double slide, double rotation) {
+    driveMecanum.driveCartesian(throttle, slide, rotation, getGyroAngle());
+  }
+
+  /** Get the angle of the gyroscope */
+  public double getGyroAngle() {
+    driveGryo.getRotation2d().getDegrees();
   }
 
   @Override
