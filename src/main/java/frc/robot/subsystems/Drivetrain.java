@@ -6,34 +6,35 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-  private final CANSparkMax leftMain;
-  private final CANSparkMax leftFollow;
-  private final CANSparkMax rightMain;
-  private final CANSparkMax rightFollow;
-  private final DifferentialDrive diffDrive;
+  private final CANSparkMax leftFront;
+  private final CANSparkMax leftBack;
+  private final CANSparkMax rightFront;
+  private final CANSparkMax rightBack;
+  private final MecanumDrive driveMecanum;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-    leftMain = new CANSparkMax(1, MotorType.kBrushless);
-    rightMain = new CANSparkMax(2, MotorType.kBrushless);
-    leftFollow = new CANSparkMax(3, MotorType.kBrushless);
-    rightFollow = new CANSparkMax(4, MotorType.kBrushless);
+    leftFront = new CANSparkMax(1, MotorType.kBrushless);
+    rightFront = new CANSparkMax(2, MotorType.kBrushless);
+    leftBack = new CANSparkMax(3, MotorType.kBrushless);
+    rightBack = new CANSparkMax(4, MotorType.kBrushless);
 
-    leftFollow.follow(leftMain);
-    rightFollow.follow(rightMain);
-
-    diffDrive = new DifferentialDrive(leftMain, rightMain);
-
+    driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
   }
 
   /** Drives the robot using ArcadeDrive style control */
   public void arcadeDrive(double throttle, double rotation) {
-    diffDrive.arcadeDrive(throttle, rotation);
+    driveMecanum.driveCartesian(throttle, 0, rotation);
+  }
+
+  /** Mecanum drive */
+  public void mecanumDrive(double throttle, double slide, double rotation) {
+    driveMecanum.driveCartesian(throttle, slide, rotation);
   }
 
   @Override

@@ -20,20 +20,27 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_driveController = new XboxController(0);
 
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Drivetrain m_drivetrain = new Drivetrain();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
-            m_drivetrain,
-            () -> m_driveController.getY(Hand.kLeft),
-            () -> m_driveController.getX(Hand.kLeft));
+          m_drivetrain,
+          () -> m_driveController.getY(Hand.kLeft),
+          () -> m_driveController.getX(Hand.kLeft));
+  private final MecanumDrive m_mecanumDrive
+      = new ArcadeDrive(
+          m_drivetrain,
+          () -> m_driveController.getY(Hand.kLeft),
+          () -> m_driveController.getX(Hand.kLeft),
+          () -> m_driveController.getX(Hand.kRight));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // Set arcade drive as default
+    m_drivetrain.setDefaultCommand(m_arcadeDrive);
   }
 
   /**
@@ -44,7 +51,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
       new JoystickButton(m_driveController, Button.kA.value)
-          .whenHeld(m_teleopDriveCommand);
+          .onPress(m_mecanumDrive);
   }
 
   /**
