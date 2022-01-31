@@ -5,15 +5,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drivetrain;
+import java.util.function.DoubleSupplier;
 
-public class ArcadeDrive extends CommandBase {
+public class MecanumDriveFOD extends CommandBase {
   private final Drivetrain driveSystem;
   private final DoubleSupplier throttle;
   private final DoubleSupplier slide;
   private final DoubleSupplier rotation;
 
-  /** Creates a new ArcadeDrive. */
-  public ArcadeDrive(Drivetrain subsystem, DoubleSupplier throttle, DoubleSupplier slide, DoubleSupplier rotation) {
+  /** Creates a new MecanumDriveFOD. */
+  public MecanumDriveFOD(Drivetrain subsystem, DoubleSupplier throttle, DoubleSupplier slide, DoubleSupplier rotation) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
     this.driveSystem = subsystem;

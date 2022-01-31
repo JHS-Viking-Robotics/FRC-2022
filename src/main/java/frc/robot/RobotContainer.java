@@ -6,9 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.MecanumDriveFOD;
+import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,20 +31,20 @@ public class RobotContainer {
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
           m_drivetrain,
-          () -> m_driveController.getY(Hand.kLeft),
-          () -> m_driveController.getX(Hand.kLeft));
+          () -> m_driveController.getLeftY(),
+          () -> m_driveController.getLeftX());
   private final MecanumDrive m_mecanumDrive
-      = new ArcadeDrive(
+      = new MecanumDrive(
           m_drivetrain,
-          () -> m_driveController.getY(Hand.kLeft),
-          () -> m_driveController.getX(Hand.kLeft),
-          () -> m_driveController.getX(Hand.kRight));
+          () -> m_driveController.getLeftY(),
+          () -> m_driveController.getLeftX(),
+          () -> m_driveController.getRightX());
   private final MecanumDriveFOD m_mecanumDriveFOD
-      = new ArcadeDrive(
+      = new MecanumDriveFOD(
           m_drivetrain,
-          () -> m_driveController.getY(Hand.kLeft),
-          () -> m_driveController.getX(Hand.kLeft),
-          () -> m_driveController.getX(Hand.kRight));
+          () -> m_driveController.getLeftY(),
+          () -> m_driveController.getLeftX(),
+          () -> m_driveController.getRightX());
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -57,9 +63,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
       new JoystickButton(m_driveController, Button.kA.value)
-          .onPress(m_mecanumDrive);
+          .whenPressed(m_mecanumDrive);
       new JoystickButton(m_driveController, Button.kB.value)
-          .onPress(m_mecanumDriveFOD);
+          .whenPressed(m_mecanumDriveFOD);
   }
 
   /**
@@ -69,6 +75,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return m_arcadeDrive;
   }
 }

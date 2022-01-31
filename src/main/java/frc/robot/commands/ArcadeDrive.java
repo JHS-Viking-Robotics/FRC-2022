@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drivetrain;
+import java.util.function.DoubleSupplier;
 
 public class ArcadeDrive extends CommandBase {
   private final Drivetrain driveSystem;

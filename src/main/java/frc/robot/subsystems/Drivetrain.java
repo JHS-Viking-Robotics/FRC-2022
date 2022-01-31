@@ -6,19 +6,20 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-  private final CANSparkMax leftFront;
-  private final CANSparkMax leftBack;
-  private final CANSparkMax rightFront;
-  private final CANSparkMax rightBack;
-  private final MecanumDrive driveMecanum;
+  private final CANSparkMax leftFront;      // Left side front motor
+  private final CANSparkMax leftBack;       // Left side rear motor
+  private final CANSparkMax rightFront;     // Right side front motor
+  private final CANSparkMax rightBack;      // Right side rear motor
+  private final MecanumDrive driveMecanum;  // Mecanum drive interface
   private final ADXRS450_Gyro driveGyro;    // Gyroscope for determining robot heading
 
-  private final double driveSpeedScalar = 0.6;
+  private final double driveSpeedScalar = 0.6; // Percent of max output for motors
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -51,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Get the angle of the gyroscope */
   public double getGyroAngle() {
-    driveGryo.getRotation2d().getDegrees();
+    return driveGyro.getRotation2d().getDegrees();
   }
 
   @Override
