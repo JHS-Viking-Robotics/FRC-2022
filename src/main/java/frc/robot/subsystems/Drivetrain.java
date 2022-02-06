@@ -51,6 +51,7 @@ public class Drivetrain extends SubsystemBase {
   private NetworkTableEntry driveI;         // kI for Talon closed-loop PID
   private NetworkTableEntry driveD;         // kD for Talon closed-loop PID
   private NetworkTableEntry driveF;         // kF for Talon closed-loop PID
+
   /** Hopper Intake modes of operation */
   public enum Motors {
     /** Left Front drive motor */
@@ -69,13 +70,13 @@ public class Drivetrain extends SubsystemBase {
     ALL
   }
 
-  private final double driveSpeedScalar = 0.6; // Percent of max output for motors
+  private final double driveSpeedScalar = 0.3; // Percent of max output for motors
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     leftFront = new CANSparkMax(Subsystem.Drivetrain.LEFT_FRONT_ID, MotorType.kBrushless);
-    rightFront = new CANSparkMax(Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
-    leftBack = new CANSparkMax(Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
+    leftBack = new CANSparkMax(Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
+    rightFront = new CANSparkMax(Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
     rightBack = new CANSparkMax(Subsystem.Drivetrain.RIGHT_BACK_ID, MotorType.kBrushless);
 
     leftFront.restoreFactoryDefaults();

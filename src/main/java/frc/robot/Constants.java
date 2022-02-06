@@ -31,19 +31,19 @@ public final class Constants {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
     public final static class Drivetrain {
       /** CAN Bus ID of left front drive SparkMAX */
-      public final static int LEFT_FRONT_ID = 3;
+      public final static int LEFT_FRONT_ID = 48;
       /** CAN Bus ID of left back drive SparkMAX */
-      public final static int LEFT_BACK_ID = 53;
+      public final static int LEFT_BACK_ID = 50;
       /** CAN Bus ID of right front drive SparkMAX */
-      public final static int RIGHT_FRONT_ID = 1;
+      public final static int RIGHT_FRONT_ID = 49;
       /** CAN Bus ID of right back drive SparkMAX */
       public final static int RIGHT_BACK_ID = 51;
       /** Left front SparkMAX is inverted */
       public final static boolean LEFT_FRONT_INVERTED = false;
       /** Left back SparkMAX is inverted */
-      public final static boolean LEFT_BACK_INVERTED = true;
+      public final static boolean LEFT_BACK_INVERTED = false;
       /** Right front SparkMAX is inverted */
-      public final static boolean RIGHT_FRONT_INVERTED = false;
+      public final static boolean RIGHT_FRONT_INVERTED = true;
       /** Right back SparkMAX is inverted */
       public final static boolean RIGHT_BACK_INVERTED = true;
       /** P constant for SparkMAX onboard PID control */
