@@ -1,5 +1,7 @@
 # FRC-2022
 
+[![Run on Repl.it](https://repl.it/badge/github/jhs-viking-robotics/FRC-2022)](https://repl.it/github/jhs-viking-robotics/FRC-2022)
+
 Team 7221 code for the 2022 FRC season. This project can be found on GitHub at [JHS-Viking-Robotics/FRC-2022](https://github.com/JHS-Viking-Robotics/FRC-2022). You can also find the 2021 code for Heimdall on the ```main-heimdall-2021``` branch.
 
 New to this project? Head on over to our [Java-Hello-World tutorial](https://github.com/JHS-Viking-Robotics/Java-Hello-World) and return back here once you feel comfortable with Java. Then check out the [Getting Started](#getting-started) section for some quick tips, and happy hacking!
