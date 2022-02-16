@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax; 
+import com.revrobotics.RelativeEncoder; 
+import com.revrobotics.SparkMaxRelativeEncoder; import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -22,6 +25,11 @@ public class Drivetrain extends SubsystemBase {
   private final MecanumDrive driveMecanum;
   private final ADXRS450_Gyro driveGyro;
 
+  private final RelativeEncoder leftFrontEncoder; // Left side front encoder 
+  private final RelativeEncoder leftBackEncoder; // Left side rear encoder 
+  private final RelativeEncoder rightFrontEncoder; // Right side front encoder 
+  private final RelativeEncoder rightBackEncoder; // Right side rear encoder
+
 
 
   public Drivetrain() {
@@ -34,6 +42,8 @@ public class Drivetrain extends SubsystemBase {
     rightFront.restoreFactoryDefaults();
     leftRear.restoreFactoryDefaults();
     rightRear.restoreFactoryDefaults();
+
+    leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); leftBackEncoder = leftBack.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); rightBackEncoder = rightBack.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
     
     driveMecanum = new MecanumDrive(leftFront, leftRear, rightFront, rightRear);
     driveGyro = new ADXRS450_Gyro();
@@ -54,7 +64,12 @@ public class Drivetrain extends SubsystemBase {
   public void mecanumDriveFOD(double throttle, double slide, double rotation) { 
     driveMecanum.driveCartesian(throttle, slide, rotation, driveGyro.getRotation2d().getDegrees());
   }
-
+public void resetEncoder(){
+    leftFront.getEncoder().setPosition(0);
+    rightFront.getEncoder().setPosition(0);
+    leftRear.getEncoder().setPosition(0);
+    rightRear.getEncoder().setPosition(0); 
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
