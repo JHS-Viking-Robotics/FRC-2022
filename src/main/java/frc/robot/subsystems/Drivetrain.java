@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.Constants;
@@ -87,7 +88,8 @@ public class Drivetrain extends SubsystemBase {
   /** Mecanum drive with Field Oriented Driving */ 
   public void mecanumDriveFOD(double throttle, double slide, double rotation) { 
     driveMecanum.driveCartesian(throttle, slide, rotation, driveGyro.getRotation2d().getDegrees());
-  }
+  } 
+  //gssrhrthdfbhtrhsefgr
 public void resetEncoder(){
     leftFront.getEncoder().setPosition(0);
     rightFront.getEncoder().setPosition(0);
@@ -106,6 +108,28 @@ public double getVelocityLeft(){
 public double getVelocityRight(){
   return (rightFrontEncoder.getVelocity() + rightRearEncoder.getVelocity())/2.0;
 }
+public double getGyroAngle() {
+    return driveGyro.getRotation2d().getDegrees();
+  }
+
+  
+  public double getGyroVelocity() {
+    return driveGyro.getRate();
+  }
+
+  public Rotation2d getGyroRotation() {
+    return driveGyro.getRotation2d();
+  }
+
+  
+  public void resetGyro() {
+    if (getVelocityLeft() != 0 || getVelocityRight() != 0) {
+     System.out.println("WARNING: Do not try to reset the gyroscope while the robot is moving");
+     return;
+   }
+
+    driveGyro.reset();
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
