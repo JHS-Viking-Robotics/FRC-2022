@@ -20,8 +20,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drivetrain extends SubsystemBase {
-  /** Creates a new Drivetrain. */
+public class Shooter extends SubsystemBase {
+  /** Creates a new Shooter. */
   /** ask Dan about compatiblity to mukanum drive*/
   private final CANSparkMax leftFront;
   private final CANSparkMax rightFront;
@@ -35,7 +35,7 @@ public class Drivetrain extends SubsystemBase {
   private final RelativeEncoder rightFrontEncoder; // Right side front encoder 
   private final RelativeEncoder rightRearEncoder; // Right side rear encoder
 
-  public Drivetrain() {
+  public Shooter() {
     leftFront = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_FRONT_ID, MotorType.kBrushless);
     rightFront = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
     leftRear = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
@@ -45,25 +45,11 @@ public class Drivetrain extends SubsystemBase {
     rightFront.restoreFactoryDefaults();
     leftRear.restoreFactoryDefaults();
     rightRear.restoreFactoryDefaults();
-    
-    leftFront.setInverted(Constants.Subsystem.Drivetrain.LEFT_FRONT_INVERTED);
-    rightFront.setInverted(Constants.Subsystem.Drivetrain.RIGHT_FRONT_INVERTED);
-    leftRear.setInverted(Constants.Subsystem.Drivetrain.LEFT_BACK_INVERTED);
-    rightRear.setInverted(Constants.Subsystem.Drivetrain.RIGHT_BACK_INVERTED);
-    
+     
     leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     leftRearEncoder = leftRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightRearEncoder = rightRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
-
-   leftFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-    leftRearEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-    rightFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-   rightRearEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-    leftFrontEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-   leftRearEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-   rightFrontEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-   rightRearEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
 
     driveMecanum = new MecanumDrive(leftFront, leftRear, rightFront, rightRear);
     driveGyro = new ADXRS450_Gyro();
@@ -89,46 +75,5 @@ public void resetEncoder(){
     leftFront.getEncoder().setPosition(0);
     rightFront.getEncoder().setPosition(0);
     rightRear.getEncoder().setPosition(0); 
-}
-  public double getDistanceLeft() {
-    return (leftFrontEncoder.getPosition() + leftRearEncoder.getPosition())/2.0;
-  }
-  public double getDistanceRight() {
-    return (rightFrontEncoder.getPosition() + rightRearEncoder.getPosition())/2.0;
-  }
-public double getVelocityLeft(){
-  return (leftFrontEncoder.getVelocity() + leftRearEncoder.getVelocity())/2.0;
-}
-public double getVelocityRight(){
-  return (rightFrontEncoder.getVelocity() + rightRearEncoder.getVelocity())/2.0;
-}
-public double getGyroAngle() {
-    return driveGyro.getRotation2d().getDegrees();
-  }
-
-  public double getGyroVelocity() {
-    return driveGyro.getRate();
-  }
-
-  public Rotation2d getGyroRotation() {
-    return driveGyro.getRotation2d();
-  }
-
-  public void resetGyro() {
-    if (getVelocityLeft() != 0 || getVelocityRight() != 0) {
-     System.out.println();
-     return;
-   }
-
-    driveGyro.reset();
-  }
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
   }
 }
