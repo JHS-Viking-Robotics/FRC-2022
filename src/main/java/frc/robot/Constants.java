@@ -85,38 +85,24 @@ public final class Constants {
           new Translation2d(-0.381, -0.381));
     }
 
-    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
-    public final class Hopper {
-    /** CAN Bus ID of lift Talon controller */
-    public final static int LIFT_ID = 2;
-    /** CAN Bus ID of intake Victor controller */
-    public final static int INTAKE_ID = 54;
-    /** Lift Talon controller is inverted */
-    public final static boolean LIFT_CONTROLLER_INVERTED = true;
-    /** Lift Talon sensor is inverted */
-    public final static boolean LIFT_SENSOR_INVERTED = false;
-    /** Intake Victor is inverted */
-    public final static boolean INTAKE_CONTROLLER_INVERTED = true;
-    /** P constant for Lift Talon onboard PID control */
-    public final static double LIFT_P = 1.0;
-    /** I constant for Lift Talon onboard PID control */
-    public final static double LIFT_I = 0.0;
-    /** D constant for Lift Talon onboard PID control */
-    public final static double LIFT_D = 0.0;
-    /** F constant for Lift Talon onboard PID control */
-    public final static double LIFT_F = 0.0;
-    /** Tick position for Lift Up setpoint */
-    public final static double LIFT_UP = 890.0;
-    /** Tick position for Lift Dispense setpoint */
-    public final static double LIFT_DISPENSE = 728.0;
-    /** Tick position for Lift Down setpoint */
-    public final static double LIFT_DOWN = 0.0;
-    /** Percent output for Intake In mode */
-    public final static double INTAKE_IN = 0.5;
-    /** Percent output for Intake Out mode */
-    public final static double INTAKE_OUT = 0.5;
-    /** Current output for Intake Hold mode */
-    public final static double INTAKE_HOLD = 0.5;
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
+    public final class Shooter {
+    /** CAN Bus ID of top left SparkMax controller */
+    public final static int TOP_LEFT_ID = 2;
+    /** CAN Bus ID of top right SparkMax controller */
+    public final static int TOP_RIGHT_ID = 3;
+    /** CAN Bus ID of bottom left SparkMax controller */
+    public final static int BOTTOM_LEFT_ID = 4;
+    /** CAN Bus ID of bottom right SparkMax controller */
+    public final static int BOTTOM_RIGHT_ID = 5;
+    /** Top left SparkMax controller is inverted */
+    public final static boolean TOP_LEFT_INVERTED = false;
+    /** Top right SparkMax controller is inverted */
+    public final static boolean TOP_RIGHT_INVERTED = false;
+    /** Bottom left SparkMax controller is inverted */
+    public final static boolean BOTTOM_LEFT_INVERTED = false;
+    /** Bottom right SparkMax controller is inverted */
+    public final static boolean BOTTOM_RIGHT_INVERTED = false;
     }
   }
   

@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import java.util.Map;
 
 import frc.robot.Constants;
-import frc.robot.Constants.Subsystem;
+import static frc.robot.Constants.Subsystem.Drivetrain.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -30,16 +30,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-  private final CANSparkMax leftFront;      // Left side front motor
-  private final CANSparkMax leftBack;       // Left side rear motor
-  private final CANSparkMax rightFront;     // Right side front motor
-  private final CANSparkMax rightBack;      // Right side rear motor
-  private final RelativeEncoder leftFrontEncoder;  // Left side front encoder
-  private final RelativeEncoder leftBackEncoder;   // Left side rear encoder
-  private final RelativeEncoder rightFrontEncoder; // Right side front encoder
-  private final RelativeEncoder rightBackEncoder;  // Right side rear encoder
-  private final MecanumDrive driveMecanum;  // Mecanum drive interface
-  private final ADXRS450_Gyro driveGyro;    // Gyroscope for determining robot heading
+  private final CANSparkMax leftFront;              // Left side front motor
+  private final CANSparkMax leftBack;               // Left side rear motor
+  private final CANSparkMax rightFront;             // Right side front motor
+  private final CANSparkMax rightBack;              // Right side rear motor
+  private final RelativeEncoder leftFrontEncoder;   // Left side front encoder
+  private final RelativeEncoder leftBackEncoder;    // Left side rear encoder
+  private final RelativeEncoder rightFrontEncoder;  // Right side front encoder
+  private final RelativeEncoder rightBackEncoder;   // Right side rear encoder
+  private final MecanumDrive driveMecanum;          // Mecanum drive interface
+  private final ADXRS450_Gyro driveGyro;            // Gyroscope for determining robot heading
   private final MecanumDriveOdometry driveOdometry; // Odometry object for keeping track of robot Pose
 
   private NetworkTableEntry leftDistance;   // NetworkTables odometer for left side sensors
@@ -74,20 +74,20 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-    leftFront = new CANSparkMax(Subsystem.Drivetrain.LEFT_FRONT_ID, MotorType.kBrushless);
-    leftBack = new CANSparkMax(Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
-    rightFront = new CANSparkMax(Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
-    rightBack = new CANSparkMax(Subsystem.Drivetrain.RIGHT_BACK_ID, MotorType.kBrushless);
+    leftFront = new CANSparkMax(LEFT_FRONT_ID, MotorType.kBrushless);
+    leftBack = new CANSparkMax(LEFT_BACK_ID, MotorType.kBrushless);
+    rightFront = new CANSparkMax(RIGHT_FRONT_ID, MotorType.kBrushless);
+    rightBack = new CANSparkMax(RIGHT_BACK_ID, MotorType.kBrushless);
 
     leftFront.restoreFactoryDefaults();
     leftBack.restoreFactoryDefaults();
     rightFront.restoreFactoryDefaults();
     rightBack.restoreFactoryDefaults();
 
-    leftFront.setInverted(Subsystem.Drivetrain.LEFT_FRONT_INVERTED);
-    leftBack.setInverted(Subsystem.Drivetrain.LEFT_BACK_INVERTED);
-    rightFront.setInverted(Subsystem.Drivetrain.RIGHT_FRONT_INVERTED);
-    rightBack.setInverted(Subsystem.Drivetrain.RIGHT_BACK_INVERTED);
+    leftFront.setInverted(LEFT_FRONT_INVERTED);
+    leftBack.setInverted(LEFT_BACK_INVERTED);
+    rightFront.setInverted(RIGHT_FRONT_INVERTED);
+    rightBack.setInverted(RIGHT_BACK_INVERTED);
 
     leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
     leftBackEncoder = leftBack.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
@@ -113,7 +113,7 @@ public class Drivetrain extends SubsystemBase {
     driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
     driveGyro = new ADXRS450_Gyro();
     driveGyro.reset();
-    driveOdometry = new MecanumDriveOdometry(Subsystem.Drivetrain.KINEMATICS, getGyroRotation());
+    driveOdometry = new MecanumDriveOdometry(KINEMATICS, getGyroRotation());
 
     configureShuffleboard();
   }
@@ -158,19 +158,19 @@ public class Drivetrain extends SubsystemBase {
 
     // Configure PID list widget, and set default values from Constants
     driveP = shufflePIDLayout
-        .add("P", Subsystem.Drivetrain.P)
+        .add("P", P)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveI = shufflePIDLayout
-        .add("I", Subsystem.Drivetrain.I)
+        .add("I", I)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveD = shufflePIDLayout
-        .add("D", Subsystem.Drivetrain.D)
+        .add("D", D)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
     driveF = shufflePIDLayout
-        .add("F", Subsystem.Drivetrain.F)
+        .add("F", F)
         .withWidget(BuiltInWidgets.kTextView)
         .getEntry();
 
@@ -337,22 +337,22 @@ public class Drivetrain extends SubsystemBase {
    */
   public void syncNetworkTables() {
     // Push Drivetrain PIDF constants from NetworkTables to the controllers
-    leftFront.getPIDController().setP(driveP.getDouble(Subsystem.Drivetrain.P));
-    leftFront.getPIDController().setI(driveI.getDouble(Subsystem.Drivetrain.I));
-    leftFront.getPIDController().setD(driveD.getDouble(Subsystem.Drivetrain.D));
-    leftFront.getPIDController().setFF(driveF.getDouble(Subsystem.Drivetrain.F));
-    leftBack.getPIDController().setP(driveP.getDouble(Subsystem.Drivetrain.P));
-    leftBack.getPIDController().setI(driveI.getDouble(Subsystem.Drivetrain.I));
-    leftBack.getPIDController().setD(driveD.getDouble(Subsystem.Drivetrain.D));
-    leftBack.getPIDController().setFF(driveF.getDouble(Subsystem.Drivetrain.F));
-    rightFront.getPIDController().setP(driveP.getDouble(Subsystem.Drivetrain.P));
-    rightFront.getPIDController().setI(driveI.getDouble(Subsystem.Drivetrain.I));
-    rightFront.getPIDController().setD(driveD.getDouble(Subsystem.Drivetrain.D));
-    rightFront.getPIDController().setFF(driveF.getDouble(Subsystem.Drivetrain.F));
-    rightBack.getPIDController().setP(driveP.getDouble(Subsystem.Drivetrain.P));
-    rightBack.getPIDController().setI(driveI.getDouble(Subsystem.Drivetrain.I));
-    rightBack.getPIDController().setD(driveD.getDouble(Subsystem.Drivetrain.D));
-    rightBack.getPIDController().setFF(driveF.getDouble(Subsystem.Drivetrain.F));
+    leftFront.getPIDController().setP(driveP.getDouble(P));
+    leftFront.getPIDController().setI(driveI.getDouble(I));
+    leftFront.getPIDController().setD(driveD.getDouble(D));
+    leftFront.getPIDController().setFF(driveF.getDouble(F));
+    leftBack.getPIDController().setP(driveP.getDouble(P));
+    leftBack.getPIDController().setI(driveI.getDouble(I));
+    leftBack.getPIDController().setD(driveD.getDouble(D));
+    leftBack.getPIDController().setFF(driveF.getDouble(F));
+    rightFront.getPIDController().setP(driveP.getDouble(P));
+    rightFront.getPIDController().setI(driveI.getDouble(I));
+    rightFront.getPIDController().setD(driveD.getDouble(D));
+    rightFront.getPIDController().setFF(driveF.getDouble(F));
+    rightBack.getPIDController().setP(driveP.getDouble(P));
+    rightBack.getPIDController().setI(driveI.getDouble(I));
+    rightBack.getPIDController().setD(driveD.getDouble(D));
+    rightBack.getPIDController().setFF(driveF.getDouble(F));
 
     // Push the current potition data from the sensors to the NetworkTables
     leftDistance.setDouble(getDistance(Motors.LEFT));
