@@ -6,21 +6,33 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.Subsystem.Shooter.*;
 
+import java.util.Map;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import static edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets.*;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-  private final CANSparkMax topLeft;      // Top left shooter motor
-  private final CANSparkMax topRight;     // Top right shooter motor
-  private final CANSparkMax bottomLeft;   // Bottom left shooter motor
-  private final CANSparkMax bottomRight;  // Bottom right shooter motor
-  private final DoubleSolenoid trigger;   // Piston to push balls into firing position
+  private final CANSparkMax topLeft;              // Top left shooter motor
+  private final CANSparkMax topRight;             // Top right shooter motor
+  private final CANSparkMax bottomLeft;           // Bottom left shooter motor
+  private final CANSparkMax bottomRight;          // Bottom right shooter motor
+  private final DoubleSolenoid trigger;           // Piston to push balls into firing position
+
+  private NetworkTableEntry topLeftVelocity;      // NetworkTables speedometer for top left sensor
+  private NetworkTableEntry topRightVelocity;     // NetworkTables speedometer for top right sensor
+  private NetworkTableEntry bottomLeftVelocity;   // NetworkTables speedometer for bottom left sensor
+  private NetworkTableEntry bottomRightVelocity;  // NetworkTables speedometer for bottom right sensor
+  private NetworkTableEntry shooterSpeed;         // NetworkTables controller for motor speed
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -43,6 +55,59 @@ public class Shooter extends SubsystemBase {
 
     // Piston should start retracted
     trigger.set(kReverse);
+
+    // Configure the shuffleboard
+    configureShuffleboard();
+  }
+
+  /** Configures the Shuffleboard dashboard "Drivetrain" tab */
+  private void configureShuffleboard() {
+    // Create references to Drivetrain tab and its various layouts
+    ShuffleboardTab shuffleDrivetrainTab = Shuffleboard.getTab("Drivetrain");
+
+    // Add piston object to tab
+    shuffleDrivetrainTab
+        .add("Trigger Piston", trigger)
+        .withPosition(0, 0)
+        .withSize(2, 2);
+
+    // Configure speedometers for each motor
+    topLeftVelocity = shuffleDrivetrainTab
+        .add("Top Left Velocity", 0.0)
+        .withWidget(kTextView)
+        .withPosition(2, 0)
+        .withSize(1, 1)
+        .getEntry();
+    topRightVelocity = shuffleDrivetrainTab
+        .add("Top Right Velocity", 0.0)
+        .withWidget(kTextView)
+        .withPosition(3, 0)
+        .withSize(1, 1)
+        .getEntry();
+    bottomLeftVelocity = shuffleDrivetrainTab
+        .add("Bottom Left Velocity", 0.0)
+        .withWidget(kTextView)
+        .withPosition(2, 1)
+        .withSize(1, 1)
+        .getEntry();
+    bottomRightVelocity = shuffleDrivetrainTab
+        .add("Bottom Right Velocity", 0.0)
+        .withWidget(kTextView)
+        .withPosition(3, 1)
+        .withSize(1, 1)
+        .getEntry();
+    
+    // Configure speed slider
+    shooterSpeed = shuffleDrivetrainTab
+        .add("Lift Setpoint", 0.0)
+        .withWidget(kNumberSlider)
+        .withProperties(
+            Map.of(
+                "Min", 0,
+                "Max", 1))
+        .withSize(2, 1)
+        .withPosition(0, 2)
+        .getEntry();
   }
 
   /*
@@ -50,7 +115,7 @@ public class Shooter extends SubsystemBase {
    * take effect as the motors spin up
    */
   public void toggleMotors(boolean active) {
-    double output = active ? 100 : 0;
+    double output = active ? shooterSpeed.getDouble(0) : 0;
     topLeft.set(output);
     topRight.set(output);
     bottomLeft.set(output);
@@ -65,8 +130,19 @@ public class Shooter extends SubsystemBase {
     else { trigger.set(kReverse); }
   }
 
+  /**
+   * Update the speedometers in NetworkTables
+   */
+  public void syncNetworkTables() {
+    // Push Drivetrain PIDF constants from NetworkTables to the controllers
+    topLeftVelocity.setDouble(topLeft.getEncoder().getVelocity());
+    topRightVelocity.setDouble(topRight.getEncoder().getVelocity());
+    bottomLeftVelocity.setDouble(bottomLeft.getEncoder().getVelocity());
+    bottomRightVelocity.setDouble(bottomRight.getEncoder().getVelocity());
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    syncNetworkTables();
   }
 }

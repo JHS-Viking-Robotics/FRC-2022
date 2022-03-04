@@ -11,7 +11,7 @@ import static frc.robot.Constants.Subsystem.Drivetrain.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxRelativeEncoder;
+import static com.revrobotics.SparkMaxRelativeEncoder.Type.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -74,25 +74,28 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
+    // Connect to the motor controllers
     leftFront = new CANSparkMax(LEFT_FRONT_ID, MotorType.kBrushless);
     leftBack = new CANSparkMax(LEFT_BACK_ID, MotorType.kBrushless);
     rightFront = new CANSparkMax(RIGHT_FRONT_ID, MotorType.kBrushless);
     rightBack = new CANSparkMax(RIGHT_BACK_ID, MotorType.kBrushless);
 
+    // Reset the controllers and set the inversion
     leftFront.restoreFactoryDefaults();
     leftBack.restoreFactoryDefaults();
     rightFront.restoreFactoryDefaults();
     rightBack.restoreFactoryDefaults();
-
     leftFront.setInverted(LEFT_FRONT_INVERTED);
     leftBack.setInverted(LEFT_BACK_INVERTED);
     rightFront.setInverted(RIGHT_FRONT_INVERTED);
     rightBack.setInverted(RIGHT_BACK_INVERTED);
 
-    leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
-    leftBackEncoder = leftBack.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
-    rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
-    rightBackEncoder = rightBack.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
+    // Connect to the encoders on the controllers, and set the conversion rate
+    // for meters and meters/second
+    leftFrontEncoder = leftFront.getEncoder(kHallSensor, 42);
+    leftBackEncoder = leftBack.getEncoder(kHallSensor, 42);
+    rightFrontEncoder = rightFront.getEncoder(kHallSensor, 42);
+    rightBackEncoder = rightBack.getEncoder(kHallSensor, 42);
     leftFrontEncoder.setPositionConversionFactor(
         (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
     leftBackEncoder.setPositionConversionFactor(
@@ -110,11 +113,16 @@ public class Drivetrain extends SubsystemBase {
     rightBackEncoder.setVelocityConversionFactor(
         (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
 
-    driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
+    // Connect to and reset the gyroscope
     driveGyro = new ADXRS450_Gyro();
     driveGyro.reset();
+
+    // Set up the MecanumDrive and the Odometry. These are helper classes which
+    // let us easily drive Mecanum-style and track our robot on the field
+    driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
     driveOdometry = new MecanumDriveOdometry(KINEMATICS, getGyroRotation());
 
+    // Configure the Shuffleboard tab for the Drivetain
     configureShuffleboard();
   }
 
@@ -136,7 +144,7 @@ public class Drivetrain extends SubsystemBase {
         .withPosition(0, 0)
         .withSize(2, 1);
     // Note that NetworkTables uses a flat namespace where the keys use '/' to
-    // denote hierarchy, so we manually set the title in Shuffleboard instead
+    // denote hierarchy, so we can't write m/s for units
     ShuffleboardLayout shuffleVelocityLayout = shuffleDrivetrainTab
         .getLayout("Speedometer (ms)", BuiltInLayouts.kGrid)
         .withProperties(Map.of(
