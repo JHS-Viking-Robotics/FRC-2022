@@ -16,15 +16,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import static edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -43,10 +40,8 @@ public class Drivetrain extends SubsystemBase {
   private final RelativeEncoder rightFrontEncoder;  // Right side front encoder
   private final RelativeEncoder rightBackEncoder;   // Right side rear encoder
   private final MecanumDrive driveMecanum;          // Mecanum drive interface
-  private final DifferentialDrive driveDiff;        // Differential drive interface
   private final ADXRS450_Gyro driveGyro;            // Gyroscope for determining robot heading
   private final MecanumDriveOdometry driveOdometryMec; // MecanumDrive Odometry object for keeping track of robot Pose
-  private final DifferentialDriveOdometry driveOdometryDiff; // DifferentialDrive Odometry object for keeping track of robot Pose
 
   private NetworkTableEntry leftDistance;   // NetworkTables odometer for left side sensors
   private NetworkTableEntry rightDistance;  // NetworkTables odometer for right side sensors
@@ -58,6 +53,8 @@ public class Drivetrain extends SubsystemBase {
   private NetworkTableEntry driveD;         // kD for Talon closed-loop PID
   private NetworkTableEntry driveF;         // kF for Talon closed-loop PID
   private NetworkTableEntry driveSpeed;     // Percent of max output for motors
+
+  private double loopCount;                 // Number of control loops ran
 
   /** Hopper Intake modes of operation */
   public enum Motors {
@@ -126,11 +123,7 @@ public class Drivetrain extends SubsystemBase {
     // Set up the MecanumDrive and the Odometry. These are helper classes which
     // let us easily drive Mecanum-style and track our robot on the field
     driveMecanum = new MecanumDrive(leftFront, leftBack, rightFront, rightBack);
-    driveDiff = new DifferentialDrive(
-        new MotorControllerGroup(leftFront, leftBack),
-        new MotorControllerGroup(rightFront, rightBack));
     driveOdometryMec = new MecanumDriveOdometry(MEC_KINEMATICS, getGyroRotation());
-    driveOdometryDiff = new DifferentialDriveOdometry(getGyroRotation());
 
     // Configure the Shuffleboard tab for the Drivetain
     configureShuffleboard();
@@ -212,14 +205,14 @@ public class Drivetrain extends SubsystemBase {
 
     // Add a control for the drive speed
     driveSpeed = shuffleDrivetrainTab
-        .add("Drive Speed", 0.3)
+        .add("Drive Speed", 0.2)
         .withWidget(kNumberSlider)
         .withProperties(
           Map.of(
               "Min", 0,
               "Max", 1))
       .withSize(2, 1)
-      .withPosition(0, 4)
+      .withPosition(6, 0)
       .getEntry();
   }
 
@@ -276,13 +269,6 @@ public class Drivetrain extends SubsystemBase {
         getVelocity(Motors.RIGHT_BACK));
   }
 
-  /** Get the current DifferentialDrive WheelSpeeds of the robot */
-  public DifferentialDriveWheelSpeeds getWheelSpeedsDiff() {
-    return new DifferentialDriveWheelSpeeds(
-        getVelocity(Motors.LEFT),
-        getVelocity(Motors.RIGHT));
-  }
-
   /** Reset the encoders to zero */
   public void resetEncoders() {
     resetEncoders(0);
@@ -328,11 +314,6 @@ public class Drivetrain extends SubsystemBase {
     return driveOdometryMec.getPoseMeters();
   }
 
-  /** Return the current estimated DifferentialDrive Pose2d of the robot */
-  public Pose2d getPoseDiff() {
-    return driveOdometryDiff.getPoseMeters();
-  }
-
   /** Reset the MecanumDrive odometry model to the specified Pose2d */
   public void resetOdometryMec(Pose2d pose) {
     resetEncoders();
@@ -345,27 +326,26 @@ public class Drivetrain extends SubsystemBase {
    * @see #resetOdometryMec(Pose2d)
    */
   public void resetOdometryMec() {
-    resetOdometryMec(getPoseMec());
-  }
-
-  /** Reset the MecanumDrive odometry model to the specified Pose2d */
-  public void resetOdometryDiff(Pose2d pose) {
-    resetEncoders();
-    driveOdometryDiff.resetPosition(pose, getGyroRotation());
-  }
-
-  /**
-   * Reset the MecanumDrive odometry model and the encoders
-   *
-   * @see #resetOdometryDiff(Pose2d)
-   */
-  public void resetOdometryDiff() {
-    resetOdometryDiff(getPoseDiff());
+    resetOdometryMec(new Pose2d(0, 0, getGyroRotation()));
   }
 
   /** Drives the robot using ArcadeDrive style control */
   public void arcadeDrive(double throttle, double rotation) {
-    driveDiff.arcadeDrive(throttle, rotation);
+    driveMecanum.driveCartesian(throttle, 0, rotation);
+  }
+
+  /** Move in the given direction */
+  public void moveTo(Translation2d position) {
+    // Convert the x and y components into unit vectors, ignoring a component if
+    // it is below 5 centimeters. Note Translation2d uses forward +x left +y,
+    // and driveCartesian uses right +x forward +y
+    double x = (Math.abs(position.getX()) > 0.05) ? (position.getX() / position.getNorm()) : 0.0;
+    double y = (Math.abs(position.getY()) > 0.05) ? (position.getY() / position.getNorm()) : 0.0;
+    System.out.println("Moving " + x + ", " + y);
+    driveMecanum.driveCartesian(
+        x * driveSpeed.getDouble(0.0),
+        -y * driveSpeed.getDouble(0.0),
+        0.0);
   }
 
   /** Mecanum drive */
@@ -398,23 +378,25 @@ public class Drivetrain extends SubsystemBase {
    * configured on the Shuffleboard
    */
   public void syncNetworkTables() {
-    // Push Drivetrain PIDF constants from NetworkTables to the controllers
-    leftFront.getPIDController().setP(driveP.getDouble(P));
-    leftFront.getPIDController().setI(driveI.getDouble(I));
-    leftFront.getPIDController().setD(driveD.getDouble(D));
-    leftFront.getPIDController().setFF(driveF.getDouble(F));
-    leftBack.getPIDController().setP(driveP.getDouble(P));
-    leftBack.getPIDController().setI(driveI.getDouble(I));
-    leftBack.getPIDController().setD(driveD.getDouble(D));
-    leftBack.getPIDController().setFF(driveF.getDouble(F));
-    rightFront.getPIDController().setP(driveP.getDouble(P));
-    rightFront.getPIDController().setI(driveI.getDouble(I));
-    rightFront.getPIDController().setD(driveD.getDouble(D));
-    rightFront.getPIDController().setFF(driveF.getDouble(F));
-    rightBack.getPIDController().setP(driveP.getDouble(P));
-    rightBack.getPIDController().setI(driveI.getDouble(I));
-    rightBack.getPIDController().setD(driveD.getDouble(D));
-    rightBack.getPIDController().setFF(driveF.getDouble(F));
+    if (++loopCount % 50 == 0) {
+      // Push Drivetrain PIDF constants from NetworkTables to the controllers
+      leftFront.getPIDController().setP(driveP.getDouble(P));
+      leftFront.getPIDController().setI(driveI.getDouble(I));
+      leftFront.getPIDController().setD(driveD.getDouble(D));
+      leftFront.getPIDController().setFF(driveF.getDouble(F));
+      leftBack.getPIDController().setP(driveP.getDouble(P));
+      leftBack.getPIDController().setI(driveI.getDouble(I));
+      leftBack.getPIDController().setD(driveD.getDouble(D));
+      leftBack.getPIDController().setFF(driveF.getDouble(F));
+      rightFront.getPIDController().setP(driveP.getDouble(P));
+      rightFront.getPIDController().setI(driveI.getDouble(I));
+      rightFront.getPIDController().setD(driveD.getDouble(D));
+      rightFront.getPIDController().setFF(driveF.getDouble(F));
+      rightBack.getPIDController().setP(driveP.getDouble(P));
+      rightBack.getPIDController().setI(driveI.getDouble(I));
+      rightBack.getPIDController().setD(driveD.getDouble(D));
+      rightBack.getPIDController().setFF(driveF.getDouble(F));
+    }
 
     // Push the current potition data from the sensors to the NetworkTables
     leftDistance.setDouble(getDistance(Motors.LEFT));
@@ -425,11 +407,7 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    syncNetworkTables();
     driveOdometryMec.update(getGyroRotation(), getWheelSpeedsMec());
-    driveOdometryDiff.update(
-        getGyroRotation(),
-        getDistance(Motors.LEFT),
-        getDistance(Motors.RIGHT));
+    syncNetworkTables();
   }
 }
