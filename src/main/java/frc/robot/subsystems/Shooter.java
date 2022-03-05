@@ -63,34 +63,34 @@ public class Shooter extends SubsystemBase {
   /** Configures the Shuffleboard dashboard "Drivetrain" tab */
   private void configureShuffleboard() {
     // Create references to Drivetrain tab and its various layouts
-    ShuffleboardTab shuffleDrivetrainTab = Shuffleboard.getTab("Drivetrain");
+    ShuffleboardTab shuffleShooterTab = Shuffleboard.getTab("Shooter");
 
     // Add piston object to tab
-    shuffleDrivetrainTab
+    shuffleShooterTab
         .add("Trigger Piston", trigger)
         .withPosition(0, 0)
         .withSize(2, 2);
 
     // Configure speedometers for each motor
-    topLeftVelocity = shuffleDrivetrainTab
+    topLeftVelocity = shuffleShooterTab
         .add("Top Left Velocity", 0.0)
         .withWidget(kTextView)
         .withPosition(2, 0)
         .withSize(1, 1)
         .getEntry();
-    topRightVelocity = shuffleDrivetrainTab
+    topRightVelocity = shuffleShooterTab
         .add("Top Right Velocity", 0.0)
         .withWidget(kTextView)
         .withPosition(3, 0)
         .withSize(1, 1)
         .getEntry();
-    bottomLeftVelocity = shuffleDrivetrainTab
+    bottomLeftVelocity = shuffleShooterTab
         .add("Bottom Left Velocity", 0.0)
         .withWidget(kTextView)
         .withPosition(2, 1)
         .withSize(1, 1)
         .getEntry();
-    bottomRightVelocity = shuffleDrivetrainTab
+    bottomRightVelocity = shuffleShooterTab
         .add("Bottom Right Velocity", 0.0)
         .withWidget(kTextView)
         .withPosition(3, 1)
@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase {
         .getEntry();
     
     // Configure speed slider
-    shooterSpeed = shuffleDrivetrainTab
+    shooterSpeed = shuffleShooterTab
         .add("Shooter Speed", 0.0)
         .withWidget(kNumberSlider)
         .withProperties(

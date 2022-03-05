@@ -48,7 +48,7 @@ public final class Constants {
       /** Right back SparkMAX is inverted */
       public final static boolean RIGHT_BACK_INVERTED = true;
       /** P constant for SparkMAX onboard PID control */
-      public final static double P = 0.0;
+      public final static double P = 3.5086;
       /** I constant for SparkMAX onboard PID control */
       public final static double I = 0.0;
       /** D constant for SparkMAX onboard PID control */
@@ -67,17 +67,17 @@ public final class Constants {
        * characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double S = 1.48;
+      public final static double S = 0.13598;
       /** kV constant with units (Vs)/m (volt seconds per meter) for Drivetrain
        * motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double V = 2.93;
+      public final static double V = 2.8389;
       /** kA constant with units (Vs^2)/m (volt seconds squared per meter) for
        * Drivetrain motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
        * section on motor characterization for more */
-      public final static double A = 0.0313;
+      public final static double A = 0.32108;
       /** MecanumDriveKinematics object for the Drivetrain */
       public final static MecanumDriveKinematics MEC_KINEMATICS = new MecanumDriveKinematics(
           new Translation2d(0.381, 0.381),
@@ -93,13 +93,13 @@ public final class Constants {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
     public final class Shooter {
     /** CAN Bus ID of top left SparkMax controller */
-    public final static int TOP_LEFT_ID = 2;
+    public final static int TOP_LEFT_ID = 52;
     /** CAN Bus ID of top right SparkMax controller */
-    public final static int TOP_RIGHT_ID = 3;
+    public final static int TOP_RIGHT_ID = 53;
     /** CAN Bus ID of bottom left SparkMax controller */
-    public final static int BOTTOM_LEFT_ID = 4;
+    public final static int BOTTOM_LEFT_ID = 54;
     /** CAN Bus ID of bottom right SparkMax controller */
-    public final static int BOTTOM_RIGHT_ID = 5;
+    public final static int BOTTOM_RIGHT_ID = 55;
     /** Top left SparkMax controller is inverted */
     public final static boolean TOP_LEFT_INVERTED = false;
     /** Top right SparkMax controller is inverted */
