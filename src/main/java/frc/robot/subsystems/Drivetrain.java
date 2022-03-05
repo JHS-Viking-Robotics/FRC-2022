@@ -100,21 +100,21 @@ public class Drivetrain extends SubsystemBase {
     rightFrontEncoder = rightFront.getEncoder(kHallSensor, 42);
     rightBackEncoder = rightBack.getEncoder(kHallSensor, 42);
     leftFrontEncoder.setPositionConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / 10.71);
     leftBackEncoder.setPositionConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / 10.71);
     rightFrontEncoder.setPositionConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / 10.71);
     rightBackEncoder.setPositionConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / 10.71);
     leftFrontEncoder.setVelocityConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
     leftBackEncoder.setVelocityConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
     rightFrontEncoder.setVelocityConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
     rightBackEncoder.setVelocityConversionFactor(
-        (10.71 * 42.0) / Constants.Chassis.WHEEL_DIAMETER);
+        Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
 
     // Connect to and reset the gyroscope
     driveGyro = new ADXRS450_Gyro();
