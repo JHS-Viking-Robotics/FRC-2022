@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 
 /**
@@ -78,11 +79,15 @@ public final class Constants {
        * section on motor characterization for more */
       public final static double A = 0.0313;
       /** MecanumDriveKinematics object for the Drivetrain */
-      public final static MecanumDriveKinematics KINEMATICS = new MecanumDriveKinematics(
+      public final static MecanumDriveKinematics MEC_KINEMATICS = new MecanumDriveKinematics(
           new Translation2d(0.381, 0.381),
           new Translation2d(0.381, -0.381),
           new Translation2d(-0.381, 0.381),
           new Translation2d(-0.381, -0.381));
+      /** DifferentialDriveKinematics object for the Drivetrain,
+       * for driving Tank Drive style */
+      public final static DifferentialDriveKinematics DIFF_KINEMATICS
+          = new DifferentialDriveKinematics(Chassis.TRACK_WIDTH);
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */

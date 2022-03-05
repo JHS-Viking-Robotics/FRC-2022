@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
     
     // Configure speed slider
     shooterSpeed = shuffleDrivetrainTab
-        .add("Lift Setpoint", 0.0)
+        .add("Shooter Speed", 0.0)
         .withWidget(kNumberSlider)
         .withProperties(
             Map.of(
@@ -115,7 +115,19 @@ public class Shooter extends SubsystemBase {
    * take effect as the motors spin up
    */
   public void toggleMotors(boolean active) {
-    double output = active ? shooterSpeed.getDouble(0) : 0;
+    double output = active ? shooterSpeed.getDouble(0.0) : 0;
+    topLeft.set(output);
+    topRight.set(output);
+    bottomLeft.set(output);
+    bottomRight.set(output);
+  }
+
+  /*
+   * Toggle the firing motors on or off. Note that this may take a second to
+   * take effect as the motors spin up
+   */
+  public void toggleMotors() {
+    double output = (topLeft.getEncoder().getVelocity() > 1) ? 0 : shooterSpeed.getDouble(0.0);
     topLeft.set(output);
     topRight.set(output);
     bottomLeft.set(output);
@@ -128,6 +140,13 @@ public class Shooter extends SubsystemBase {
   public void toggleTrigger(boolean active) {
     if (active) { trigger.set(kForward); }
     else { trigger.set(kReverse); }
+  }
+
+  /*
+   * Toggle the firing trigger in or out
+   */
+  public void toggleTrigger() {
+    trigger.toggle();
   }
 
   /**
