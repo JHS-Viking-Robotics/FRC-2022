@@ -57,14 +57,14 @@ public class Drivetrain extends SubsystemBase {
     rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightRearEncoder = rightRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
-    leftFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-    leftRearEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-    rightFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-   rightRearEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-    leftFrontEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
-   leftRearEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-   rightFrontEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
-   rightRearEncoder.setVelocityConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM);
+    leftFrontEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71); 
+    leftRearEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71); 
+    rightFrontEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71);
+   rightRearEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71);
+    leftFrontEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
+   leftRearEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60)); 
+   rightFrontEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60)); 
+   rightRearEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
 
 
 

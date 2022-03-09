@@ -29,6 +29,24 @@ public final class Constants {
   /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
   public final static class Subsystem {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
+    public final static class Shooter {
+      /** CAN Bus ID of left front drive SparkMAX */
+      public final static int TOP_FRONT_ID = 32;
+      /** CAN Bus ID of left back drive SparkMAX */
+      public final static int TOP_BACK_ID = 33;
+      /** CAN Bus ID of right front drive SparkMAX */
+      public final static int BOTTOM_FRONT_ID = 34;
+      /** CAN Bus ID of right back drive SparkMAX */
+      public final static int BOTTOM_BACK_ID = 35;
+      /** Left front SparkMAX is inverted */
+      public final static boolean TOP_FRONT_INVERTED = false;
+      /** Left back SparkMAX is inverted */
+      public final static boolean TOP_BACK_INVERTED = false;
+      /** Right front SparkMAX is inverted */
+      public final static boolean BOTTOM_FRONT_INVERTED = true;
+      /** Right back SparkMAX is inverted */
+      public final static boolean BOTTOM_BACK_INVERTED = true;
+    }
     public final static class Drivetrain {
       /** CAN Bus ID of left front drive SparkMAX */
       public final static int LEFT_FRONT_ID = 48;
@@ -70,7 +88,7 @@ public final class Constants {
       /** kV constant with units (Vs)/m (volt seconds per meter) for Drivetrain
        * motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
-       * section on motor characterization for more */
+         * section on motor characterization for more */
       public final static double V = 2.93;
       /** kA constant with units (Vs^2)/m (volt seconds squared per meter) for
        * Drivetrain motor characterization. See
@@ -84,9 +102,6 @@ public final class Constants {
           new Translation2d(-0.381, 0.381),
           new Translation2d(-0.381, -0.381));
     }
-
-    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
-    
   }
   
   /** Joystick USB ports */
@@ -108,6 +123,6 @@ public final class Constants {
     /** Width of the robot in meters */
     public final static double WIDTH = 27 * Math.INCHES_2_METERS;
     /** Length of the robot in meters */
-    public final static double LENGTH = 32.3 * Math.INCHES_2_METERS;
+    public final static double LENGTH = 32.3 * Math.INCHES_2_METERS; 
   }
-  }
+}

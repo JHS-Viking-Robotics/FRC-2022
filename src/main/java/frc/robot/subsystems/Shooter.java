@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Shooter;
 import frc.robot.Constants;
 import com.revrobotics.SparkMaxRelativeEncoder;
 
@@ -15,61 +15,60 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   /** ask Dan about compatiblity to mukanum drive*/
-  private final CANSparkMax leftFront;
-  private final CANSparkMax rightFront;
-  private final CANSparkMax leftRear;
-  private final CANSparkMax rightRear;
-  private final MecanumDrive driveMecanum;
-  private final ADXRS450_Gyro driveGyro;
+  private final CANSparkMax topFront;
+  private final CANSparkMax bottomFront;
+  private final CANSparkMax topRear;
+  private final CANSparkMax bottomRear;
 
-  private final RelativeEncoder leftFrontEncoder; // Left side front encoder 
-  private final RelativeEncoder leftRearEncoder; // Left side rear encoder 
-  private final RelativeEncoder rightFrontEncoder; // Right side front encoder 
-  private final RelativeEncoder rightRearEncoder; // Right side rear encoder
+  private final RelativeEncoder topFrontEncoder; // Left side front encoder 
+  private final RelativeEncoder topRearEncoder; // Left side rear encoder 
+  private final RelativeEncoder bottomFrontEncoder; // Right side front encoder 
+  private final RelativeEncoder bottomRearEncoder; // Right side rear encoder
+  private final DoubleSolenoid ShooterPCM;
 
-  public Shooter() {
-    leftFront = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_FRONT_ID, MotorType.kBrushless);
-    rightFront = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
-    leftRear = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
-    rightRear = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_BACK_ID, MotorType.kBrushless);
+  public  Shooter() {
+    topFront = new CANSparkMax(Constants.Subsystem.Shooter.TOP_FRONT_ID, MotorType.kBrushless);
+    bottomFront = new CANSparkMax(Constants.Subsystem.Shooter.BOTTOM_FRONT_ID, MotorType.kBrushless);
+    topRear = new CANSparkMax(Constants.Subsystem.Shooter.TOP_BACK_ID, MotorType.kBrushless);
+    bottomRear = new CANSparkMax(Constants.Subsystem.Shooter.BOTTOM_BACK_ID, MotorType.kBrushless);
+    ShooterPCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
     
-    leftFront.restoreFactoryDefaults();
-    rightFront.restoreFactoryDefaults();
-    leftRear.restoreFactoryDefaults();
-    rightRear.restoreFactoryDefaults();
+    topFront.restoreFactoryDefaults();
+    bottomFront.restoreFactoryDefaults();
+    topRear.restoreFactoryDefaults();
+    bottomRear.restoreFactoryDefaults();
      
-    leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    leftRearEncoder = leftRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    rightRearEncoder = rightRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
+    topFrontEncoder = topFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
+    topRearEncoder = topRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
+    bottomFrontEncoder = bottomFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
+    bottomRearEncoder = bottomRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
-    driveMecanum = new MecanumDrive(leftFront, leftRear, rightFront, rightRear);
-    driveGyro = new ADXRS450_Gyro();
-    driveGyro.reset();
   }
-
-  /** Drives the robot using ArcadeDrive style control */
-  public void arcadeDrive(double throttle, double rotation) {
-    driveMecanum.driveCartesian(throttle, 0, rotation);
-  }
-
-  /** Mecanum drive */ 
-  public void mecanumDrive(double throttle, double slide, double rotation) { 
-    driveMecanum.driveCartesian(throttle, slide, rotation);
-  }
-
-  /** Mecanum drive with Field Oriented Driving */ 
-  public void mecanumDriveFOD(double throttle, double slide, double rotation) { 
-    driveMecanum.driveCartesian(throttle, slide, rotation, driveGyro.getRotation2d().getDegrees());
-  } 
   //gssrhrthdfbhtrhsefgr
+public void togglePiston(boolean offOn){
+  if (offOn == true){
+    ShooterPCM.set(kForward);
+  }
+  else{
+    ShooterPCM.set(kReverse);
+  }
+}
+public void presetRev(boolean fire, double throttle, double slide, double rotation){
+  if( fire == true){
+    
+  }
+}
 public void resetEncoder(){
-    leftFront.getEncoder().setPosition(0);
-    rightFront.getEncoder().setPosition(0);
-    rightRear.getEncoder().setPosition(0); 
+    topFront.getEncoder().setPosition(0);
+    bottomFront.getEncoder().setPosition(0);
+    topRear.getEncoder().setPosition(0);
+    bottomRear.getEncoder().setPosition(0);
   }
 }
