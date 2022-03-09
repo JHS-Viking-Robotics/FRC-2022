@@ -41,20 +41,22 @@ public class Drivetrain extends SubsystemBase {
     leftRear = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
     rightRear = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_BACK_ID, MotorType.kBrushless);
     
-    leftFront.restoreFactoryDefaults();
-    rightFront.restoreFactoryDefaults();
-    leftRear.restoreFactoryDefaults();
-    rightRear.restoreFactoryDefaults();
+  rightFront.restoreFactoryDefaults();
+  leftRear.restoreFactoryDefaults();
+  rightRear.restoreFactoryDefaults();
     
-    leftFront.setInverted(Constants.Subsystem.Drivetrain.LEFT_FRONT_INVERTED);
-    rightFront.setInverted(Constants.Subsystem.Drivetrain.RIGHT_FRONT_INVERTED);
-    leftRear.setInverted(Constants.Subsystem.Drivetrain.LEFT_BACK_INVERTED);
-    rightRear.setInverted(Constants.Subsystem.Drivetrain.RIGHT_BACK_INVERTED);
+  leftFront.setInverted(Constants.Subsystem.Drivetrain.LEFT_FRONT_INVERTED);
+    
+  rightFront.setInverted(Constants.Subsystem.Drivetrain.RIGHT_FRONT_INVERTED);
+  leftRear.setInverted(Constants.Subsystem.Drivetrain.LEFT_BACK_INVERTED);
+  rightRear.setInverted(Constants.Subsystem.Drivetrain.RIGHT_BACK_INVERTED);
     
     leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     leftRearEncoder = leftRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightRearEncoder = rightRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
+
+   leftFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
 
    leftFrontEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 
     leftRearEncoder.setPositionConversionFactor( (10.71 * 42.0) / Constants.Chassis.WHEEL_CIRCUM); 

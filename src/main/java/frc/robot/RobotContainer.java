@@ -8,6 +8,7 @@ import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDriveFOD;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;

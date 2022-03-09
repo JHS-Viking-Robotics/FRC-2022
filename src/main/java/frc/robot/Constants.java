@@ -70,7 +70,7 @@ public final class Constants {
       /** kV constant with units (Vs)/m (volt seconds per meter) for Drivetrain
        * motor characterization. See
        * <a href=https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html">FRC Docs</a>
-       * section on motor characterization for more */
+         * section on motor characterization for more */
       public final static double V = 2.93;
       /** kA constant with units (Vs^2)/m (volt seconds squared per meter) for
        * Drivetrain motor characterization. See
@@ -84,7 +84,19 @@ public final class Constants {
           new Translation2d(-0.381, 0.381),
           new Translation2d(-0.381, -0.381));
     }
-  }
+
+    public final static class Shooter {
+      public final static int TOP_FRONT_ID = 32;
+      public final static int TOP_BACK_ID = 33;
+      public final static int BOTTOM_FRONT_ID = 34;
+      public final static int BOTTOM_BACK_ID = 35;
+      public final static boolean TOP_FRONT_INVERTED = false;
+      public final static boolean TOP_BACK_INVERTED = false;
+      public final static boolean BOTTOM_FRONT_INVERTED = true;
+      public final static boolean BOTTOM_BACK_INVERTED = true;
+    }
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
+    }
   
   /** Joystick USB ports */
   public final class Joystick {
