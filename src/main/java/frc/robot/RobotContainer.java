@@ -29,7 +29,7 @@ public class RobotContainer {
   private final XboxController m_driveController = new XboxController(0);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
-//   private final Shooter m_shooter = new Shooter();
+  private final Shooter m_shooter = new Shooter();
 
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
@@ -69,10 +69,10 @@ public class RobotContainer {
           .whenPressed(m_mecanumDrive);
       new JoystickButton(m_driveController, Button.kB.value)
           .whenPressed(m_mecanumDriveFOD);
-    //   new JoystickButton(m_driveController, Button.kY.value)
-    //       .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
-    //   new JoystickButton(m_driveController, Button.kX.value)
-    //       .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
+      new JoystickButton(m_driveController, Button.kY.value)
+          .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
+      new JoystickButton(m_driveController, Button.kX.value)
+          .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
   }
 
   /**

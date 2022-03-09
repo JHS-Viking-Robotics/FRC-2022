@@ -93,21 +93,21 @@ public final class Constants {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
     public final class Shooter {
     /** CAN Bus ID of top left SparkMax controller */
-    public final static int TOP_LEFT_ID = 52;
+    public final static int TOP_LEFT_ID = 32;
     /** CAN Bus ID of top right SparkMax controller */
-    public final static int TOP_RIGHT_ID = 53;
+    public final static int TOP_RIGHT_ID = 33;
     /** CAN Bus ID of bottom left SparkMax controller */
-    public final static int BOTTOM_LEFT_ID = 54;
+    public final static int BOTTOM_LEFT_ID = 34;
     /** CAN Bus ID of bottom right SparkMax controller */
-    public final static int BOTTOM_RIGHT_ID = 55;
+    public final static int BOTTOM_RIGHT_ID = 35;
     /** Top left SparkMax controller is inverted */
     public final static boolean TOP_LEFT_INVERTED = false;
     /** Top right SparkMax controller is inverted */
-    public final static boolean TOP_RIGHT_INVERTED = false;
+    public final static boolean TOP_RIGHT_INVERTED = true;
     /** Bottom left SparkMax controller is inverted */
     public final static boolean BOTTOM_LEFT_INVERTED = false;
     /** Bottom right SparkMax controller is inverted */
-    public final static boolean BOTTOM_RIGHT_INVERTED = false;
+    public final static boolean BOTTOM_RIGHT_INVERTED = true;
     }
   }
   
