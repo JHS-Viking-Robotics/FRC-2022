@@ -39,6 +39,7 @@ public class Shooter extends SubsystemBase {
     topRear = new CANSparkMax(Constants.Subsystem.Shooter.TOP_BACK_ID, MotorType.kBrushless);
     bottomRear = new CANSparkMax(Constants.Subsystem.Shooter.BOTTOM_BACK_ID, MotorType.kBrushless);
     ShooterPCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+
     
     topFront.restoreFactoryDefaults();
     bottomFront.restoreFactoryDefaults();
@@ -60,10 +61,16 @@ public void togglePiston(boolean offOn){
     ShooterPCM.set(kReverse);
   }
 }
-public void presetRev(boolean fire, double throttle, double slide, double rotation){
-  if( fire == true){
-    
-  }
+  //turn on motors
+public void toggleMotors(){
+  double output =(topFrontEncoder.getVelocity()>1) ? 0: 0.5;
+  topFront.set(output);
+  topRear.set(output);
+  bottomFront.set(output);
+  bottomRear.set(output);
+}
+public void toggleTrigger(){
+  ShooterPCM.toggle();
 }
 public void resetEncoder(){
     topFront.getEncoder().setPosition(0);
