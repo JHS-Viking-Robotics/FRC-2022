@@ -8,12 +8,14 @@ import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDriveFOD;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,6 +28,7 @@ public class RobotContainer {
   private final XboxController m_driveController = new XboxController(0);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Shooter m_shooter= new Shooter();
 
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
@@ -44,6 +47,7 @@ public class RobotContainer {
           () -> m_driveController.getLeftY(),
           () -> m_driveController.getLeftX(),
           () -> m_driveController.getRightX());
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -65,6 +69,10 @@ public class RobotContainer {
           .whenPressed(m_mecanumDrive);
       new JoystickButton(m_driveController, Button.kB.value)
           .whenPressed(m_mecanumDriveFOD);
+      new JoystickButton(m_driveController, Button.kX.value)
+          .whenPressed(m_shooter::toggleMotors, m_shooter);
+      new JoystickButton(m_driveController, Button.kY.value)
+          .whenPressed(m_shooter::toggleTrigger, m_shooter);
   }
 
   /**
