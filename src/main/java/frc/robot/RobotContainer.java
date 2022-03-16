@@ -9,6 +9,7 @@ import frc.robot.commands.MecanumDriveFOD;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +30,7 @@ public class RobotContainer {
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Shooter m_shooter= new Shooter();
+  private final Intake m_intake= new Intake();
 
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
@@ -72,7 +74,9 @@ public class RobotContainer {
       new JoystickButton(m_driveController, Button.kX.value)
           .whenPressed(m_shooter::toggleMotors, m_shooter);
       new JoystickButton(m_driveController, Button.kY.value)
-          .whenPressed(m_shooter::toggleTrigger, m_shooter);
+        .whenPressed(m_shooter::toggleTrigger, m_shooter);
+      new JoystickButton(m_driveController, Button.kRightBumper.value)
+        .whenPressed(m_intake::toggleInTake, m_intake);
   }
 
   /**

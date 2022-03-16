@@ -29,6 +29,10 @@ public final class Constants {
   /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
   public final static class Subsystem {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
+    public final static class Intake {
+      public final static int TAKE_ID = 22;
+      public final static boolean TAKE_INVERTED = false;
+    }
     public final static class Shooter {
       /** CAN Bus ID of left front drive SparkMAX */
       public final static int TOP_FRONT_ID = 32;
