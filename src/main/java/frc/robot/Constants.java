@@ -96,7 +96,14 @@ public final class Constants {
       public final static boolean BOTTOM_BACK_INVERTED = true;
     }
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
+    public final static class Lift {
+      public final static int LEFT_ID = 24;
+      public final static int RIGHT_ID = 25;
+      public final static boolean LEFT_INVERTED = false;
+      public final static boolean RIGHT_INVERTED = true;
+      
     }
+}
   
   /** Joystick USB ports */
   public final class Joystick {
