@@ -4,20 +4,18 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.Subsystem.Drivetrain.*;
+import static frc.robot.Constants.Chassis.*;
+import com.revrobotics.SparkMaxRelativeEncoder;
+
 import com.revrobotics.CANSparkMax; 
 import com.revrobotics.RelativeEncoder; 
-import com.revrobotics.SparkMaxRelativeEncoder; 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.Constants;
-import com.revrobotics.SparkMaxRelativeEncoder;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
@@ -33,42 +31,36 @@ public class Drivetrain extends SubsystemBase {
   private final RelativeEncoder rightFrontEncoder; // Right side front encoder 
   private final RelativeEncoder rightRearEncoder; // Right side rear encoder
 
-
-
   public Drivetrain() {
-    leftFront = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_FRONT_ID, MotorType.kBrushless);
-    rightFront = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_FRONT_ID, MotorType.kBrushless);
-    leftRear = new CANSparkMax(Constants.Subsystem.Drivetrain.LEFT_BACK_ID, MotorType.kBrushless);
-    rightRear = new CANSparkMax(Constants.Subsystem.Drivetrain.RIGHT_BACK_ID, MotorType.kBrushless);
+    leftFront = new CANSparkMax(LEFT_FRONT_ID, kBrushless);
+    rightFront = new CANSparkMax(RIGHT_FRONT_ID, kBrushless);
+    leftRear = new CANSparkMax(LEFT_BACK_ID, kBrushless);
+    rightRear = new CANSparkMax(RIGHT_BACK_ID, kBrushless);
     
     leftFront.restoreFactoryDefaults();
     rightFront.restoreFactoryDefaults();
     leftRear.restoreFactoryDefaults();
     rightRear.restoreFactoryDefaults();
     
-   leftFront.setInverted(Constants.Subsystem.Drivetrain.LEFT_FRONT_INVERTED);
-    rightFront.setInverted(Constants.Subsystem.Drivetrain.RIGHT_FRONT_INVERTED);
-    leftRear.setInverted(Constants.Subsystem.Drivetrain.LEFT_BACK_INVERTED);
-    rightRear.setInverted(Constants.Subsystem.Drivetrain.RIGHT_BACK_INVERTED);
+    leftFront.setInverted(LEFT_FRONT_INVERTED);
+    rightFront.setInverted(RIGHT_FRONT_INVERTED);
+    leftRear.setInverted(LEFT_BACK_INVERTED);
+    rightRear.setInverted(RIGHT_BACK_INVERTED);
     
-
     leftFrontEncoder = leftFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     leftRearEncoder = leftRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightFrontEncoder = rightFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     rightRearEncoder = rightRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
-    leftFrontEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71); 
-    leftRearEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71); 
-    rightFrontEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71);
-   rightRearEncoder.setPositionConversionFactor(Constants.Chassis.WHEEL_CIRCUM / 10.71);
-    leftFrontEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
-   leftRearEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60)); 
-   rightFrontEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60)); 
-   rightRearEncoder.setVelocityConversionFactor(Constants.Chassis.WHEEL_CIRCUM / (10.71 * 60));
+    leftFrontEncoder.setPositionConversionFactor(WHEEL_CIRCUM / 10.71); 
+    leftRearEncoder.setPositionConversionFactor(WHEEL_CIRCUM / 10.71); 
+    rightFrontEncoder.setPositionConversionFactor(WHEEL_CIRCUM / 10.71);
+    rightRearEncoder.setPositionConversionFactor(WHEEL_CIRCUM / 10.71);
+    leftFrontEncoder.setVelocityConversionFactor(WHEEL_CIRCUM / (10.71 * 60));
+    leftRearEncoder.setVelocityConversionFactor(WHEEL_CIRCUM / (10.71 * 60)); 
+    rightFrontEncoder.setVelocityConversionFactor(WHEEL_CIRCUM / (10.71 * 60)); 
+    rightRearEncoder.setVelocityConversionFactor(WHEEL_CIRCUM / (10.71 * 60));
 
-
-
-    
     driveMecanum = new MecanumDrive(leftFront, leftRear, rightFront, rightRear);
     driveGyro = new ADXRS450_Gyro();
     driveGyro.reset();
@@ -95,23 +87,26 @@ public void resetEncoder(){
     leftRear.getEncoder().setPosition(0);
     rightRear.getEncoder().setPosition(0); 
 }
-public double getDistanceLeft() {
+  public double getDistanceLeft() {
     return (leftFrontEncoder.getPosition() + leftRearEncoder.getPosition())/2.0;
   }
-public double getDistanceRight() {
+
+  public double getDistanceRight() {
     return (rightFrontEncoder.getPosition() + rightRearEncoder.getPosition())/2.0;
   }
-public double getVelocityLeft(){
-  return (leftFrontEncoder.getVelocity() + leftRearEncoder.getVelocity())/2.0;
-}
-public double getVelocityRight(){
-  return (rightFrontEncoder.getVelocity() + rightRearEncoder.getVelocity())/2.0;
-}
-public double getGyroAngle() {
+
+  public double getVelocityLeft(){
+    return (leftFrontEncoder.getVelocity() + leftRearEncoder.getVelocity())/2.0;
+  }
+
+  public double getVelocityRight(){
+    return (rightFrontEncoder.getVelocity() + rightRearEncoder.getVelocity())/2.0;
+  }
+
+  public double getGyroAngle() {
     return driveGyro.getRotation2d().getDegrees();
   }
 
-  
   public double getGyroVelocity() {
     return driveGyro.getRate();
   }
@@ -120,15 +115,14 @@ public double getGyroAngle() {
     return driveGyro.getRotation2d();
   }
 
-  
   public void resetGyro() {
     if (getVelocityLeft() != 0 || getVelocityRight() != 0) {
      System.out.println("WARNING: Do not try to reset the gyroscope while the robot is moving");
      return;
    }
-
     driveGyro.reset();
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
