@@ -10,6 +10,7 @@ import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,6 +32,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Shooter m_shooter = new Shooter();
   private final Lift m_lift = new Lift();
+  private final Intake m_intake= new Intake();
 
   private final ArcadeDrive m_arcadeDrive
       = new ArcadeDrive(
@@ -49,6 +51,7 @@ public class RobotContainer {
           () -> m_driveController.getLeftY(),
           () -> m_driveController.getLeftX(),
           () -> m_driveController.getRightX());
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,19 +71,23 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-      new JoystickButton(m_driveController, Button.kA.value)
-          .whenPressed(m_mecanumDrive);
-      new JoystickButton(m_driveController, Button.kB.value)
-          .whenPressed(m_mecanumDriveFOD);
-      new JoystickButton(m_driveController, Button.kX.value)
-          .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
-      new JoystickButton(m_driveController, Button.kY.value)
-          .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
-      new JoystickButton(m_driveController, Button.kLeftBumper.value)
-          .whenHeld(new InstantCommand(m_lift::goUp, m_lift));
-      new JoystickButton(m_driveController, Button.kRightBumper.value)
-          .whenHeld(new InstantCommand(m_lift::goDown, m_lift));
-  
+    new JoystickButton(m_driveController, Button.kA.value)
+        .whenPressed(m_mecanumDrive);
+    new JoystickButton(m_driveController, Button.kB.value)
+        .whenPressed(m_mecanumDriveFOD);
+
+    new JoystickButton(m_driveController, Button.kX.value)
+        .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
+
+    new JoystickButton(m_driveController, Button.kLeftBumper.value)
+        .whenHeld(new InstantCommand(m_lift::goUp, m_lift));
+    new JoystickButton(m_driveController, Button.kRightBumper.value)
+        .whenHeld(new InstantCommand(m_lift::goDown, m_lift));
+
+    new JoystickButton(m_driveController, Button.kRightBumper.value)
+        .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));
   }
 
   /**

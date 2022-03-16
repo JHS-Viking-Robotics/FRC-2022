@@ -29,6 +29,30 @@ public final class Constants {
   /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
   public final static class Subsystem {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
+    public final static class Intake {
+      public final static int TAKE_ID = 22;
+      public final static boolean TAKE_INVERTED = false;
+    }
+
+    public final static class Shooter {
+      /** CAN Bus ID of left front drive SparkMAX */
+      public final static int TOP_FRONT_ID = 32;
+      /** CAN Bus ID of left back drive SparkMAX */
+      public final static int TOP_BACK_ID = 33;
+      /** CAN Bus ID of right front drive SparkMAX */
+      public final static int BOTTOM_FRONT_ID = 34;
+      /** CAN Bus ID of right back drive SparkMAX */
+      public final static int BOTTOM_BACK_ID = 35;
+      /** Left front SparkMAX is inverted */
+      public final static boolean TOP_FRONT_INVERTED = false;
+      /** Left back SparkMAX is inverted */
+      public final static boolean TOP_BACK_INVERTED = false;
+      /** Right front SparkMAX is inverted */
+      public final static boolean BOTTOM_FRONT_INVERTED = true;
+      /** Right back SparkMAX is inverted */
+      public final static boolean BOTTOM_BACK_INVERTED = true;
+    }
+
     public final static class Drivetrain {
       /** CAN Bus ID of left front drive SparkMAX */
       public final static int LEFT_FRONT_ID = 48;
@@ -85,17 +109,7 @@ public final class Constants {
           new Translation2d(-0.381, -0.381));
     }
 
-    public final static class Shooter {
-      public final static int TOP_FRONT_ID = 32;
-      public final static int TOP_BACK_ID = 33;
-      public final static int BOTTOM_FRONT_ID = 34;
-      public final static int BOTTOM_BACK_ID = 35;
-      public final static boolean TOP_FRONT_INVERTED = false;
-      public final static boolean TOP_BACK_INVERTED = false;
-      public final static boolean BOTTOM_FRONT_INVERTED = true;
-      public final static boolean BOTTOM_BACK_INVERTED = true;
-    }
-    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Hopper Hopper} subsystem */
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Lift Lift} subsystem */
     public final static class Lift {
       public final static int LEFT_ID = 24;
       public final static int RIGHT_ID = 25;
