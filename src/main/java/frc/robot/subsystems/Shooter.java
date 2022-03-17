@@ -17,32 +17,22 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   /** ask Dan about compatiblity to mukanum drive*/
   private final CANSparkMax topFront;
-  private final CANSparkMax bottomFront;
   private final CANSparkMax topRear;
-  private final CANSparkMax bottomRear;
 
   private final RelativeEncoder topFrontEncoder; // Left side front encoder 
   private final RelativeEncoder topRearEncoder; // Left side rear encoder 
-  private final RelativeEncoder bottomFrontEncoder; // Right side front encoder 
-  private final RelativeEncoder bottomRearEncoder; // Right side rear encoder
   private final DoubleSolenoid ShooterPCM;
 
   public  Shooter() {
     topFront = new CANSparkMax(Constants.Subsystem.Shooter.TOP_FRONT_ID, kBrushless);
-    bottomFront = new CANSparkMax(Constants.Subsystem.Shooter.BOTTOM_FRONT_ID, kBrushless);
     topRear = new CANSparkMax(Constants.Subsystem.Shooter.TOP_BACK_ID, kBrushless);
-    bottomRear = new CANSparkMax(Constants.Subsystem.Shooter.BOTTOM_BACK_ID, kBrushless);
     ShooterPCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
     topFront.restoreFactoryDefaults();
-    bottomFront.restoreFactoryDefaults();
     topRear.restoreFactoryDefaults();
-    bottomRear.restoreFactoryDefaults();
      
     topFrontEncoder = topFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
     topRearEncoder = topRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    bottomFrontEncoder = bottomFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    bottomRearEncoder = bottomRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
   }
   
   //gssrhrthdfbhtrhsefgr
@@ -60,8 +50,6 @@ public class Shooter extends SubsystemBase {
     double output =(topFrontEncoder.getVelocity()>1) ? 0: 0.5;
     topFront.set(output);
     topRear.set(output);
-    bottomFront.set(output);
-    bottomRear.set(output);
   }
 
   public void toggleTrigger(){
@@ -70,8 +58,6 @@ public class Shooter extends SubsystemBase {
   
 public void resetEncoder(){
     topFront.getEncoder().setPosition(0);
-    bottomFront.getEncoder().setPosition(0);
     topRear.getEncoder().setPosition(0);
-    bottomRear.getEncoder().setPosition(0);
   }
 }

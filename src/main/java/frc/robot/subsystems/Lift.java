@@ -13,29 +13,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Lift extends SubsystemBase {
   /** Creates a new Lift. */
   private final CANSparkMax left;
-  private final CANSparkMax right;
-
   public  Lift() {
     left = new CANSparkMax(Constants.Subsystem.Lift.LEFT_ID, MotorType.kBrushless); 
-    right = new CANSparkMax(Constants.Subsystem.Lift.RIGHT_ID, MotorType.kBrushless);
 
   left.restoreFactoryDefaults();
-  right.restoreFactoryDefaults();
-
-  left.setInverted(Constants.Subsystem.Lift.LEFT_INVERTED); 
-  right.setInverted(Constants.Subsystem.Lift.RIGHT_INVERTED);
+left.setInverted(Constants.Subsystem.Lift.LEFT_INVERTED); 
   }
 
   public void goUp(){
     left.set(0.5);
-    right.set(0.5);
   }
   public void goDown(){
     left.set(-0.5);
-    right.set(-0.5);
   }
   public void stop(){
     left.set(0);
-    right.set(0);
   }
 }
