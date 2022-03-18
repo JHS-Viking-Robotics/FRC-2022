@@ -22,6 +22,7 @@ public class Shooter extends SubsystemBase {
   private final RelativeEncoder topFrontEncoder; // Left side front encoder 
   private final RelativeEncoder topRearEncoder; // Left side rear encoder 
   private final DoubleSolenoid ShooterPCM;
+  private boolean motorsOn = false;              // Current state of the motors
 
   public  Shooter() {
     topFront = new CANSparkMax(Constants.Subsystem.Shooter.TOP_FRONT_ID, kBrushless);
@@ -47,7 +48,8 @@ public class Shooter extends SubsystemBase {
 
   //turn on motors
   public void toggleMotors(){
-    double output =(topFrontEncoder.getVelocity()>1) ? 0: 0.5;
+    double output = (motorsOn) ? 0 : 0.5;
+    motorsOn = !motorsOn;
     topFront.set(output);
     topRear.set(output);
   }

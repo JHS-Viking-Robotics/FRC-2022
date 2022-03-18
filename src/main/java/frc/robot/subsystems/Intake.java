@@ -17,6 +17,8 @@ public class Intake extends SubsystemBase {
 
   private final RelativeEncoder takeMotorEncoder;
 
+  private boolean intakeOn = false;                  // State of intake motors
+
   public  Intake() {
     takeMotor = new CANSparkMax(TAKE_ID, MotorType.kBrushless);
     takeMotor.restoreFactoryDefaults();
@@ -25,7 +27,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void toggleInTake() {
-    double output =(takeMotorEncoder.getVelocity()>1) ? 0: 0.5;
+    double output =(intakeOn) ? 0: 0.5;
+    intakeOn = !intakeOn;
     takeMotor.set(output);
   }
 
