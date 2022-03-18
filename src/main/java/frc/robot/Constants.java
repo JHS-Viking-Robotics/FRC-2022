@@ -36,21 +36,13 @@ public final class Constants {
 
     public final static class Shooter {
       /** CAN Bus ID of left front drive SparkMAX */
-      public final static int TOP_FRONT_ID = 32;
+      public final static int FRONT_ID = 32;
       /** CAN Bus ID of left back drive SparkMAX */
-      public final static int TOP_BACK_ID = 33;
-      /** CAN Bus ID of right front drive SparkMAX */
-      public final static int BOTTOM_FRONT_ID = 34;
-      /** CAN Bus ID of right back drive SparkMAX */
-      public final static int BOTTOM_BACK_ID = 35;
+      public final static int REAR_ID = 33;
       /** Left front SparkMAX is inverted */
-      public final static boolean TOP_FRONT_INVERTED = false;
+      public final static boolean FRONT_INVERTED = false;
       /** Left back SparkMAX is inverted */
-      public final static boolean TOP_BACK_INVERTED = false;
-      /** Right front SparkMAX is inverted */
-      public final static boolean BOTTOM_FRONT_INVERTED = true;
-      /** Right back SparkMAX is inverted */
-      public final static boolean BOTTOM_BACK_INVERTED = true;
+      public final static boolean REAR_INVERTED = false;
     }
 
     public final static class Drivetrain {

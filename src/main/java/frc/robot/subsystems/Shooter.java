@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import frc.robot.subsystems.Shooter;
-import frc.robot.Constants;
+import static frc.robot.Constants.Subsystem.Shooter.*;
 
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax; 
-import com.revrobotics.RelativeEncoder; 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,26 +13,24 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   /** ask Dan about compatiblity to mukanum drive*/
-  private final CANSparkMax topFront;
-  private final CANSparkMax topRear;
+  private final CANSparkMax front;
+  private final CANSparkMax rear;
 
-  private final RelativeEncoder topFrontEncoder; // Left side front encoder 
-  private final RelativeEncoder topRearEncoder; // Left side rear encoder 
   private final DoubleSolenoid ShooterPCM;
   private boolean motorsOn = false;              // Current state of the motors
 
   public  Shooter() {
-    topFront = new CANSparkMax(Constants.Subsystem.Shooter.TOP_FRONT_ID, kBrushless);
-    topRear = new CANSparkMax(Constants.Subsystem.Shooter.TOP_BACK_ID, kBrushless);
+    front = new CANSparkMax(FRONT_ID, kBrushless);
+    rear = new CANSparkMax(REAR_ID, kBrushless);
     ShooterPCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
-    topFront.restoreFactoryDefaults();
-    topRear.restoreFactoryDefaults();
-     
-    topFrontEncoder = topFront.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
-    topRearEncoder = topRear.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
+    front.restoreFactoryDefaults();
+    rear.restoreFactoryDefaults();
+
+    front.setInverted(FRONT_INVERTED);
+    rear.setInverted(REAR_INVERTED);
   }
-  
+
   //gssrhrthdfbhtrhsefgr
   public void togglePiston(boolean offOn){
     if (offOn == true){
@@ -48,18 +43,22 @@ public class Shooter extends SubsystemBase {
 
   //turn on motors
   public void toggleMotors(){
-    double output = (motorsOn) ? 0 : 0.5;
     motorsOn = !motorsOn;
-    topFront.set(output);
-    topRear.set(output);
   }
 
   public void toggleTrigger(){
     ShooterPCM.toggle();
   }
-  
-public void resetEncoder(){
-    topFront.getEncoder().setPosition(0);
-    topRear.getEncoder().setPosition(0);
+
+  public void resetEncoder(){
+    front.getEncoder().setPosition(0);
+    rear.getEncoder().setPosition(0);
+  }
+
+  @Override
+  public void periodic() {
+    double output = (motorsOn) ? 0 : 0.5;
+    front.set(output);
+    rear.set(output);
   }
 }
