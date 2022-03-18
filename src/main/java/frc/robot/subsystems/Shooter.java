@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double output = (motorsOn) ? 0 : 0.5;
+    double output = (motorsOn) ? 0.5 : 0;
     front.set(output);
     rear.set(output);
   }

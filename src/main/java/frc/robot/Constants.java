@@ -28,12 +28,13 @@ public final class Constants {
 
   /** Configuration options, PID constants, and CAN Bus ID's for various subsystems */
   public final static class Subsystem {
-    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Intake Intake} subsystem */
     public final static class Intake {
       public final static int TAKE_ID = 22;
       public final static boolean TAKE_INVERTED = false;
     }
 
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
     public final static class Shooter {
       /** CAN Bus ID of front SparkMAX */
       public final static int FRONT_ID = 32;
@@ -45,6 +46,7 @@ public final class Constants {
       public final static boolean REAR_INVERTED = false;
     }
 
+    /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Drivetrain Drivetrain} subsystem */
     public final static class Drivetrain {
       /** CAN Bus ID of left front drive SparkMAX */
       public final static int LEFT_FRONT_ID = 48;
@@ -103,11 +105,10 @@ public final class Constants {
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Lift Lift} subsystem */
     public final static class Lift {
-      public final static int LEFT_ID = 24;
-      public final static int RIGHT_ID = 25;
-      public final static boolean LEFT_INVERTED = false;
-      public final static boolean RIGHT_INVERTED = true;
-      
+      /** CAN Bus ID of lift SparkMAX */
+      public final static int LIFT_ID = 24;
+      /** Lift SparkMAX is inverted */
+      public final static boolean LIFT_INVERTED = false;      
     }
 }
   

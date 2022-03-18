@@ -4,29 +4,31 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
+import static frc.robot.Constants.Subsystem.Lift.*;
 
 import com.revrobotics.CANSparkMax; 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lift extends SubsystemBase {
-  /** Creates a new Lift. */
-  private final CANSparkMax left;
-  public  Lift() {
-    left = new CANSparkMax(Constants.Subsystem.Lift.LEFT_ID, MotorType.kBrushless); 
 
-  left.restoreFactoryDefaults();
-left.setInverted(Constants.Subsystem.Lift.LEFT_INVERTED); 
+  private final CANSparkMax lift; // 
+
+  /** Creates a new Lift. */
+  public  Lift() {
+    lift = new CANSparkMax(LIFT_ID, kBrushless);
+    lift.restoreFactoryDefaults();
+    lift.setInverted(LIFT_INVERTED); 
   }
 
   public void goUp(){
-    left.set(0.5);
+    lift.set(0.5);
   }
   public void goDown(){
-    left.set(-0.5);
+    lift.set(-0.5);
   }
   public void stop(){
-    left.set(0);
+    lift.set(0);
   }
 }
