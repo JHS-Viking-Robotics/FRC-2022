@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -28,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_driveController = new XboxController(0);
-  private final XboxController m_shooterController = new XboxController(0);
+  private final XboxController m_shooterController = new XboxController(1);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Shooter m_shooter = new Shooter();
@@ -59,10 +60,9 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Set arcade drive as default
+    // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_arcadeDrive);
-    
-    m_lift.setDefaultCommand(new InstantCommand(m_lift::stop,m_lift));
+    m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
   }
 
   /**
@@ -83,9 +83,9 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
 
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
-        .whenHeld(new InstantCommand(m_lift::goUp, m_lift));
+        .whenHeld(new RunCommand(m_lift::goUp, m_lift));
     new JoystickButton(m_driveController, Button.kRightBumper.value)
-        .whenHeld(new InstantCommand(m_lift::goDown, m_lift));
+        .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
         .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));

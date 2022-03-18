@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
     takeMotor = new CANSparkMax(TAKE_ID, MotorType.kBrushless);
     takeMotor.restoreFactoryDefaults();
     takeMotor.setInverted(TAKE_INVERTED);
-    takeMotorEncoder = takeMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 22); 
+    takeMotorEncoder = takeMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42); 
   }
 
   public void toggleInTake() {
