@@ -77,9 +77,9 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kB.value)
         .whenPressed(m_mecanumDriveFOD);
 
-    new JoystickButton(m_shooterController, Button.kX.value)
+    new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
-    new JoystickButton(m_shooterController, Button.kY.value)
+    new JoystickButton(m_driveController, Button.kY.value)
         .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
 
     new JoystickButton(m_shooterController, Button.kY.value)

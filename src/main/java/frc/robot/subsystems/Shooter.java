@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Shooter extends SubsystemBase {
+  private final CANSparkMax front;          // Front shooter motor
+  private final CANSparkMax rear;           // Rear shooter motor
+  private final DoubleSolenoid ShooterPCM;  // Solenoid for the shooter trigger
+  
+  private boolean motorsOn = false;         // Current state of the motors
+  
   /** Creates a new Shooter. */
-  /** ask Dan about compatiblity to mukanum drive*/
-  private final CANSparkMax front;
-  private final CANSparkMax rear;
-
-  private final DoubleSolenoid ShooterPCM;
-  private boolean motorsOn = false;              // Current state of the motors
-
   public  Shooter() {
     front = new CANSparkMax(FRONT_ID, kBrushless);
     rear = new CANSparkMax(REAR_ID, kBrushless);
@@ -31,7 +30,7 @@ public class Shooter extends SubsystemBase {
     rear.setInverted(REAR_INVERTED);
   }
 
-  //gssrhrthdfbhtrhsefgr
+  /* Toggle the trigger on/off */
   public void togglePiston(boolean offOn){
     if (offOn == true){
       ShooterPCM.set(kForward);
@@ -41,18 +40,14 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  //turn on motors
+  /* Toggle the spin-up motors on/off */
   public void toggleMotors(){
     motorsOn = !motorsOn;
   }
 
+  /* Toggle the trigger on/off */
   public void toggleTrigger(){
     ShooterPCM.toggle();
-  }
-
-  public void resetEncoder(){
-    front.getEncoder().setPosition(0);
-    rear.getEncoder().setPosition(0);
   }
 
   @Override
