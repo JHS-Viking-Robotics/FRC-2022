@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.MecanumDriveFOD;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
@@ -46,13 +45,15 @@ public class RobotContainer {
           m_drivetrain,
           () -> m_driveController.getLeftY(),
           () -> m_driveController.getLeftX(),
-          () -> m_driveController.getRightX());
-  private final MecanumDriveFOD m_mecanumDriveFOD
-      = new MecanumDriveFOD(
+          () -> m_driveController.getRightX(),
+          false);
+  private final MecanumDrive m_mecanumDriveFOD
+      = new MecanumDrive(
           m_drivetrain,
           () -> m_driveController.getLeftY(),
           () -> m_driveController.getLeftX(),
-          () -> m_driveController.getRightX());
+          () -> m_driveController.getRightX(),
+          true);
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */

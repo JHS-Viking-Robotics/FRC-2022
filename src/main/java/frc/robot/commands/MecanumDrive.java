@@ -14,14 +14,16 @@ public class MecanumDrive extends CommandBase {
   private DoubleSupplier throttle;
   private DoubleSupplier slide;
   private DoubleSupplier rotation;
+  private boolean useFOD;
   
   /** Creates a new MecanumDrive */
-  public MecanumDrive(Drivetrain drivetrain, DoubleSupplier throttle, DoubleSupplier slide, DoubleSupplier rotation) {
+  public MecanumDrive(Drivetrain drivetrain, DoubleSupplier throttle, DoubleSupplier slide, DoubleSupplier rotation, boolean useFOD) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drivetrain = drivetrain;
     this.throttle = throttle;
     this.slide = slide;
     this.rotation = rotation;
+    this.useFOD = useFOD;
     addRequirements(this.drivetrain);
   }
 
@@ -35,10 +37,11 @@ public class MecanumDrive extends CommandBase {
     // Drive the robot using driveCartesian style control
     // NOTE: The +/- for the y axis on the joystick is inverted from
     // the right-hand-rule
-    drivetrain.mecanumDrive(
+    drivetrain.drive(
         -throttle.getAsDouble(),
         slide.getAsDouble(),
-        rotation.getAsDouble());
+        rotation.getAsDouble(),
+        useFOD);
   }
    
   // Called once the command ends or is interrupted.

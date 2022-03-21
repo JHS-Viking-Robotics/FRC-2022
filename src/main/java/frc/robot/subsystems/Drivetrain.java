@@ -13,6 +13,7 @@ import com.revrobotics.RelativeEncoder;
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -81,14 +82,34 @@ public class Drivetrain extends SubsystemBase {
     driveMecanum.driveCartesian(throttle, 0, rotation);
   }
 
-  /** Mecanum drive */ 
-  public void mecanumDrive(double throttle, double slide, double rotation) { 
-    driveMecanum.driveCartesian(throttle, slide, rotation);
+  /**
+   * Drive Mecanum style with/without FOD (Field Oriented Driving)
+   * 
+   * @param throttle speed along y axis (forward is positive) [-1.0, 1.0]
+   * @param slide speed along x-axis (right is positive) [-1.0, 1.0]
+   * @param rotation rotational speed (clockwise is positive) [-1.0, 1.0]
+   * @param useFOD use Field Oriented Driving
+   */ 
+  public void drive(double throttle, double slide, double rotation, boolean useFOD) { 
+    if (useFOD) {
+      driveMecanum.driveCartesian(throttle, slide, rotation, getGyroAngle());
+    } else {
+      driveMecanum.driveCartesian(throttle, slide, rotation);
+    }
   }
 
-  /** Mecanum drive with Field Oriented Driving */ 
-  public void mecanumDriveFOD(double throttle, double slide, double rotation) { 
-    driveMecanum.driveCartesian(throttle, slide, rotation, driveGyro.getRotation2d().getDegrees());
+  /** Set the max speed of the drivetrain between [0,1] */
+  public void setMaxSpeed(double maxSpeed) {
+    driveMecanum.setMaxOutput(maxSpeed);
+  }
+
+  /**
+   * Reset the max speed of the drivetrain to the default in Constants.
+   * 
+   * @see #setMaxSpeed(double)
+   */
+  public void setMaxSpeed() {
+    driveMecanum.setMaxOutput(MAX_SPEED);
   }
 
   /** Reset the encoders to 0 */
@@ -130,6 +151,10 @@ public class Drivetrain extends SubsystemBase {
         rightRearEncoder.getVelocity());
   }
 
+  /** Get the current robot pose as a Pose2d object in meters */
+  public Pose2d getPose() {
+    return driveOdometry.getPoseMeters();
+  }
   /** Get the current gyroscope angle in degrees from forward [-180, 180] */
   public double getGyroAngle() {
     return driveGyro.getRotation2d().getDegrees();
