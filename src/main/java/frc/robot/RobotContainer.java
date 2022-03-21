@@ -7,11 +7,14 @@ package frc.robot;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.commands.autonomous.GetOffLine;
+import frc.robot.commands.autonomous.MoveToLocation;
 import frc.robot.subsystems.*;
-
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -52,12 +55,28 @@ public class RobotContainer {
           () -> m_driveController.getLeftX(),
           () -> m_driveController.getRightX(),
           true);
-  
+
+    // A chooser for autonomous commands
+    SendableChooser<Command> m_autonSelector = new SendableChooser<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure the autonomous mode selector
+    m_autonSelector.setDefaultOption(
+        "Get Off The Line",
+        new GetOffLine(m_drivetrain, 0.2, true));
+    m_autonSelector.addOption(
+        "Move To (1, 1)",
+        new MoveToLocation(
+            m_drivetrain,
+            new Translation2d(1, 1),
+            0.3));
+
+    // Put the chooser on the dashboard
+    SmartDashboard.putData(m_autonSelector);
 
     // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_arcadeDrive);
@@ -96,7 +115,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new GetOffLine(m_drivetrain, 0.4, true);
+    return m_autonSelector.getSelected();
   }
 }
