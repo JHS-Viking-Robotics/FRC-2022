@@ -6,10 +6,8 @@ package frc.robot;
 
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDrive;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Lift;
-import frc.robot.subsystems.Intake;
+import frc.robot.commands.autonomous.GetOffLine;
+import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -99,6 +97,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_arcadeDrive;
+    return new GetOffLine(m_drivetrain, 0.4, true);
   }
 }
