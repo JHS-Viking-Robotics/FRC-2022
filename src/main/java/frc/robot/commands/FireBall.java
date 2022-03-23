@@ -26,6 +26,6 @@ public class FireBall extends CommandBase {
   }
   @Override
   public boolean isFinished() {
-    return timer.get() > 0.1;
+    return timer.get() > 2;
   }
 }
