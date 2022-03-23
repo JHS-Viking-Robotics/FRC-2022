@@ -40,6 +40,10 @@ public final class Constants {
       public final static int FRONT_ID = 32;
       /** CAN Bus ID of rear SparkMAX */
       public final static int REAR_ID = 33;
+      /** Forward channel on the Pneumatics Module */
+      public final static int TRIGGER_FORWARD_ID = 1;
+      /** Reverse channel on the Pneumatics Module */
+      public final static int TRIGGER_REVERSE_ID = 2;
       /** Front SparkMAX is inverted */
       public final static boolean FRONT_INVERTED = true;
       /** Rear SparkMAX is inverted */

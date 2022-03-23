@@ -1,19 +1,19 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.Subsystem.Shooter.*;
+import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+import static edu.wpi.first.wpilibj.PneumaticsModuleType.*;
 
 import com.revrobotics.CANSparkMax; 
-import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Shooter extends SubsystemBase {
   private final CANSparkMax front;          // Front shooter motor
   private final CANSparkMax rear;           // Rear shooter motor
-  private final DoubleSolenoid ShooterPCM;  // Solenoid for the shooter trigger
+  private final DoubleSolenoid shooterPCM;  // Solenoid for the shooter trigger
   
   private boolean motorsOn = false;         // Current state of the motors
   
@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase {
   public  Shooter() {
     front = new CANSparkMax(FRONT_ID, kBrushless);
     rear = new CANSparkMax(REAR_ID, kBrushless);
-    ShooterPCM = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+    shooterPCM = new DoubleSolenoid(CTREPCM, TRIGGER_FORWARD_ID, TRIGGER_REVERSE_ID);
 
     front.restoreFactoryDefaults();
     rear.restoreFactoryDefaults();
@@ -33,10 +33,10 @@ public class Shooter extends SubsystemBase {
   /* Toggle the trigger on/off */
   public void togglePiston(boolean offOn){
     if (offOn == true){
-      ShooterPCM.set(kForward);
+      shooterPCM.set(kForward);
     }
     else{
-      ShooterPCM.set(kReverse);
+      shooterPCM.set(kReverse);
     }
   }
 
@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
 
   /* Toggle the trigger on/off */
   public void toggleTrigger(){
-    ShooterPCM.toggle();
+    shooterPCM.toggle();
   }
 
   @Override
