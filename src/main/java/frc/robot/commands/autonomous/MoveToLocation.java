@@ -26,7 +26,7 @@ public class MoveToLocation extends CommandBase {
     this.goal = goal;
     this.start = drive.getPose().getTranslation();
     this.drive.setMaxSpeed(maxSpeed);
-    addRequirements(driveSubsystem);
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.

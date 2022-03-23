@@ -155,6 +155,21 @@ public class Drivetrain extends SubsystemBase {
   public Pose2d getPose() {
     return driveOdometry.getPoseMeters();
   }
+
+  /** Reset the MecanumDrive Odometer and encoders
+   * @see #resetOdometry(Pose2d)
+   */
+  public void resetOdometry() {
+    resetOdometry(new Pose2d());
+  }
+
+  /** Reset the MecanumDrive Odometer to the specified position,
+   * and reset encoders */
+  public void resetOdometry(Pose2d pose) {
+    resetEncoder();
+    driveOdometry.resetPosition(pose, getGyroRotation());
+  }
+
   /** Get the current gyroscope angle in degrees from forward [-180, 180] */
   public double getGyroAngle() {
     return driveGyro.getRotation2d().getDegrees();
