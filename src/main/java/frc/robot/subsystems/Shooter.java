@@ -22,6 +22,8 @@ public class Shooter extends SubsystemBase {
     front = new CANSparkMax(FRONT_ID, kBrushless);
     rear = new CANSparkMax(REAR_ID, kBrushless);
     shooterPCM = new DoubleSolenoid(CTREPCM, TRIGGER_FORWARD_ID, TRIGGER_REVERSE_ID);
+    //has to be set before toggled
+    toggleTrigger(false);
 
     front.restoreFactoryDefaults();
     rear.restoreFactoryDefaults();
@@ -31,7 +33,7 @@ public class Shooter extends SubsystemBase {
   }
 
   /* Toggle the trigger on/off */
-  public void togglePiston(boolean offOn){
+  public void toggleTrigger(boolean offOn){
     if (offOn == true){
       shooterPCM.set(kForward);
     }
