@@ -106,7 +106,13 @@ public class RobotContainer {
         .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
-        .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));
+        .whenHeld(new RunCommand(
+            () -> m_intake.toggleIntake(true),
+            m_intake));
+    new JoystickButton(m_driveController, Button.kLeftBumper.value)
+        .whenHeld(new RunCommand(
+            () -> m_intake.toggleIntake(true),
+            m_intake));
   }
 
   /**

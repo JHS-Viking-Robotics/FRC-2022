@@ -30,8 +30,12 @@ public final class Constants {
   public final static class Subsystem {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Intake Intake} subsystem */
     public final static class Intake {
+      /** Intake SparkMAX ID number */
       public final static int TAKE_ID = 22;
+      /** Intake SparkMAX is inverted */
       public final static boolean TAKE_INVERTED = false;
+      /** Intake SparkMAX operating speed [0.0, 1.0] */
+      public final static double TAKE_SPEED = 0.5;
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
@@ -113,7 +117,7 @@ public final class Constants {
       public final static boolean LIFT_INVERTED = false;      
     }
 }
-  
+
   /** Joystick USB ports */
   public final class Joystick {
     /** USB port for driver controller */
@@ -121,7 +125,7 @@ public final class Constants {
     /** USB port for support controller */
     public final static int SUPPORT = 1;
   }
-  
+
   /** Physical chassis measurements and dimensions */
   public final class Chassis {
     /** Wheel diameter in meters */
@@ -133,6 +137,6 @@ public final class Constants {
     /** Width of the robot in meters */
     public final static double WIDTH = 27 * Math.INCHES_2_METERS;
     /** Length of the robot in meters */
-    public final static double LENGTH = 32.3 * Math.INCHES_2_METERS; 
+    public final static double LENGTH = 32.3 * Math.INCHES_2_METERS;
   }
 }
