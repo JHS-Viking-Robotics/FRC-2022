@@ -54,7 +54,7 @@ public class Shooter extends SubsystemBase {
 
     // Configure speed slider
     shooterSpeed = shuffleShooterTab
-        .add("Shooter Speed", 0.0)
+        .add("Shooter Speed", SHOOTER_SPEED)
         .withWidget(kNumberSlider)
         .withProperties(
             Map.of(
@@ -87,7 +87,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double output = (motorsOn) ? 0.5 : 0;
+    double output = (motorsOn) ? shooterSpeed.getDouble(SHOOTER_SPEED) : 0;
     front.set(output);
     rear.set(output);
   }

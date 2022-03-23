@@ -44,6 +44,8 @@ public final class Constants {
       public final static int TRIGGER_FORWARD_ID = 1;
       /** Reverse channel on the Pneumatics Module */
       public final static int TRIGGER_REVERSE_ID = 2;
+      /** Firing speed of the motors [0.0, 1.0] */
+      public final static double SHOOTER_SPEED = 0.75;
       /** Front SparkMAX is inverted */
       public final static boolean FRONT_INVERTED = true;
       /** Rear SparkMAX is inverted */
