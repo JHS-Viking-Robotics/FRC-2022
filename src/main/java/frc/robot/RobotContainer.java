@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDrive;
+import frc.robot.commands.FireBall;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Lift;
@@ -28,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_driveController = new XboxController(0);
-  private final XboxController m_shooterController = new XboxController(1);
+  private final XboxController m_liftController = new XboxController(1);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Shooter m_shooter = new Shooter();
@@ -54,6 +55,9 @@ public class RobotContainer {
           () -> m_driveController.getLeftX(),
           () -> m_driveController.getRightX(),
           true);
+  private final FireBall m_fireBall
+      = new FireBall(
+        m_shooter);
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -81,11 +85,11 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
     new JoystickButton(m_driveController, Button.kY.value)
-        .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
+        .whenPressed(m_fireBall);
 
-    new JoystickButton(m_shooterController, Button.kY.value)
+    new JoystickButton(m_liftController, Button.kY.value)
         .whenHeld(new RunCommand(m_lift::goUp, m_lift));
-    new JoystickButton(m_shooterController, Button.kA.value)
+    new JoystickButton(m_liftController, Button.kA.value)
         .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
