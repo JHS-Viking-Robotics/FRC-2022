@@ -1,20 +1,26 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import static frc.robot.Constants.Subsystem.Shooter.*;
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import static edu.wpi.first.wpilibj.PneumaticsModuleType.*;
+import static edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets.*;
 
 import com.revrobotics.CANSparkMax; 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Shooter extends SubsystemBase {
   private final CANSparkMax front;          // Front shooter motor
   private final CANSparkMax rear;           // Rear shooter motor
   private final DoubleSolenoid shooterPCM;  // Solenoid for the shooter trigger
-  
+  private NetworkTableEntry shooterSpeed;   // NetworkTables controller for motor speed
   private boolean motorsOn = false;         // Current state of the motors
   
   /** Creates a new Shooter. */
@@ -30,6 +36,33 @@ public class Shooter extends SubsystemBase {
 
     front.setInverted(FRONT_INVERTED);
     rear.setInverted(REAR_INVERTED);
+
+    // Configure the shuffleboard so we can easily test the Shooter
+    configureShuffleboard();
+  }
+
+  /** Configures the Shuffleboard dashboard "Shooter" tab */
+  private void configureShuffleboard() {
+    // Create references to Shooter tab and its various layouts
+    ShuffleboardTab shuffleShooterTab = Shuffleboard.getTab("Shooter");
+
+    // Add piston object to tab
+    shuffleShooterTab
+        .add("Trigger Piston", shooterPCM)
+        .withPosition(0, 0)
+        .withSize(2, 1);
+
+    // Configure speed slider
+    shooterSpeed = shuffleShooterTab
+        .add("Shooter Speed", 0.0)
+        .withWidget(kNumberSlider)
+        .withProperties(
+            Map.of(
+                "Min", 0,
+                "Max", 1))
+        .withSize(2, 1)
+        .withPosition(0, 1)
+        .getEntry();
   }
 
   /* Toggle the trigger on/off */
