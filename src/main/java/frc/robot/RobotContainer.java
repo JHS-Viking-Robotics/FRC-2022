@@ -4,13 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.commands.FireBall;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Lift;
-import frc.robot.subsystems.Intake;
+import frc.robot.commands.autonomous.GetOffLine;
+import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -36,11 +33,6 @@ public class RobotContainer {
   private final Lift m_lift = new Lift();
   private final Intake m_intake= new Intake();
 
-  private final ArcadeDrive m_arcadeDrive
-      = new ArcadeDrive(
-          m_drivetrain,
-          () -> m_driveController.getLeftY(),
-          () -> m_driveController.getLeftX());
   private final MecanumDrive m_mecanumDrive
       = new MecanumDrive(
           m_drivetrain,
@@ -99,6 +91,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_arcadeDrive;
+    return new GetOffLine(m_drivetrain, 0.4, true);
   }
 }
