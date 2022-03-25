@@ -66,7 +66,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Set arcade drive as default, and also set lift.stop as a safety
-    m_drivetrain.setDefaultCommand(m_arcadeDrive);
+    m_drivetrain.setDefaultCommand(m_mecanumDrive);
     m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
   }
 
@@ -77,10 +77,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driveController, Button.kA.value)
-        .whenPressed(m_mecanumDrive);
-    new JoystickButton(m_driveController, Button.kB.value)
-        .whenPressed(m_mecanumDriveFOD);
 
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
