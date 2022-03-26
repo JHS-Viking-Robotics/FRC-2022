@@ -19,6 +19,7 @@ public class ShootAndScoot extends SequentialCommandGroup {
   public ShootAndScoot(Drivetrain drivetrain, Shooter shooter, double speed, boolean forward) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    shooter.setMotorSpeed(0.8);
     addCommands(
       new WaitCommand(7.5),
       new InstantCommand(shooter::toggleMotors, shooter),
@@ -27,5 +28,6 @@ public class ShootAndScoot extends SequentialCommandGroup {
       new WaitCommand(2.0),
       new GetOffLine(drivetrain, speed, forward)
     );
+    shooter.setMotorSpeed();
   }
 }
