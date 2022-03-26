@@ -43,7 +43,7 @@ public class MoveToLocation extends CommandBase {
     Translation2d move = goal.minus(drive.getPose().getTranslation());
     move = move.div(move.getNorm());
 
-    // Scale our vector so we speed up and slow down in the last 0.5m
+    // TODO: Scale our vector so we speed up and slow down in the last 0.5m
     // If we are only moving 1m total, then just go slowly
 
     // We need to rotate our axis to use driveCartesian, which uses NED
