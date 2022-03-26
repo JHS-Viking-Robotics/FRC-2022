@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   }
 
   /* Turn the intake on/off */
-  public void toggleIntake() {
+  public void toggleInTake() {
     double output = (intakeOn) ? 0 : TAKE_SPEED;
     intakeOn = !intakeOn;
     takeMotor.set(output);

@@ -35,7 +35,7 @@ public final class Constants {
       /** Intake SparkMAX is inverted */
       public final static boolean TAKE_INVERTED = false;
       /** Intake SparkMAX operating speed [0.0, 1.0] */
-      public final static double TAKE_SPEED = 0.5;
+      public final static double TAKE_SPEED = 0.85;
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
@@ -44,6 +44,12 @@ public final class Constants {
       public final static int FRONT_ID = 32;
       /** CAN Bus ID of rear SparkMAX */
       public final static int REAR_ID = 33;
+      /** Forward channel on the Pneumatics Module */
+      public final static int TRIGGER_FORWARD_ID = 1;
+      /** Reverse channel on the Pneumatics Module */
+      public final static int TRIGGER_REVERSE_ID = 2;
+      /** Firing speed of the motors [0.0, 1.0] */
+      public final static double SHOOTER_SPEED = 0.75;
       /** Front SparkMAX is inverted */
       public final static boolean FRONT_INVERTED = true;
       /** Rear SparkMAX is inverted */
@@ -77,7 +83,7 @@ public final class Constants {
       /** F constant for SparkMAX onboard PID control */
       public final static double F = 0.0;
       /** Max speed of the robot between [0,1] */
-      public final static double MAX_SPEED = 0.5;
+      public final static double MAX_SPEED = 0.75;
       /** Maximum forward driving velocity in m/s (meters per second). Should
        * be slightly lower than robot's maximum free speed */
       public final static double MAX_VELOCITY = 2.0;
@@ -114,7 +120,7 @@ public final class Constants {
       /** CAN Bus ID of lift SparkMAX */
       public final static int LIFT_ID = 24;
       /** Lift SparkMAX is inverted */
-      public final static boolean LIFT_INVERTED = false;      
+      public final static boolean LIFT_INVERTED = true;
     }
 }
 

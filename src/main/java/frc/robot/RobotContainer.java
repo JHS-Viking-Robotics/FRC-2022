@@ -6,7 +6,11 @@ package frc.robot;
 
 import frc.robot.commands.autonomous.GetOffLine;
 import frc.robot.commands.autonomous.MoveToLocation;
+import frc.robot.commands.MecanumDrive;
+import frc.robot.commands.FireBall;
+import frc.robot.commands.autonomous.ShootAndScoot;
 import frc.robot.subsystems.*;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -27,15 +31,33 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XboxController m_driveController = new XboxController(0);
-  private final XboxController m_shooterController = new XboxController(1);
+  private final XboxController m_liftController = new XboxController(1);
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final Shooter m_shooter = new Shooter();
   private final Lift m_lift = new Lift();
-  private final Intake m_intake = new Intake();
+  private final Intake m_intake= new Intake();
+  
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_autonSelector = new SendableChooser<>();
 
-    // A chooser for autonomous commands
-    SendableChooser<Command> m_autonSelector = new SendableChooser<>();
+  private final MecanumDrive m_mecanumDrive
+      = new MecanumDrive(
+          m_drivetrain,
+          () -> m_driveController.getLeftY(),
+          () -> m_driveController.getLeftX(),
+          () -> m_driveController.getRightX(),
+          false);
+  private final MecanumDrive m_mecanumDriveFOD
+      = new MecanumDrive(
+          m_drivetrain,
+          () -> m_driveController.getLeftY(),
+          () -> m_driveController.getLeftX(),
+          () -> m_driveController.getRightX(),
+          true);
+  private final FireBall m_fireBall
+      = new FireBall(
+        m_shooter);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -47,6 +69,13 @@ public class RobotContainer {
         "Get Off The Line",
         new GetOffLine(m_drivetrain, 0.2, true));
     m_autonSelector.addOption(
+        "Shoot And Scoot",
+        new ShootAndScoot(
+            m_drivetrain,
+            m_shooter,
+            0.2,
+            true));
+    m_autonSelector.addOption(
         "Move To (1, 1)",
         new MoveToLocation(
             m_drivetrain,
@@ -57,16 +86,8 @@ public class RobotContainer {
     SmartDashboard.putData(m_autonSelector);
 
     // Set arcade drive as default, and also set lift.stop as a safety
-    m_drivetrain.setDefaultCommand(
-        new RunCommand(
-            () -> m_drivetrain.drive(
-                m_driveController.getLeftY(),
-                m_driveController.getLeftX(),
-                m_driveController.getRightX(),
-                false),
-            m_drivetrain));
-    m_lift.setDefaultCommand(
-        new RunCommand(m_lift::stop, m_lift));
+    m_drivetrain.setDefaultCommand(m_mecanumDrive);
+    m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
   }
 
   /**
@@ -76,21 +97,17 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Configure the button for driving with FOD
-    SmartDashboard.putData(
-        "Drive using FOD",
-        new RunCommand(
-            () -> m_drivetrain.drive(
-                m_driveController.getLeftY(),
-                m_driveController.getLeftX(),
-                m_driveController.getRightX(),
-                true),
-            m_drivetrain));
+    // Configure the button for turning on FOD
+    SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
-    // Configure the buttons for raising/lowering the Lift
-    new JoystickButton(m_shooterController, Button.kY.value)
+    new JoystickButton(m_driveController, Button.kX.value)
+        .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenPressed(m_fireBall);
+
+    new JoystickButton(m_liftController, Button.kY.value)
         .whenHeld(new RunCommand(m_lift::goUp, m_lift));
-    new JoystickButton(m_shooterController, Button.kA.value)
+    new JoystickButton(m_liftController, Button.kA.value)
         .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
     // Configure the buttons for loading and firing the Shooter, and running
@@ -100,13 +117,10 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kY.value)
         .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
     new JoystickButton(m_driveController, Button.kRightBumper.value)
-        .whenHeld(new RunCommand(
-            () -> m_intake.toggleIntake(true),
-            m_intake));
+        .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
-        .whenHeld(new RunCommand(
-            () -> m_intake.toggleIntake(true),
-            m_intake));
+        .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
+        .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
   }
 
   /**
