@@ -28,10 +28,16 @@ The following sections contain useful information if you want to deploy or devel
 
 ### Hardware Setup
 
-Our robot is still being built, but follows the following conventions. All devices are updated with the latest firmware, and are always connected pos <--> pos and grd <--> grd (inversion is only handled in the code). You can find pictures of the robot [on our website](https://www.jhsvikingrobotics.com/this-year-s-robots).
+Our robot follows the following conventions. All devices are updated with the latest firmware, and are always connected pos <--> pos and grd <--> grd (inversion is only handled in the code). You can find pictures of the robot [on our website](https://www.jhsvikingrobotics.com/this-year-s-robots). We are using RevRobotics [SparkMAX Motor Controllers](https://www.revrobotics.com/rev-11-2158/) and [NEO Brushless Motors](https://www.revrobotics.com/rev-21-1650/)
 
 Subsystem | Motor(s) | Controller(s) | Sensor(s)
 :-:|:-:|:-:|:-:
+Drivetrain | 4 x NEO | 4 x SparkMAX | 4 x Internal
+Shooter | 2 x NEO | 2 x SparkMAX | (not used)
+Intake | 1 x NEO | 1 x SparkMAX | (not used)
+Lift | 1 x NEO | 1 x SparkMAX | (not used)
+
+We also have a [CTRE PCM](https://store.ctr-electronics.com/pneumatic-control-module/) which manages the "trigger" piston on our shooter system. All the equipment is standard KOP stuff.
 
 ### Deploying To RoboRIO
 
@@ -39,7 +45,18 @@ To deploy the code to the RoboRIO, pull this repository from GitHub using the in
 
 ### Controls Layout
 
-There are very few button mappings to the controller right now, as everything is in the testing phase. To operate the robot, open the ```Driver Station``` and open the ```Shuffleboard```. There are tabs for each subsystem, which have controllers on them.
+During testing, each subsystem will manage its own tab on the ```Shuffleboard```. For competition code, these tabs will not be available so the buttons don't accidentally get triggered. The following is the current controls layout:
+
+Action | Button | Notes
+:-:|:-:|:-:
+Enable/Disable FOD | Dashboard | Field Oriented Driving (FOD) makes all movements act relative to the field rather than the robot
+Drive Slide | Left Stick | Drives the robot forward/backward/left/right Mecanum style
+Drive Rotation | Right Stick | Rotates the robot clockwise/counter-clockwise
+Toggle Shooter | X Button | Toggles the Shooter motors on/off
+Fire Shooter | Y Button | Fires the Shooter piston and automatically retracts it
+Run Intake | Bumpers | Run the intake while either bumper is help
+Raise Lift | Secondary Controller Y Button | Raise the Lift when held
+Lower Lift | Secondary Controller A Button | Lower the Lift when held
 
 ### Style Guide
 
@@ -47,21 +64,7 @@ We do not yet have a strict style guide. Generally we expect new commits to foll
 
 All methods, members, and code blocks should have javadocs and comments to make them easily understandable to other developers.
 
-For pull requests and commit messages, check out the [Team 7221 Docs](https://jhs-viking-robotics.github.io/Java-Hello-World/) for templates and guidelines. In general, always add a high level description of functionality or the interface.
-
-### Other Notes
-
-Xbox controller inputs are inverted for the y axis, which needs to be handled whenever passing joystick ax(es) to a command. See the following diagram:
-
-```plaintext
-    (-)
-     |
-(-)--+--(+)
-     |
-    (+)
-```
-
-New features can be added in a PR to the development branch after basic has been completed. After extensive testing, several new features will be merged together to main, and tagged with a new release.
+For pull requests and commit messages, check out the [Team 7221 Docs](https://jhs-viking-robotics.github.io/Java-Hello-World/) for templates and guidelines.
 
 ## Feature Requests And Bug Reporting
 
