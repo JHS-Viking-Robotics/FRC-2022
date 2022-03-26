@@ -23,6 +23,7 @@ public class GetOffLine extends CommandBase {
     this.drive = driveSubsystem;
     this.forward = forward;
     drive.setMaxSpeed(speed);
+    drive.setBrake();
     addRequirements(drive);
   }
 
@@ -44,6 +45,7 @@ public class GetOffLine extends CommandBase {
   public void end(boolean interrupted) {
     // Stop moving and reset drive speed
     drive.drive(0, 0, 0, false);
+    drive.setCoast();
     drive.setMaxSpeed();
   }
 

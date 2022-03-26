@@ -12,6 +12,7 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -58,7 +59,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Set arcade drive as default, and also set lift.stop as a safety
-    m_drivetrain.setDefaultCommand(m_mecanumDrive);
+    m_drivetrain.setDefaultCommand(m_mecanumDriveFOD);
     m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
   }
 
@@ -69,6 +70,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Configure the button for turning off FOD
+    SmartDashboard.putData("Drive without FOD", m_mecanumDrive);
 
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
@@ -82,6 +85,9 @@ public class RobotContainer {
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
         .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));
+    new JoystickButton(m_driveController, Button.kLeftBumper.value)
+        .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
+        .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
   }
 
   /**
