@@ -56,7 +56,6 @@ public class RobotContainer {
   private final FireBall m_fireBall
       = new FireBall(
         m_shooter);
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -65,15 +64,15 @@ public class RobotContainer {
 
     // Configure the autonomous mode selector
     m_autonSelector.setDefaultOption(
-        "Get Off The Line",
-        new GetOffLine(m_drivetrain, 0.2, true));
-    m_autonSelector.addOption(
         "Shoot And Scoot",
         new ShootAndScoot(
             m_drivetrain,
             m_shooter,
             0.2,
             true));
+    m_autonSelector.addOption(
+        "Get Off The Line",
+        new GetOffLine(m_drivetrain, 0.2, true));
 
     // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_mecanumDrive);
