@@ -95,6 +95,11 @@ public class Shooter extends SubsystemBase {
     shooterSpeed.setDouble(speed);
   }
 
+  /** Set the motor speed to the default for auton mode */
+  public void setMotorSpeedAuton() {
+    setMotorSpeed(0.7);
+  }
+
   @Override
   public void periodic() {
     double output = (motorsOn) ? shooterSpeed.getDouble(SHOOTER_SPEED) : 0;
