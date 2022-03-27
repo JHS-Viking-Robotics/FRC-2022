@@ -47,6 +47,7 @@ public class RotateToAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return goal.equals(drive.getPose().getRotation());
+    // We won't get exactly there so stop within a few degrees
+    return 5 > Math.abs(goal.minus(drive.getPose().getRotation()).getDegrees());
   }
 }

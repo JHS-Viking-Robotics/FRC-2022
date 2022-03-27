@@ -12,7 +12,6 @@ public class MoveToLocation extends CommandBase {
 
   private final Drivetrain drive;       // Drive subsystem to use
   private final Translation2d goal;     // Goal position of the robot
-  private final Translation2d start;    // Start position of the robot
 
   /**
    * Creates a new MoveToLocation.
@@ -24,7 +23,6 @@ public class MoveToLocation extends CommandBase {
   public MoveToLocation(Drivetrain driveSubsystem, Translation2d goal, double maxSpeed) {
     this.drive = driveSubsystem;
     this.goal = goal;
-    this.start = drive.getPose().getTranslation();
     this.drive.setMaxSpeed(maxSpeed);
     addRequirements(drive);
   }
@@ -65,6 +63,7 @@ public class MoveToLocation extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return goal.equals(drive.getPose().getTranslation());
+    // We won't get exactly to the position, so stop within a few centimeters
+    return 0.05 > goal.getDistance(drive.getPose().getTranslation());
   }
 }
