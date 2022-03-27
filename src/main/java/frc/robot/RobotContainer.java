@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.autonomous.DoubleShootRight;
 import frc.robot.commands.autonomous.GetOffLine;
 import frc.robot.commands.autonomous.MoveToLocation;
 import frc.robot.commands.MecanumDrive;
@@ -76,11 +77,14 @@ public class RobotContainer {
             0.2,
             true));
     m_autonSelector.addOption(
-        "Move To (1, 1)",
+        "Test Move To (1, 1)",
         new MoveToLocation(
             m_drivetrain,
             new Translation2d(1, 1),
             0.3));
+    m_autonSelector.addOption(
+        "Double Shoot Right", 
+        new DoubleShootRight(m_drivetrain, m_shooter, m_lift, m_intake, 0.3));
 
     // Put the chooser on the dashboard
     SmartDashboard.putData(m_autonSelector);

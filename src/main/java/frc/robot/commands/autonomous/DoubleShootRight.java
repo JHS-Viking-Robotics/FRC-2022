@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class DoubleShootRight extends SequentialCommandGroup {
   /** Creates a new DoubleShootRight. */
   public DoubleShootRight(Drivetrain drivetrain, Shooter shooter, Lift lift,
-                          Intake intake, double speed, boolean forward) {
+                          Intake intake, double speed) {
     // Order goes as such:
     //     1. Let the Robot know where we start (use some reference or line on
     //        the field so it's easy to line up during matches. Angle must be
