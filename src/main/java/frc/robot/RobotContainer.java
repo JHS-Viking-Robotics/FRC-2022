@@ -71,7 +71,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Configure the button for turning off FOD
-    SmartDashboard.putData("Drive without FOD", m_mecanumDrive);
+    SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
