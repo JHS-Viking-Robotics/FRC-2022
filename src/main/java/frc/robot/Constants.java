@@ -121,6 +121,8 @@ public final class Constants {
       public final static int LIFT_ID = 24;
       /** Lift SparkMAX is inverted */
       public final static boolean LIFT_INVERTED = true;
+      /** Speed of the Lift motor [0.0, 1.0] */
+      public final static double LIFT_SPEED = 0.5;
     }
 }
 
