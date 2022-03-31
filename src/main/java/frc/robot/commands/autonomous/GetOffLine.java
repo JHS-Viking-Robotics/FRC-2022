@@ -53,6 +53,6 @@ public class GetOffLine extends CommandBase {
   @Override
   public boolean isFinished() {
     // Go at least 1m in either direction, plus some wiggle room
-    return forward ? drive.getDistanceLeft() > 1.1 : drive.getDistanceLeft() < -1.1;
+    return forward ? drive.getDistanceLeft() > 1.2 : drive.getDistanceLeft() < -1.2;
   }
 }
