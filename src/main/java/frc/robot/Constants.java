@@ -30,8 +30,12 @@ public final class Constants {
   public final static class Subsystem {
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Intake Intake} subsystem */
     public final static class Intake {
+      /** CAN Bus ID of Intake SparkMAX */
       public final static int TAKE_ID = 22;
+      /** Intake SparkMAX is inverted */
       public final static boolean TAKE_INVERTED = false;
+      /** Max speed of the robot between [0,1] */
+      public final static double TAKE_SPEED = 0.85;
     }
 
     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
@@ -79,7 +83,7 @@ public final class Constants {
       /** F constant for SparkMAX onboard PID control */
       public final static double F = 0.0;
       /** Max speed of the robot between [0,1] */
-      public final static double MAX_SPEED = 0.5;
+      public final static double MAX_SPEED = 0.75;
       /** Maximum forward driving velocity in m/s (meters per second). Should
        * be slightly lower than robot's maximum free speed */
       public final static double MAX_VELOCITY = 2.0;
@@ -116,7 +120,7 @@ public final class Constants {
       /** CAN Bus ID of lift SparkMAX */
       public final static int LIFT_ID = 24;
       /** Lift SparkMAX is inverted */
-      public final static boolean LIFT_INVERTED = false;      
+      public final static boolean LIFT_INVERTED = true;
     }
 }
   

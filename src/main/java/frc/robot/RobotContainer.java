@@ -7,11 +7,14 @@ package frc.robot;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.commands.FireBall;
 import frc.robot.commands.autonomous.GetOffLine;
+import frc.robot.commands.autonomous.ShootAndScoot;
 import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -32,6 +35,9 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Lift m_lift = new Lift();
   private final Intake m_intake= new Intake();
+  
+  // A chooser for autonomous commands
+  SendableChooser<Command> m_autonSelector = new SendableChooser<>();
 
   private final MecanumDrive m_mecanumDrive
       = new MecanumDrive(
@@ -50,12 +56,23 @@ public class RobotContainer {
   private final FireBall m_fireBall
       = new FireBall(
         m_shooter);
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure the autonomous mode selector
+    m_autonSelector.setDefaultOption(
+        "Shoot And Scoot",
+        new ShootAndScoot(
+            m_drivetrain,
+            m_shooter,
+            0.2,
+            true));
+    m_autonSelector.addOption(
+        "Get Off The Line",
+        new GetOffLine(m_drivetrain, 0.2, true));
 
     // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_mecanumDrive);
@@ -69,6 +86,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+<<<<<<< HEAD
+    // Configure the button for turning off FOD
+=======
+    // Configure the button for turning on FOD
+>>>>>>> 597cde809c8beebac09fddec99d29709ddd905a4
+    SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
@@ -82,6 +105,9 @@ public class RobotContainer {
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
         .whenPressed(new InstantCommand(m_intake::toggleInTake, m_intake));
+    new JoystickButton(m_driveController, Button.kLeftBumper.value)
+        .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
+        .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
   }
 
   /**
@@ -90,7 +116,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new GetOffLine(m_drivetrain, 0.4, true);
+    return m_autonSelector.getSelected();
   }
 }

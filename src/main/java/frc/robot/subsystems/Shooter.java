@@ -85,6 +85,16 @@ public class Shooter extends SubsystemBase {
     shooterPCM.toggle();
   }
 
+  /** Set the motor speed to the default in Constants */
+  public void setMotorSpeed() {
+    setMotorSpeed(SHOOTER_SPEED);
+  }
+
+  /** Set the motor speed between [0.0, 1.0] */
+  public void setMotorSpeed(double speed) {
+    shooterSpeed.setDouble(speed);
+  }
+
   @Override
   public void periodic() {
     double output = (motorsOn) ? shooterSpeed.getDouble(SHOOTER_SPEED) : 0;

@@ -6,8 +6,9 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.Subsystem.Drivetrain.*;
 import static frc.robot.Constants.Chassis.*;
-import com.revrobotics.SparkMaxRelativeEncoder;
+import static com.revrobotics.CANSparkMax.IdleMode.*;
 
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax; 
 import com.revrobotics.RelativeEncoder; 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
@@ -98,9 +99,30 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  /**
+   * Sets the drive motors to brake mode
+   * @see #setCoast
+   */
+  public void setBrake() {
+    leftFront.setIdleMode(kBrake);
+  }
+
+  /**
+   * Sets the drive motors to brake mode
+   * @see #setBrake
+   */
+  public void setCoast() {
+    leftFront.setIdleMode(kCoast);
+  }
+
   /** Set the max speed of the drivetrain between [0,1] */
   public void setMaxSpeed(double maxSpeed) {
     driveMecanum.setMaxOutput(maxSpeed);
+  }
+
+  /** Set the max speed of the drivetrain between [0,1] */
+  public void setTurboSpeed() {
+    driveMecanum.setMaxOutput(1.0);
   }
 
   /**

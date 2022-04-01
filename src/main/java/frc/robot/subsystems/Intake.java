@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
 
   /* Turn the intake on/off */
   public void toggleInTake() {
-    double output =(intakeOn) ? 0: 0.5;
+    double output =(intakeOn) ? 0 : TAKE_SPEED;
     intakeOn = !intakeOn;
     takeMotor.set(output);
   }

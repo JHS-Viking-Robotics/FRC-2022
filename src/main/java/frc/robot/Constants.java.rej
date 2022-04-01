@@ -1,0 +1,10 @@
+diff a/src/main/java/frc/robot/Constants.java b/src/main/java/frc/robot/Constants.java	(rejected hunks)
+@@ -35,7 +35,7 @@
+       /** Intake SparkMAX is inverted */
+       public final static boolean TAKE_INVERTED = false;
+       /** Max speed of the robot between [0,1] */
+-      public final static double TAKE_SPEED = 0.85;
++      public final static double TAKE_SPEED = 0.9;
+     }
+ 
+     /** Configuration options, PID constants, and CAN Bus ID's for {@link frc.robot.subsystems.Shooter Shooter} subsystem */
