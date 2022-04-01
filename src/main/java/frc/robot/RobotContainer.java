@@ -86,11 +86,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-<<<<<<< HEAD
-    // Configure the button for turning off FOD
-=======
     // Configure the button for turning on FOD
->>>>>>> 597cde809c8beebac09fddec99d29709ddd905a4
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
     new JoystickButton(m_driveController, Button.kX.value)

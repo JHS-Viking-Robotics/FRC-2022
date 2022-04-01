@@ -5,9 +5,10 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.Subsystem.Lift.*;
-
-import com.revrobotics.CANSparkMax; 
+import static com.revrobotics.CANSparkMax.IdleMode.*;
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
+
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,16 +20,25 @@ public class Lift extends SubsystemBase {
   public  Lift() {
     lift = new CANSparkMax(LIFT_ID, kBrushless);
     lift.restoreFactoryDefaults();
-    lift.setInverted(LIFT_INVERTED); 
+    lift.setInverted(LIFT_INVERTED);
+    // Lift mechanism is spring loaded, and will try to lift itself a few inches
+    // throughout the match. Using brake mode to counter this
+    lift.setIdleMode(kBrake);
   }
 
-  public void goUp(){
+  /** Raise the Lift */
+  public void goUp() {
     lift.set(0.5);
   }
-  public void goDown(){
+
+  /** Lower the Lift */
+  public void goDown() {
     lift.set(-0.5);
   }
-  public void stop(){
+
+  /** Stop the Lift. Note that this will not work after the match when the power
+   * is turned off. */
+  public void stop() {
     lift.set(0);
   }
 }
