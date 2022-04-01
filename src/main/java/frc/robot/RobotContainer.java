@@ -93,11 +93,10 @@ public class RobotContainer {
     // Configure the button for turning on FOD
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
-    new JoystickButton(m_driveController, Button.kX.value)
+    new JoystickButton(m_liftController, Button.kX.value)
         .whenPressed(m_autoOffShoot);
-    new JoystickButton(m_driveController, Button.kY.value)
+    new JoystickButton(m_liftController, Button.kB.value)
         .whenPressed(m_fireBall);
-
     new JoystickButton(m_liftController, Button.kY.value)
         .whenHeld(new RunCommand(m_lift::goUp, m_lift));
     new JoystickButton(m_liftController, Button.kA.value)
