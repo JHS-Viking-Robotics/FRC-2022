@@ -35,7 +35,6 @@ public final class Constants {
       /** Intake SparkMAX is inverted */
       public final static boolean TAKE_INVERTED = false;
       /** Max speed of the robot between [0,1] */
-      public final static int    INTAKE_DROP_ID = 3;
       public final static double TAKE_SPEED = 0.85;
     }
 
