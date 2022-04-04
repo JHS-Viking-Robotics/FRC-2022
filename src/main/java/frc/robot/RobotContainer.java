@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.commands.MecanumDrive;
 import frc.robot.commands.FireBall;
-import frc.robot.commands.AutoOffShoot;
 import frc.robot.commands.autonomous.GetOffLine;
 import frc.robot.commands.autonomous.ShootAndScoot;
 import frc.robot.subsystems.*;
@@ -57,9 +56,7 @@ public class RobotContainer {
   private final FireBall m_fireBall
       = new FireBall(
         m_shooter);
-  private final AutoOffShoot m_autoOffShoot
-      = new AutoOffShoot(
-        m_shooter);
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -94,7 +91,7 @@ public class RobotContainer {
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
 
     new JoystickButton(m_liftController, Button.kX.value)
-        .whenPressed(m_autoOffShoot);
+        .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
     new JoystickButton(m_liftController, Button.kB.value)
         .whenPressed(m_fireBall);
     new JoystickButton(m_liftController, Button.kY.value)
@@ -107,7 +104,7 @@ public class RobotContainer {
     new JoystickButton(m_driveController, Button.kX.value)
         .whenPressed(new InstantCommand(m_intake::toggleDrop, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
-        .whenHeld(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
+        .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
         .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
   }
 
