@@ -104,6 +104,8 @@ public class RobotContainer {
 
     new JoystickButton(m_driveController, Button.kRightBumper.value)
         .whenHeld(new InstantCommand(m_intake::toggleInTake, m_intake));
+    new JoystickButton(m_driveController, Button.kX.value)
+        .whenPressed(new InstantCommand(m_intake::toggleDrop, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
         .whenHeld(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
         .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
