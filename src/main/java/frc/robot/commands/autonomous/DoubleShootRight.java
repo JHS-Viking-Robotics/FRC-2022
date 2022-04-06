@@ -4,7 +4,6 @@
 
 package frc.robot.commands.autonomous;
 
-import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -22,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class DoubleShootRight extends SequentialCommandGroup {
   /** Creates a new DoubleShootRight. */
-  public DoubleShootRight(Drivetrain drivetrain, Shooter shooter, Lift lift,
+  public DoubleShootRight(Drivetrain drivetrain, Shooter shooter,
                           Intake intake, double speed) {
     // Order goes as such:
     //     1. Let the Robot know where we start (use some reference or line on
