@@ -8,12 +8,13 @@ import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.commands.InitializeIntake;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -50,12 +51,12 @@ public class DoubleShootRight extends SequentialCommandGroup {
         new MoveToLocation(drivetrain, new Translation2d(7.65, 2.69), speed),
         // Fire first ball
         new ShootSequence(shooter),
-        new InitializeIntake(lift),
+        new InstantCommand(intake::toggleDrop, intake),
         // Head to Waypoint 3 with intake running to get the ball
         new RotateToAngle(drivetrain, Rotation2d.fromDegrees(-96.38), speed),
-        new InstantCommand(intake::toggleInTake, intake),
+        new ScheduleCommand(new RunCommand(intake::run, intake)),
         new MoveToLocation(drivetrain, new Translation2d(7.65, 0.63), speed),
-        new InstantCommand(intake::toggleInTake, intake),
+        new InstantCommand(intake::stop, intake),
         // Head to final waypoint to score last ball
         new RotateToAngle(drivetrain, Rotation2d.fromDegrees(-112.37), speed),
         new MoveToLocation(drivetrain, new Translation2d(7.79, 2.65), speed),
