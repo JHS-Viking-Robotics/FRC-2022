@@ -97,6 +97,7 @@ public class RobotContainer {
     // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_mecanumDrive);
     m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
+    m_intake.setDefaultCommand(new RunCommand(m_intake::stop, m_intake));
   }
 
   /**
@@ -106,12 +107,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Configure the button for turning on FOD
+
+    // Configure the button for turning on FOD and initializing the intake
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
+    /* commenting this out for now, there are issues with intake drop we are
+       trying to rule out the button being broken
     SmartDashboard.putData(
         "Initialize Intake",
         new InstantCommand(m_intake::toggleDrop, m_intake));
+    */
+    new JoystickButton(m_driveController, Button.kY.value)
+        .whenPressed(new InstantCommand(m_intake::toggleDrop, m_intake));
 
+    // Set up Lift controller to control Lift up/down and firing the shooter
     new JoystickButton(m_liftController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
     new JoystickButton(m_liftController, Button.kB.value)
@@ -121,14 +129,9 @@ public class RobotContainer {
     new JoystickButton(m_liftController, Button.kA.value)
         .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
-    // Configure the buttons for loading and firing the Shooter, and running
-    // the intake. Both bumpers are set for intake just in case driver forgets
-    new JoystickButton(m_driveController, Button.kX.value)
-        .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
-    new JoystickButton(m_driveController, Button.kY.value)
-        .whenPressed(new InstantCommand(m_shooter::toggleTrigger, m_shooter));
+    // Configure the turbo button and intake button
     new JoystickButton(m_driveController, Button.kRightBumper.value)
-        .whenHeld(new RunCommand(m_intake::run, m_intake));
+        .toggleWhenPressed(new RunCommand(m_intake::run, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
         .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
         .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));
