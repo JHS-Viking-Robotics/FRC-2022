@@ -87,11 +87,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-<<<<<<< HEAD
 
-=======
     // Configure the button for turning on FOD
->>>>>>> f88ff4bf809ce0c27bf94505782c7748b7e2687e
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
     SmartDashboard.putData(
         "Initialize Intake",
