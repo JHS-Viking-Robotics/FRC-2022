@@ -78,6 +78,7 @@ public class RobotContainer {
     // Set arcade drive as default, and also set lift.stop as a safety
     m_drivetrain.setDefaultCommand(m_mecanumDrive);
     m_lift.setDefaultCommand(new RunCommand(m_lift::stop, m_lift));
+    m_intake.setDefaultCommand(new RunCommand(m_intake::stop, m_intake));
   }
 
   /**

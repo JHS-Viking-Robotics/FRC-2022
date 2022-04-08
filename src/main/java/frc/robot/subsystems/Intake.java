@@ -35,4 +35,7 @@ public class Intake extends SubsystemBase {
   public void toggleDrop(){
     intakeDrop.set(false);
   }
+  public void stop() {
+    takeMotor.set(0);
+  }
 }

@@ -73,7 +73,7 @@ public class Drivetrain extends SubsystemBase {
 
     // Configure MecanumDrive object and set up the gyroscope, also set up the odometry
     driveMecanum = new MecanumDrive(leftFront, leftRear, rightFront, rightRear);
-    setMaxSpeed();
+    setMaxSpeed(MAX_SPEED);
     driveGyro = new ADXRS450_Gyro();
     driveGyro.reset();
     driveOdometry = new MecanumDriveOdometry(KINEMATICS, getGyroRotation());
@@ -202,7 +202,6 @@ public class Drivetrain extends SubsystemBase {
    }
     driveGyro.reset();
   }
-
   @Override
   public void periodic() {
     // Update odometry
