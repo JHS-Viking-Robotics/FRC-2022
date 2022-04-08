@@ -7,20 +7,21 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.wpilibj.PneumaticsModuleType.*;
-import edu.wpi.first.wpilibj.Solenoid;
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Intake extends SubsystemBase {
 
   private final CANSparkMax takeMotor; // Intake motor
   private boolean intakeOn = false;    // State of intake motors
-  private final Solenoid intakeDrop ;
+ private final DoubleSolenoid intakeDrop;
 
   /** Creates a new .Intake */
   public  Intake() {
     takeMotor = new CANSparkMax(TAKE_ID, MotorType.kBrushless);
-     intakeDrop = new Solenoid(CTREPCM, INTAKE_DROP_ID);
+     intakeDrop = new DoubleSolenoid(CTREPCM, INTAKE_DROP_ID, INTAKE_PLACEHOLDER_ID);
     //We what it to stay up untill it gets changed
-    intakeDrop.set(true);
+    intakeDrop.set(kForward);
     takeMotor.restoreFactoryDefaults();
     takeMotor.setInverted(TAKE_INVERTED);
   }
@@ -32,6 +33,6 @@ public class Intake extends SubsystemBase {
     takeMotor.set(output);
   }
   public void toggleDrop(){
-   intakeDrop.set(false);
+   intakeDrop.set(kReverse);
   }
 }
