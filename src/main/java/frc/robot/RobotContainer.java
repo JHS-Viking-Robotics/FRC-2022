@@ -90,10 +90,10 @@ public class RobotContainer {
 
     // Configure the button for turning on FOD
     SmartDashboard.putData("Drive with FOD", m_mecanumDriveFOD);
-    SmartDashboard.putData(
+    /**SmartDashboard.putData(
         "Initialize Intake",
         new InstantCommand(m_intake::toggleDrop, m_intake));
-
+    */
     new JoystickButton(m_liftController, Button.kX.value)
         .whenPressed(new InstantCommand(m_shooter::toggleMotors, m_shooter));
     new JoystickButton(m_liftController, Button.kB.value)
@@ -103,7 +103,9 @@ public class RobotContainer {
     new JoystickButton(m_liftController, Button.kA.value)
         .whenHeld(new RunCommand(m_lift::goDown, m_lift));
 
-    new JoystickButton(m_driveController, Button.kRightBumper.value)
+        new JoystickButton(m_driveController, Button.kY.value)
+        .whenHeld(new InstantCommand(m_intake::toggleDrop, m_intake));
+        new JoystickButton(m_driveController, Button.kRightBumper.value)
         .whenHeld(new RunCommand(m_intake::runIntake, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
         .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
