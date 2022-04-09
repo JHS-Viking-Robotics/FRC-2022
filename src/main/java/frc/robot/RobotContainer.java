@@ -6,14 +6,12 @@ package frc.robot;
 
 import frc.robot.commands.autonomous.DoubleShootRight;
 import frc.robot.commands.autonomous.GetOffLine;
-import frc.robot.commands.autonomous.MoveToLocation;
 import frc.robot.commands.MecanumDrive;
 import frc.robot.commands.FireBall;
 import frc.robot.commands.autonomous.ShootAndScoot;
 import frc.robot.commands.autonomous.TripleBallBottomRight;
 import frc.robot.subsystems.*;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -79,17 +77,11 @@ public class RobotContainer {
             0.2,
             true));
     m_autonSelector.addOption(
-        "Test Move To (1, 1)",
-        new MoveToLocation(
-            m_drivetrain,
-            new Translation2d(1, 1),
-            0.3));
-    m_autonSelector.addOption(
         "Double Shoot Right", 
-        new DoubleShootRight(m_drivetrain, m_shooter, m_intake, 0.35));
+        new DoubleShootRight(m_drivetrain, m_shooter, m_intake, 0.30));
     m_autonSelector.addOption(
         "Triple Ball Bottom Right",
-        new TripleBallBottomRight(m_drivetrain, m_shooter, m_intake, 0.35));
+        new TripleBallBottomRight(m_drivetrain, m_shooter, m_intake, 0.30));
 
     // Put the chooser on the dashboard
     SmartDashboard.putData(m_autonSelector);
@@ -131,7 +123,7 @@ public class RobotContainer {
 
     // Configure the turbo button and intake button
     new JoystickButton(m_driveController, Button.kRightBumper.value)
-        .toggleWhenPressed(new RunCommand(m_intake::run, m_intake));
+        .whenHeld(new RunCommand(m_intake::run, m_intake));
     new JoystickButton(m_driveController, Button.kLeftBumper.value)
         .whenPressed(new InstantCommand(m_drivetrain::setTurboSpeed, m_drivetrain))
         .whenReleased(new InstantCommand(m_drivetrain::setMaxSpeed, m_drivetrain));

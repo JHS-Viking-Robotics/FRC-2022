@@ -52,7 +52,7 @@ public class TripleBallBottomRight extends SequentialCommandGroup {
         // Fire third ball
         new MoveToLocation(drive, new Translation2d(7.71, 1.39), speed),
         new RotateToAngle(drive, Rotation2d.fromDegrees(-97), speed),
-        new ShootSequence(shooter),
+        new ShootSequence(shooter)
     );
   }
 }
