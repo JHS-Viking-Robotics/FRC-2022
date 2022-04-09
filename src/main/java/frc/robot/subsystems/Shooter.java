@@ -97,7 +97,7 @@ public class Shooter extends SubsystemBase {
 
   /** Set the motor speed to the default for auton mode */
   public void setMotorSpeedAuton() {
-    setMotorSpeed(0.7);
+    setMotorSpeed(1.0);
   }
 
   @Override
