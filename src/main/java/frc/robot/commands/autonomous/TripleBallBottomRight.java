@@ -28,10 +28,12 @@ public class TripleBallBottomRight extends SequentialCommandGroup {
         new SetCurrentPosition(
             drive,
             new Pose2d(
-                7.59,
-                2.87,
+                7.63,
+                2.90,
                 Rotation2d.fromDegrees(-111))),
         // Fire first ball
+        new MoveToLocation(drive, new Translation2d(7.71, 1.39), speed),
+        new RotateToAngle(drive, Rotation2d.fromDegrees(-97), speed),
         new ShootSequence(shooter),
         // Move to get second ball
         new RotateToAngle(drive, Rotation2d.fromDegrees(-89), speed),
@@ -39,8 +41,8 @@ public class TripleBallBottomRight extends SequentialCommandGroup {
         new MoveToLocation(drive, new Translation2d(7.62, 0.65), speed),
         new InstantCommand(intake::stop, intake),
         // Fire second ball
-        new RotateToAngle(drive, Rotation2d.fromDegrees(-110), speed),
-        new MoveToLocation(drive, new Translation2d(7.84, 2.77), speed),
+        new MoveToLocation(drive, new Translation2d(7.71, 1.39), speed),
+        new RotateToAngle(drive, Rotation2d.fromDegrees(-97), speed),
         new ShootSequence(shooter),
         // Move to get third ball
         new RotateToAngle(drive, Rotation2d.fromDegrees(-160), speed),
@@ -48,9 +50,9 @@ public class TripleBallBottomRight extends SequentialCommandGroup {
         new MoveToLocation(drive, new Translation2d(5.16, 1.93), speed),
         new InstantCommand(intake::stop, intake),
         // Fire third ball
-        new RotateToAngle(drive, Rotation2d.fromDegrees(-110), speed),
-        new MoveToLocation(drive, new Translation2d(7.84, 2.77), speed),
-        new ShootSequence(shooter)
+        new MoveToLocation(drive, new Translation2d(7.71, 1.39), speed),
+        new RotateToAngle(drive, Rotation2d.fromDegrees(-97), speed),
+        new ShootSequence(shooter),
     );
   }
 }

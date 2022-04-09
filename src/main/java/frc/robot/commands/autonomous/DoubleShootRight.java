@@ -41,13 +41,13 @@ public class DoubleShootRight extends SequentialCommandGroup {
         new SetCurrentPosition(
             drivetrain,
             new Pose2d(
-                7.65,
-                0.83,
+                8.37,
+                1.86,
                 Rotation2d.fromDegrees(2))),
         new InstantCommand(shooter::setMotorSpeedAuton, shooter),
         // Go to Waypoint 1
         new RotateToAngle(drivetrain, Rotation2d.fromDegrees(-112.37), speed),
-        new MoveToLocation(drivetrain, new Translation2d(7.65, 2.69), speed),
+        new MoveToLocation(drivetrain, new Translation2d(7.65, 1.36), speed),
         // Fire first ball
         new ShootSequence(shooter),
         new InstantCommand(intake::toggleDrop, intake),
@@ -58,7 +58,7 @@ public class DoubleShootRight extends SequentialCommandGroup {
         new InstantCommand(intake::stop, intake),
         // Head to final waypoint to score last ball
         new RotateToAngle(drivetrain, Rotation2d.fromDegrees(-112.37), speed),
-        new MoveToLocation(drivetrain, new Translation2d(7.79, 2.65), speed),
+        new MoveToLocation(drivetrain, new Translation2d(7.65, 1.36), speed),
         new ShootSequence(shooter),
         // Clean up when we are done
         new InstantCommand(shooter::setMotorSpeed, shooter)
